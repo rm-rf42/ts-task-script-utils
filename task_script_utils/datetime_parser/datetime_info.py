@@ -111,6 +111,26 @@ class DateTimeInfo:
 
         return None
 
+    def match_offset(self, token: str):
+        # Can't parse 12-23-1223T11:12:23.000-05:30
+        # offset with - sign, confuses with date separator
+        # that why we need space 12-23-1223T11:12:23.000 -05:30
+        patterns = [
+            r"[+-]\d+:\d+",
+            r"\s*[+-]\d+\s+|\s*[+-]\d+$",
+        ]
+        for pattern in patterns:
+            matches = re.findall(pattern, token)
+            if matches:
+                if len(matches) != 1:
+                    return MultipleOffsetsError(f"Multiple offsets found: {matches}")
+                match = matches[0].strip()
+                sign, offset = match[0], match[1:]
+                offset = self._pad_and_validate_offset_value(offset)
+                if offset:
+                    return f"{sign}{offset}"
+        return None
+
     def _process_year_first_or_last_matches(self, matches, year_first):
         if len(matches) > 1:
             raise MultipleDatesError(f"Multiple Dates Detected: {matches}")
@@ -232,3 +252,28 @@ class DateTimeInfo:
         day = f"0{day}" if day < 10 else str(day)
         month = f"0{month}" if month < 10 else str(month)
         return day, month
+
+    def _pad_and_validate_offset_value(self, offset):
+        if ":" in offset:
+            # 5:30 --> 05:30
+            # 05:30 --> 05:30
+            if len(offset) == 4:
+                return f"0{offset}"
+            elif len(offset) == 5:
+                return offset
+            else:
+                return None
+        else:
+            # 2 --> 02:00 | 09 --> +09:00 | 12 --> 12:00
+            # 530 --> 05:30
+            # 0930 --> 09:30 | 1200 --> 12:00
+            if len(offset) == 1:
+                return f"0{offset}:00"
+            elif len(offset) == 2:
+                return f"{offset}:00"
+            elif len(offset) == 3:
+                return f"0{offset[0]}:{offset[1:]}"
+            elif len(offset) == 4:
+                return f"{offset[:2]}:{offset[2:]}"
+            else:
+                return None
