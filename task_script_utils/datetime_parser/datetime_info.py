@@ -23,7 +23,7 @@ class DateTimeInfo:
         self.day = None
         self.month = None
         self.year = None
-        self.hours = None
+        self.hour = None
         self.minutes = None
         self.seconds = None
         self.milliseconds = None
@@ -214,7 +214,7 @@ class DateTimeInfo:
             if self.milliseconds:
                 dt_str += f".{self.milliseconds}"
 
-            if self.am_or_pm:
+            if self.am_or_pm and int(self.hour)<=12:
                 dt_str += f" {self.am_or_pm.upper()}"
 
             if self.offset:
@@ -224,12 +224,12 @@ class DateTimeInfo:
         raise TimestampBuildError(f"Required tokens missing: {self.__dict__}")
 
     @property
-    def dt_formats(self):
-        day = "d" if len(self.day) == 1 else "dd"
+    def dt_format(self):
+        day = "D" if len(self.day) == 1 else "DD"
         month = "M" if len(self.month) == 1 else "MM"
         year = "YYYY"
 
-        if self.am_or_pm:
+        if self.am_or_pm and int(self.hour) <=12:
             hrs = "h" if len(self.hour) == 1 else "hh"
         else:
             hrs = "H" if len(self.hour) == 1 else "HH"
@@ -239,11 +239,19 @@ class DateTimeInfo:
 
         if self.milliseconds:
             fmt += ".SSS"
-        if self.am_or_pm:
+        if self.am_or_pm and int(self.hour) <=12:
             fmt += " A"
         if self.offset:
             fmt += " Z"
         return fmt
+
+    @property
+    def datetime(self):
+        return pendulum.from_format(
+            self.dtstamp,
+            self.dt_format,
+            tz=None
+        )
 
     def pre_process_datetime_string(self):
         raw_dt = self.date_time_raw
