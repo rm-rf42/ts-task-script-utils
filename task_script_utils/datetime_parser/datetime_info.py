@@ -172,7 +172,7 @@ class DateTimeInfo:
         return None
 
     def match_am_or_pm(self, token: str):
-        pattern = r"\s*[aApP][mM]\s+|\s+[aApP][mM]$"
+        pattern = r"\s*[aApP][mM]\s+|\s*[aApP][mM]$"
         matches = re.findall(pattern, token)
         if not matches or len(matches) != 1:
             return None
