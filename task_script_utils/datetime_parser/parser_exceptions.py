@@ -21,3 +21,6 @@ class MultipleOffsetsError(Exception):
 
 class InvalidDateError(Exception):
     pass
+
+class TimestampBuildError(Exception):
+    pass

@@ -1,3 +1,4 @@
+from datetime import time
 import re
 import json
 from typing import Union
@@ -11,24 +12,29 @@ from .pipeline_config import PipelineConfig
 class DateTimeInfo:
     def __init__(self, date_time_raw: str, config: PipelineConfig):
         self.date_time_raw = date_time_raw
+        self.pre_process_datetime_string()
+
         self.am_or_pm = None
         self.short_date = None
         self.time = None
         self.iana_tz = None
-        self.day_first = None
-        self.year_first = None
-        self.month_first = None
-        self.offset = None
-        self.military_format = None
+        self.offset_ = None
+        self.abbreviated_tz = None
+        self.day = None
+        self.month = None
+        self.year = None
+        self.hours = None
+        self.minutes = None
+        self.seconds = None
+        self.milliseconds = None
         self.config = config
-        self.parse()
 
     def __str__(self):
         return json.dumps(self.__dict__, indent=2)
 
     def parse(self):
         checks = self.get_checks()
-        tokens = self.date_time_raw.split(" ")
+        tokens = self.date_time_raw.split()
         for token in tokens:
             t = token
             for var_name, func in checks.items():
@@ -37,11 +43,17 @@ class DateTimeInfo:
                     if result:
                         setattr(self, var_name, result)
 
+        # if self.iana_tz:
+        #    self.offset_ = pendulum.now(tz=self.iana_tz).format("Z")
+
     def get_checks(self):
         methods_dict = {
             "iana_tz": self.match_iana_tz,
             "time": self.match_time,
             "short_date": self.match_short_date,
+            "am_or_pm": self.match_am_or_pm,
+            "offset_": self.match_offset,
+            "abbreviated_tz": self.match_tz_abbreviation
         }
         return methods_dict
 
@@ -50,16 +62,29 @@ class DateTimeInfo:
             return token
 
     def match_time(self, token: str):
-        pattern = r"\d+:\d+:\d+.\d+|\d+:\d+:\d+"
-        matches = re.findall(pattern, token)
+        hh_mm_ss_pattern = r"\d+:\d+:\d+.\d+|\d+:\d+:\d+"
+        hh_mm_pattern = r"\d{1,2}:\d{1,2}[+-]|\d{1,2}:\d{1,2}\s+|\d{1,2}:\d{1,2}$"
+
+        matches = re.findall(hh_mm_ss_pattern, token)
         if not matches:
-            return None
+            matches = re.findall(hh_mm_pattern, token)
+            if not matches:
+                return None
 
         if len(matches) > 1:
             raise MultipleTimesFoundError(
                 f"Multiple Time values found: {matches}")
-        time_ = matches[0].split(":")
-        hour, minutes, seconds = time_
+
+        time_ = matches[0].strip()
+        time_ = time_.replace("+", "")
+        time_ = time_.replace("-", "")
+        time_ = time_.split(":")
+
+        if len(time_) == 2:
+            hour, minutes = time_
+            seconds = "00"
+        else:
+            hour, minutes, seconds = time_
         if "." in seconds:
             seconds, milliseconds = seconds.split(".")
         else:
@@ -72,11 +97,12 @@ class DateTimeInfo:
         assert (0 <= int(seconds) <= 60), InvalidTimeError(
             f"Invalid time : {time_}. Seconds value is incorrect")
 
-        self.hour = int(hour)
-        self.minutes = int(minutes)
-        self.seconds = int(seconds)
-        self.milliseconds = int(milliseconds)
-        return ':'.join(time_)
+        self.hour = hour
+        self.minutes = minutes
+        self.seconds = seconds
+        if milliseconds:
+            self.milliseconds = int(milliseconds)
+        return matches[0].strip()
 
     def match_short_date(self, token: str) -> Union[tuple, None]:
         year_first_pattern = r"\d{4,4}[-~!@#$%^&*.,;/\\]\d{1,2}[-~!@#$%^&*.,;/\\]\d{1,2}"
@@ -116,20 +142,113 @@ class DateTimeInfo:
         # offset with - sign, confuses with date separator
         # that why we need space 12-23-1223T11:12:23.000 -05:30
         patterns = [
-            r"[+-]\d+:\d+",
+            r"[Uu][Tt][Cc][+-]\d+",
             r"\s*[+-]\d+\s+|\s*[+-]\d+$",
+            r"[+-]\d+:\d+",
         ]
+
+        # if the token matched short date
+        # then it is a date don't match for offset
+        try:
+            short_date = self.match_short_date(token)
+        except Exception as e:
+            short_date = None
+
+        if short_date:
+            return None
+
         for pattern in patterns:
             matches = re.findall(pattern, token)
             if matches:
                 if len(matches) != 1:
                     return MultipleOffsetsError(f"Multiple offsets found: {matches}")
                 match = matches[0].strip()
+                if match.lower().startswith("utc"):
+                    match = match[3:]
                 sign, offset = match[0], match[1:]
                 offset = self._pad_and_validate_offset_value(offset)
                 if offset:
                     return f"{sign}{offset}"
         return None
+
+    def match_am_or_pm(self, token: str):
+        pattern = r"\s*[aApP][mM]\s+|\s+[aApP][mM]$"
+        matches = re.findall(pattern, token)
+        if not matches or len(matches) != 1:
+            return None
+        return matches[0].strip()
+
+    def match_tz_abbreviation(self, token: str):
+        if not self.config.tz_dict:
+            return None
+        for tz in self.config.tz_dict.keys():
+            if tz.lower() == token.lower.strip():
+                return tz
+        return None
+
+    @property
+    def offset(self):
+        if self.offset_:
+            return self.offset_
+
+        if self.abbreviated_tz:
+            return self.config.tz_dict[self.abbreviated_tz]
+
+        if self.iana_tz:
+            return pendulum.now(tz=self.iana_tz).format("Z")
+
+        return None
+
+    @property
+    def dtstamp(self):
+        if (
+            self.day
+            and self.month
+            and self.year
+            and self.hour
+            and self.minutes
+            and self.seconds
+        ):
+            dt_str = f"{self.day}-{self.month}-{self.year}"
+            dt_str += f" {self.hour}:{self.minutes}:{self.seconds}"
+            if self.milliseconds:
+                dt_str += f".{self.milliseconds}"
+
+            if self.am_or_pm:
+                dt_str += f" {self.am_or_pm.upper()}"
+
+            if self.offset:
+                dt_str += f" {self.offset}"
+            return dt_str
+
+        raise TimestampBuildError(f"Required tokens missing: {self.__dict__}")
+
+    @property
+    def dt_formats(self):
+        day = "d" if len(self.day) == 1 else "dd"
+        month = "M" if len(self.month) == 1 else "MM"
+        year = "YYYY"
+
+        if self.am_or_pm:
+            hrs = "h" if len(self.hour) == 1 else "hh"
+        else:
+            hrs = "H" if len(self.hour) == 1 else "HH"
+        mins = "m" if len(self.minutes) == 1 else "mm"
+        seconds = "s" if len(self.seconds) == 1 else "ss"
+        fmt = f"{day}-{month}-{year} {hrs}:{mins}:{seconds}"
+
+        if self.milliseconds:
+            fmt += ".SSS"
+        if self.am_or_pm:
+            fmt += " A"
+        if self.offset:
+            fmt += " Z"
+        return fmt
+
+    def pre_process_datetime_string(self):
+        raw_dt = self.date_time_raw
+        raw_dt = self._replace_single_characters(raw_dt)
+        self.date_time_raw = raw_dt
 
     def _process_year_first_or_last_matches(self, matches, year_first):
         if len(matches) > 1:
@@ -277,3 +396,28 @@ class DateTimeInfo:
                 return f"{offset[:2]}:{offset[2:]}"
             else:
                 return None
+
+    def _replace_single_characters(self, string: str):
+        # Input =  2018-13-09T11:12:23.000-05:30
+        # output = 2018-13-09 11:12:23.000-05:30
+        prev_char: str = ""
+        indexes = []
+        for i in range(len(string)):
+            current_char = string[i]
+            next_char = string[i+1] if i < len(string) - 1 else ""
+            if (
+                prev_char.isdigit()
+                and current_char.isalpha()
+                and next_char.isdigit()
+            ):
+                indexes.append(i)
+            prev_char = current_char
+
+        new_string = ""
+        for i in range(len(string)):
+            if i in indexes:
+                new_string += " "
+            else:
+                new_string += string[i]
+
+        return new_string
