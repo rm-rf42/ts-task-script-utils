@@ -4,12 +4,14 @@ from dateutil import tz
 from dateutil.parser import parse as dateutil_parse
 from .pipeline_config import PipelineConfig
 from .datetime_info import DateTimeInfo
+from .date_formats import get_long_datetime_formats
 
+default_pipline_config = PipelineConfig.from_dict({})
 
 def parse(
     datetime_str: str,
     formats_list: list = None,
-    config: PipelineConfig = PipelineConfig.from_dict({})
+    config: PipelineConfig = default_pipline_config
 ):
     parsed_datetime = None
 
@@ -34,11 +36,17 @@ def parse(
     # Otherwise use DateInfo Parser to parse short dates
     try:
         dt_info = DateTimeInfo(datetime_str, config)
-        parsed_datetime = dt_info.datetime_object
+        if dt_info.dtstamp:
+            parsed_datetime = dt_info.datetime_object
     except Exception as e:
         raise(e)
 
-    # TODO: parse long datetime formats
+    # Use long date formats
+    if not parsed_datetime:
+        parsed_datetime = parse_with_formats(
+            datetime_str,
+            get_long_datetime_formats()
+        )
     return parsed_datetime
 
 
@@ -77,6 +85,7 @@ def change_time_zone(parsed_datetime, datetime_str, config: PipelineConfig):
     tz_local = tz.tzoffset(tz_, offset_seconds)
     local_parsed_time = parsed_datetime.replace(tzinfo=tz_local)
     return local_parsed_time
+
 
 def convert_offset_to_seconds(offset_value):
     sign, offset = offset_value[0], offset_value[1:]

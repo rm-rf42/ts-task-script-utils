@@ -221,7 +221,7 @@ class DateTimeInfo:
                 dt_str += f" {self.offset}"
             return dt_str
 
-        raise TimestampBuildError(f"Required tokens missing: {self.__dict__}")
+        raise None
 
     @property
     def dt_format(self):
