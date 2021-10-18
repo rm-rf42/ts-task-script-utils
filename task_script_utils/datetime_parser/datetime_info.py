@@ -221,7 +221,7 @@ class DateTimeInfo:
                 dt_str += f" {self.offset}"
             return dt_str
 
-        raise None
+        return None
 
     @property
     def dt_format(self):

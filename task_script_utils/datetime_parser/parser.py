@@ -36,6 +36,7 @@ def parse(
     # Otherwise use DateInfo Parser to parse short dates
     try:
         dt_info = DateTimeInfo(datetime_str, config)
+        dt_info.parse()
         if dt_info.dtstamp:
             parsed_datetime = dt_info.datetime_object
     except Exception as e:
