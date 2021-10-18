@@ -1,7 +1,7 @@
 from datetime import time
 import re
 import json
-from typing import Union
+from typing import List, Union
 
 import pendulum
 
@@ -47,6 +47,12 @@ class DateTimeInfo:
         #    self.offset_ = pendulum.now(tz=self.iana_tz).format("Z")
 
     def get_checks(self):
+        """It creates a `dict` that maps parsing functions to instance
+        variable that should store the result.
+
+        eg. if `self.match_short_date` is able to parse short
+        date successfully, it will be stored in `self.short_date`
+        """
         methods_dict = {
             "iana_tz": self.match_iana_tz,
             "time": self.match_time,
@@ -57,11 +63,37 @@ class DateTimeInfo:
         }
         return methods_dict
 
-    def match_iana_tz(self, token: str):
+    def match_iana_tz(self, token: str) -> str:
+        """Match and store IANA timezone
+
+        Args:
+            token (str): A string value from `self.date_time_raw`
+            when splitted by whitespace
+
+        Returns:
+            str : An IANA timezone string
+        """
         if token in pendulum.timezones:
             return token
 
-    def match_time(self, token: str):
+    def match_time(self, token: str) -> Union[str, None]:
+        """Use Regex to find any time string present in
+        input token
+
+        Args:
+            token (str): A string value from `self.date_time_raw`
+            when splitted by whitespace
+
+        Raises:
+            - MultipleTimesFoundError: When more than one time-string
+            are matched
+            - InvalidTimeError: When time like string is parsed, but the
+            numeric value of hrs, minutes and seconds are out of bound.
+
+        Returns:
+            Union[str, None]: return if any time string is found
+            else return None
+        """
         hh_mm_ss_pattern = r"\d+:\d+:\d+.\d+|\d+:\d+:\d+"
         hh_mm_pattern = r"\d{1,2}:\d{1,2}[+-]|\d{1,2}:\d{1,2}\s+|\d{1,2}:\d{1,2}$"
 
@@ -104,11 +136,25 @@ class DateTimeInfo:
             self.milliseconds = int(milliseconds)
         return matches[0].strip()
 
-    def match_short_date(self, token: str) -> Union[tuple, None]:
+    def match_short_date(self, token: str) -> Union[str, None]:
+        """Use Regex to find any short date string present in
+        input token
+
+        If a valid, non-ambiguous match is found, then it also sets
+        `self.day`, `self.month` and `self.year`
+
+        Args:
+            token (str): A string value from `self.date_time_raw`
+            when splitted by whitespace
+
+        Returns:
+            Union[str, None]: if a match occurs return DD-MM-YYYY formated
+            date string else return None
+        """
         year_first_pattern = r"\d{4,4}[-~!@#$%^&*.,;/\\]\d{1,2}[-~!@#$%^&*.,;/\\]\d{1,2}"
         year_last_pattern = r"\d{1,2}[-~!@#$%^&*.,;/\\]\d{1,2}[-!~@#$%^&*.,;/\\]\d{4,4}"
         two_digit_date_pattern = r"\d{1,2}[-~!@#$%^&*.,;/\\]\d{1,2}[-!~@#$%^&*.,;/\\]\d{1,2}"
-        no_sep_date_pattern = r"\d{6,6}"
+        # no_sep_date_pattern = r"\d{6,6}"
 
         # YYYY-XX-XX
         year_first_matches = re.findall(year_first_pattern, token)
@@ -137,7 +183,18 @@ class DateTimeInfo:
 
         return None
 
-    def match_offset(self, token: str):
+    def match_offset(self, token: str) -> Union[str, None]:
+        """Use Regex to find if any utc offset value
+        is present in input token
+
+        Args:
+            token (str): A string value from `self.date_time_raw`
+            when splitted by whitespace
+
+        Returns:
+            Union[str, None]: +hh:mm or -hh:mm if a match is found
+            else None
+        """
         # Can't parse 12-23-1223T11:12:23.000-05:30
         # offset with - sign, confuses with date separator
         # that why we need space 12-23-1223T11:12:23.000 -05:30
@@ -172,13 +229,28 @@ class DateTimeInfo:
         return None
 
     def match_am_or_pm(self, token: str):
+        """
+        Use regex to check if input string contains
+        AM or PM. Return the matched value
+        """
         pattern = r"\s*[aApP][mM]\s+|\s*[aApP][mM]$"
         matches = re.findall(pattern, token)
         if not matches or len(matches) != 1:
             return None
         return matches[0].strip()
 
-    def match_tz_abbreviation(self, token: str):
+    def match_tz_abbreviation(self, token: str) -> Union[str, None]:
+        """Check if the input token is an abbreviated timezone
+        present in Pipeline Config's tz_dict
+
+        Args:
+            token (str): A string value from `self.date_time_raw`
+            when splitted by whitespace
+
+        Returns:
+            Union[str, None]: string like CST/EST etc if a
+            match is found else None
+        """
         if not self.config.tz_dict:
             return None
         for tz in self.config.tz_dict.keys():
@@ -188,6 +260,9 @@ class DateTimeInfo:
 
     @property
     def offset(self):
+        """
+        Return UTC offset that was found during parsing
+        """
         if self.offset_:
             return self.offset_
 
@@ -201,6 +276,13 @@ class DateTimeInfo:
 
     @property
     def dtstamp(self):
+        """Created Datetime string from parsed raw input string.
+        The format is DD-MM-YYYY hh:mm:ss and milliseconds, AM/PM
+        and utc offset are appended conditionally
+
+        Returns:
+            str/None: A datetime string
+        """
         if (
             self.day
             and self.month
@@ -214,7 +296,7 @@ class DateTimeInfo:
             if self.milliseconds:
                 dt_str += f".{self.milliseconds}"
 
-            if self.am_or_pm and int(self.hour)<=12:
+            if self.am_or_pm and int(self.hour) <= 12:
                 dt_str += f" {self.am_or_pm.upper()}"
 
             if self.offset:
@@ -225,11 +307,23 @@ class DateTimeInfo:
 
     @property
     def dt_format(self):
+        """Build datetime format using pendulum tokens.
+        This property along with `dtstamp` property can be used
+        to parse date using `pendulum.from_format`
+
+        Returns:
+            str: A datetime format build using pendulum formatting
+            tokens. This string represent the datetime format for
+            `dtstamp`
+        """
+        if not self.dtstamp:
+            return None
+
         day = "D" if len(self.day) == 1 else "DD"
         month = "M" if len(self.month) == 1 else "MM"
         year = "YYYY"
 
-        if self.am_or_pm and int(self.hour) <=12:
+        if self.am_or_pm and int(self.hour) <= 12:
             hrs = "h" if len(self.hour) == 1 else "hh"
         else:
             hrs = "H" if len(self.hour) == 1 else "HH"
@@ -239,7 +333,7 @@ class DateTimeInfo:
 
         if self.milliseconds:
             fmt += ".SSS"
-        if self.am_or_pm and int(self.hour) <=12:
+        if self.am_or_pm and int(self.hour) <= 12:
             fmt += " A"
         if self.offset:
             fmt += " Z"
@@ -247,6 +341,8 @@ class DateTimeInfo:
 
     @property
     def datetime(self):
+        if not self.dt_format or not self.dtstamp:
+            return None
         return pendulum.from_format(
             self.dtstamp,
             self.dt_format,
@@ -254,6 +350,11 @@ class DateTimeInfo:
         )
 
     def pre_process_datetime_string(self):
+        """This method is used to pre-process the input string
+        if required, before the parsing starts. It performs following
+        pre-processing:
+        1. Repace a character if it is sandwiched between two integer
+        """
         raw_dt = self.date_time_raw
         raw_dt = self._replace_single_characters(raw_dt)
         self.date_time_raw = raw_dt
@@ -334,7 +435,22 @@ class DateTimeInfo:
 
         return day, month, year
 
-    def _process_day_and_month(self, tokens):
+    def _process_day_and_month(self, tokens: List[str]) -> tuple:
+        """Given a list of two numeric tokens,
+        try to decide which token is day and which
+        is month.
+
+        Args:
+            tokens (List): a list containing two
+            numeric tokens
+
+        Raises:
+            AmbiguousDateError: When we fail to decide between day and month
+
+
+        Returns:
+            tuple: (day, month)
+        """
         tokens = [int(token) for token in tokens]
 
         first_token_is_month = tokens[0] <= 12
@@ -359,6 +475,21 @@ class DateTimeInfo:
         return day, month
 
     def _decide_month_and_year(self, tokens):
+        """Given a list of two numeric tokens,
+        try to decide which token is month and which
+        is year.
+
+        Args:
+            tokens (List): a list containing two
+            numeric tokens
+
+        Raises:
+            AmbiguousDateError: When we fail to decide between month and year
+
+
+        Returns:
+            tuple: (month, year)
+        """
         first_token_is_month = int(tokens[0]) <= 12
         second_token_is_month = int(tokens[1]) <= 12
 
@@ -371,14 +502,14 @@ class DateTimeInfo:
             raise AmbiguousDateError(
                 f"Can't decide month and year between: {tokens}")
 
-        day, month = (
+        month, year = (
             (tokens[0], tokens[1])
             if first_token_is_month
             else (tokens[1], tokens[0])
         )
-        day = f"0{day}" if day < 10 else str(day)
         month = f"0{month}" if month < 10 else str(month)
-        return day, month
+        year = f"0{year}" if year < 10 else str(year)
+        return month, year
 
     def _pad_and_validate_offset_value(self, offset):
         if ":" in offset:
