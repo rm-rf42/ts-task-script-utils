@@ -23,7 +23,7 @@ class PipelineConfig:
             "day_first": config_dict.get("day_first", None),
             "year_first": config_dict.get("year_first", None),
             "formats_list": config_dict.get("formats_list", []),
-            "tz_dict": config_dict.get("tz_dict,{}"),
+            "tz_dict": config_dict.get("tz_dict",{}),
             "fold": config_dict.get("fold", 0)
         }
         return cls(**config)

@@ -38,7 +38,7 @@ def parse(
         dt_info = DateTimeInfo(datetime_str, config)
         dt_info.parse()
         if dt_info.dtstamp:
-            parsed_datetime = dt_info.datetime_object
+            parsed_datetime = dt_info.datetime
     except Exception as e:
         raise(e)
 
