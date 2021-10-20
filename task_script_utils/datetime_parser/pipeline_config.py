@@ -1,3 +1,4 @@
+from .utils import map_offset_to_seconds
 class PipelineConfig:
     def __init__(
         self,
@@ -11,7 +12,7 @@ class PipelineConfig:
         self.day_first = day_first
         self.year_first = year_first
         self.format_list = formats_list
-        self.tz_dict = tz_dict
+        self.tz_dict = map_offset_to_seconds(tz_dict)
         self.fold = fold
 
     @classmethod

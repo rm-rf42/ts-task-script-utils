@@ -5,7 +5,7 @@ from dateutil.parser import parse as dateutil_parse
 from .pipeline_config import PipelineConfig
 from .datetime_info import DateTimeInfo
 from .date_formats import get_long_datetime_formats
-
+from .utils import convert_offset_to_seconds
 default_pipline_config = PipelineConfig.from_dict({})
 
 
@@ -63,13 +63,17 @@ def parse_with_formats(datetime_str: str, formats: list = None):
 
 def parse_using_dateutils(datetime_str: str, config: PipelineConfig):
     try:
-        parsed_datetime = dateutil_parse(
-            datetime_str,
-            dayfirst=config.day_first,
-            yearfirst=config.year_first,
-            #TODO: Pass tz_dict
-        )
-        return parsed_datetime
+        if (
+            (config.day_first is not None)
+            and (config.year_first is not None)
+        ):
+            parsed_datetime = dateutil_parse(
+                datetime_str,
+                dayfirst=config.day_first,
+                yearfirst=config.year_first,
+                tzinfos=config.tz_dict
+            )
+            return parsed_datetime
     except Exception as e:
         return None
 
@@ -91,14 +95,3 @@ def change_time_zone(parsed_datetime, datetime_str, config: PipelineConfig):
     tz_local = tz.tzoffset(tz_, offset_seconds)
     local_parsed_time = parsed_datetime.replace(tzinfo=tz_local)
     return local_parsed_time
-
-
-def convert_offset_to_seconds(offset_value):
-    sign, offset = offset_value[0], offset_value[1:]
-    sign = -1 if sign == "-" else 1
-    hrs, mins = offset.split(":")
-    total_seconds = dt.timedelta(
-        hours=int(hrs),
-        minutes=int(mins)
-    ).total_seconds()
-    return sign * total_seconds

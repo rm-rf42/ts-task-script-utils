@@ -8,6 +8,7 @@ snapshottest = "*"
 pytest = "*"
 pytest-cov = "*"
 ipykernel= "*"
+autopep8 = "*"
 
 [packages]
 numpy = "*"
