@@ -122,18 +122,21 @@ class DateTimeInfo:
         else:
             milliseconds = None
 
-        assert (0 <= int(hour) <= 24), InvalidTimeError(
-            f"Invalid time : {time_}. Hours value is incorrect")
-        assert (0 <= int(minutes) <= 60), InvalidTimeError(
-            f"Invalid time : {time_}. Minutes value is incorrect")
-        assert (0 <= int(seconds) <= 60), InvalidTimeError(
-            f"Invalid time : {time_}. Seconds value is incorrect")
+        if not (0 <= int(hour) <= 24):
+            raise InvalidTimeError(
+                f"Invalid time : {time_}. Hours value is incorrect")
+        if not (0 <= int(minutes) <= 60):
+            raise InvalidTimeError(
+                f"Invalid time : {time_}. Minutes value is incorrect")
+        if not (0 <= int(seconds) <= 60):
+            raise InvalidTimeError(
+                f"Invalid time : {time_}. Seconds value is incorrect")
 
         self.hour = hour
         self.minutes = minutes
         self.seconds = seconds
         if milliseconds:
-            self.milliseconds = int(milliseconds)
+            self.milliseconds = milliseconds
         return matches[0].strip()
 
     def match_short_date(self, token: str) -> Union[str, None]:
@@ -381,7 +384,7 @@ class DateTimeInfo:
             raise MultipleDatesError(f"Multiple Dates Detected: {matches}")
 
         date = re.sub(r"[-~!@#$%^&*.,;/\\]", "-", matches[0])
-        date_tokens = [i for i in date.split("-")]
+        date_tokens = date.split("-")
 
         if self.config.year_first is True:
             if self.config.day_first is True:
@@ -421,12 +424,14 @@ class DateTimeInfo:
                 raise AmbiguousDateError(
                     f"AmbiguousDateError: Date={matches[0]}; year_first=None; day_first=None")
 
-        assert 0 < int(month) <= 12, InvalidDateError(
-            f"Invalid month: {month}, Date={matches[0]}, year_first={self.config.year_first}, day_first={self.config.day_first}"
-        )
-        assert 0 < int(day) <= 31, InvalidDateError(
-            f"Invalid day: {day}, Date={matches[0]}, year_first={self.config.year_first}, day_first={self.config.day_first}"
-        )
+        if not (0 < int(month) <= 12):
+            raise InvalidDateError(
+                f"Invalid month: {month}, Date={matches[0]}, year_first={self.config.year_first}, day_first={self.config.day_first}"
+            )
+        if not (0 < int(day) <= 31):
+            raise InvalidDateError(
+                f"Invalid day: {day}, Date={matches[0]}, year_first={self.config.year_first}, day_first={self.config.day_first}"
+            )
 
         if len(year) == 1:
             year = f"200{year}"
@@ -470,8 +475,8 @@ class DateTimeInfo:
             if second_token_is_month
             else (tokens[1], tokens[0])
         )
-        day = f"0{day}" if day < 10 else str(day)
-        month = f"0{month}" if month < 10 else str(month)
+        day = f"{day:02d}"
+        month = f"{month:02d}"
         return day, month
 
     def _decide_month_and_year(self, tokens):
@@ -507,8 +512,8 @@ class DateTimeInfo:
             if first_token_is_month
             else (tokens[1], tokens[0])
         )
-        month = f"0{month}" if month < 10 else str(month)
-        year = f"0{year}" if year < 10 else str(year)
+        month = f"{month:02d}"
+        year = f"{year:02d}"
         return month, year
 
     def _pad_and_validate_offset_value(self, offset):
@@ -522,7 +527,7 @@ class DateTimeInfo:
             else:
                 return None
         else:
-            # 2 --> 02:00 | 09 --> +09:00 | 12 --> 12:00
+            # 2 --> 02:00 | 09 --> 09:00 | 12 --> 12:00
             # 530 --> 05:30
             # 0930 --> 09:30 | 1200 --> 12:00
             if len(offset) == 1:
@@ -541,9 +546,8 @@ class DateTimeInfo:
         # output = 2018-13-09 11:12:23.000-05:30
         prev_char: str = ""
         indexes = []
-        for i in range(len(string)):
-            current_char = string[i]
-            next_char = string[i+1] if i < len(string) - 1 else ""
+        for i, current_char in enumerate(string[:-1]):
+            next_char = string[i+1]
             if (
                 prev_char.isdigit()
                 and current_char.isalpha()

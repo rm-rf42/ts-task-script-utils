@@ -8,6 +8,7 @@ from .date_formats import get_long_datetime_formats
 
 default_pipline_config = PipelineConfig.from_dict({})
 
+
 def parse(
     datetime_str: str,
     formats_list: list = None,
@@ -18,7 +19,9 @@ def parse(
     # Parse Using formats list
     if formats_list:
         parsed_datetime, matched_format = parse_with_formats(
-            datetime_str, formats_list)
+            datetime_str,
+            formats_list
+        )
         if parsed_datetime:
             if config.tz_dict:
                 parsed_datetime = change_time_zone(
@@ -34,13 +37,10 @@ def parse(
         return parsed_datetime
 
     # Otherwise use DateInfo Parser to parse short dates
-    try:
-        dt_info = DateTimeInfo(datetime_str, config)
-        dt_info.parse()
-        if dt_info.dtstamp:
-            parsed_datetime = dt_info.datetime
-    except Exception as e:
-        raise(e)
+    dt_info = DateTimeInfo(datetime_str, config)
+    dt_info.parse()
+    if dt_info.dtstamp:
+        parsed_datetime = dt_info.datetime
 
     # Use long date formats
     if not parsed_datetime:
@@ -67,6 +67,7 @@ def parse_using_dateutils(datetime_str: str, config: PipelineConfig):
             datetime_str,
             dayfirst=config.day_first,
             yearfirst=config.year_first,
+            #TODO: Pass tz_dict
         )
         return parsed_datetime
     except Exception as e:
@@ -74,14 +75,18 @@ def parse_using_dateutils(datetime_str: str, config: PipelineConfig):
 
 
 def change_time_zone(parsed_datetime, datetime_str, config: PipelineConfig):
-    config_timezones = config.tz_dict.keys()
-
     tz_ = None
-    for timezone in config_timezones:
-        if timezone in datetime_str:
+    offset = None
+    config_timezones = config.tz_dict
+    for timezone, potential_offset in config_timezones.items():
+        if timezone.lower() in datetime_str.lower():
             tz_ = timezone
+            offset = potential_offset
             break
-    offset = config.tz_dict.get(tz_)
+
+    if offset is None:
+        return parsed_datetime
+
     offset_seconds = convert_offset_to_seconds(offset)
     tz_local = tz.tzoffset(tz_, offset_seconds)
     local_parsed_time = parsed_datetime.replace(tzinfo=tz_local)
@@ -93,7 +98,7 @@ def convert_offset_to_seconds(offset_value):
     sign = -1 if sign == "-" else 1
     hrs, mins = offset.split(":")
     total_seconds = dt.timedelta(
-        hours=(sign * int(hrs)),
+        hours=int(hrs),
         minutes=int(mins)
     ).total_seconds()
-    return total_seconds
+    return sign * total_seconds

@@ -7,13 +7,15 @@ verify_ssl = true
 snapshottest = "*"
 pytest = "*"
 pytest-cov = "*"
+ipykernel= "*"
 
 [packages]
 numpy = "*"
 python-dateutil = "*"
 dateparser = "*"
 arrow = "*"
-ipykernel= "*"
+pendulum = "*"
+pydash = "*"
 
 [requires]
 python_version = "3.7"

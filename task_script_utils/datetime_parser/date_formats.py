@@ -1,10 +1,9 @@
-from datetime import time
 from itertools import product
 
 from pydash.arrays import flatten
 
 date_parts = [
-    ['dddd', 'ddd ', 'dddd, ', 'ddd, ', ''],
+    ['dddd', 'ddd', 'dddd,', 'ddd,', ''],
     ['MMMM', 'MMM'],
     ['Do,', 'Do', 'D,', 'D'],
     ['YYYY']
@@ -18,7 +17,7 @@ time_parts = [
 
 long_date_formats = product(*date_parts)
 long_date_formats = [
-    " ".join(tokens).strip().replace("  ", " ")
+    " ".join(tokens).strip()
     for tokens in long_date_formats
 ]
 

@@ -16,8 +16,8 @@ class PipelineConfig:
 
     @classmethod
     def from_dict(cls, config_dict):
-        assert type(config_dict) == dict, TypeError(
-            "config_dict must be a python dict.")
+        if not isinstance(config_dict, dict):
+            raise TypeError("config_dict must be a python dict.")
 
         config = {
             "day_first": config_dict.get("day_first", None),
