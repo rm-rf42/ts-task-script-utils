@@ -75,10 +75,11 @@ regex_test_cases = [
 ]
 
 
+
 @pytest.mark.parametrize("input, year_first, day_first, expected", two_digit_date_with_config_test_cases)
 def test_match_short_date(input, year_first, day_first, expected):
     config_dict = pipeline_configs[(year_first, day_first)]
-    config = PipelineConfig.from_dict(config_dict)
+    config = PipelineConfig(**config_dict)
     try:
         date_info = DateTimeInfo(input, config)
         date_info.parse()
@@ -91,7 +92,7 @@ def test_match_short_date(input, year_first, day_first, expected):
 
 @pytest.mark.parametrize("input, expected", regex_test_cases)
 def test_regex_parsing(input, expected):
-    year_first = PipelineConfig.from_dict({"year_first": True})
+    year_first = PipelineConfig(**{"year_first": True})
     d = DateTimeInfo(input, year_first)
     d.parse()
     assert d.dtstamp == expected

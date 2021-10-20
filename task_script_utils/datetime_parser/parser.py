@@ -5,8 +5,14 @@ from dateutil.parser import parse as dateutil_parse
 from .pipeline_config import PipelineConfig
 from .datetime_info import DateTimeInfo
 from .date_formats import get_long_datetime_formats
-from .utils import convert_offset_to_seconds
-default_pipline_config = PipelineConfig.from_dict({})
+from .utils import (
+    convert_offset_to_seconds,
+    replace_abbreviated_tz_with_utc_offset,
+    replace_zz_with_Z
+)
+
+
+default_pipline_config = PipelineConfig(**{})
 
 
 def parse(
@@ -51,10 +57,34 @@ def parse(
     return parsed_datetime
 
 
-def parse_with_formats(datetime_str: str, formats: list = None):
-    for format in formats:
+def parse_with_formats(
+    datetime_str: str,
+    pipeline_config: PipelineConfig,
+    formats: list = []
+):
+    # If pipeline config contains tz_dict, then replace
+    # abbreviated_tz in datetime_str with its corresponding
+    # utc offset values from pipeline_config.tz_dict
+    datetime_str_with_no_abbreviated_tz = replace_abbreviated_tz_with_utc_offset(
+        datetime_str,
+        pipeline_config.tz_dict
+    )
+    if datetime_str_with_no_abbreviated_tz != datetime_str:
+        # It means datetime_str did contain abbreviated_tz and we
+        # have replaced it with its utc_offset value from tz_dict.
+        # Now if the format in formats_list contains "zz", replace
+        # it with "Z". This is because no library parses abbreviated tz
+        # due to its ambiguous nature
+        formats_with_no_zz = replace_zz_with_Z(formats)
+    else:
+        formats_with_no_zz = formats
+
+    for format_ in formats_with_no_zz:
         try:
-            parsed = pendulum.from_format(datetime_str, format, tz=None)
+            parsed = pendulum.from_format(
+                datetime_str_with_no_abbreviated_tz,
+                format_
+            )
             return parsed, format
         except Exception as e:
             continue
