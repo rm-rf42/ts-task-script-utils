@@ -376,7 +376,7 @@ class DateTimeInfo:
             raise InvalidYearError(f"{date} has invalid year.")
 
         day, month = self._process_day_and_month(others)
-        year = int(year)
+
         return day, month, year
 
     def _process_two_digit_date_pattern(self, matches):

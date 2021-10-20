@@ -29,12 +29,6 @@ def parse(
             formats_list
         )
         if parsed_datetime:
-            if config.tz_dict:
-                parsed_datetime = change_time_zone(
-                    parsed_datetime,
-                    datetime_str,
-                    config
-                )
             return parsed_datetime
 
     # Parse Using dateutil.parser.parse
