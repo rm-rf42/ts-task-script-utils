@@ -95,7 +95,7 @@ class DateTimeInfo:
             else return None
         """
         hh_mm_ss_pattern = r"\d+:\d+:\d+.\d+|\d+:\d+:\d+"
-        hh_mm_pattern = r"\d{1,2}:\d{1,2}[+-]|\d{1,2}:\d{1,2}\s+|\d{1,2}:\d{1,2}$"
+        hh_mm_pattern = r"^(?![+-])\d{1,2}:\d{1,2}"
 
         matches = re.findall(hh_mm_ss_pattern, token)
         if not matches:
@@ -203,8 +203,8 @@ class DateTimeInfo:
         # that why we need space 12-23-1223T11:12:23.000 -05:30
         patterns = [
             r"[Uu][Tt][Cc][+-]\d+",
-            r"\s*[+-]\d+\s+|\s*[+-]\d+$",
-            r"[+-]\d+:\d+",
+            r"[+-]\d{1,2}:\d{1,2}",
+            r"[+-]\d{1,2}",
         ]
 
         # if the token matched short date
@@ -236,14 +236,14 @@ class DateTimeInfo:
         Use regex to check if input string contains
         AM or PM. Return the matched value
         """
-        pattern = r"\s*[aApP][mM]\s+|\s*[aApP][mM]$"
-        matches = re.findall(pattern, token)
+        pattern = r"[ap][m]$"
+        matches = re.findall(pattern, token, flags=re.IGNORECASE)
         if not matches or len(matches) != 1:
             return None
-        return matches[0].strip()
+        return matches[0].upper()
 
     def match_tz_abbreviation(self, token: str) -> Union[str, None]:
-        """Check if the input token is an abbreviated timezone
+        """ Check if the input token is an abbreviated timezone
         present in Pipeline Config's tz_dict
 
         Args:
@@ -254,10 +254,10 @@ class DateTimeInfo:
             Union[str, None]: string like CST/EST etc if a
             match is found else None
         """
-        if not self.config.tz_dict:
+        if not self.config.tz_dict_seconds:
             return None
-        for tz in self.config.tz_dict.keys():
-            if tz.lower() == token.lower.strip():
+        for tz in self.config.tz_dict_seconds.keys():
+            if tz == token.upper():
                 return tz
         return None
 
