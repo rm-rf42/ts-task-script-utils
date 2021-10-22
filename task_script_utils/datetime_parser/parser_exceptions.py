@@ -1,26 +1,28 @@
-class InvalidYearError(Exception):
+class DatetimeParserError(Exception):
+    pass
+class InvalidYearError(DatetimeParserError):
     pass
 
-class AmbiguousDateError(Exception):
+class AmbiguousDateError(DatetimeParserError):
     pass
 
-class MultipleDatesError(Exception):
+class MultipleDatesError(DatetimeParserError):
     pass
 
-class MultipleTimesFoundError(Exception):
+class MultipleTimesFoundError(DatetimeParserError):
     pass
 
-class InvalidTimeError(Exception):
+class InvalidTimeError(DatetimeParserError):
     pass
 
-class InvalidOffsetError(Exception):
+class InvalidOffsetError(DatetimeParserError):
     pass
 
-class MultipleOffsetsError(Exception):
+class MultipleOffsetsError(DatetimeParserError):
     pass
 
-class InvalidDateError(Exception):
+class InvalidDateError(DatetimeParserError):
     pass
 
-class TimestampBuildError(Exception):
+class TimestampBuildError(DatetimeParserError):
     pass

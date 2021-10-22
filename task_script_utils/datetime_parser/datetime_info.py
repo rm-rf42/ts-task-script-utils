@@ -375,7 +375,12 @@ class DateTimeInfo:
         if len(year) == 3:
             raise InvalidYearError(f"{date} has invalid year.")
 
-        day, month = self._process_day_and_month(others)
+        if self.config.day_first is True:
+            day, month = others
+        elif self.config.day_first is False:
+            month, day = others
+        else:
+            day, month = self._process_day_and_month(others)
 
         return day, month, year
 
@@ -390,13 +395,9 @@ class DateTimeInfo:
             if self.config.day_first is True:
                 # Input = YY-DD-MM
                 year, day, month = date_tokens
-            elif self.config.day_first is False:
-                # Input = YY-MM-DD
-                # TODO: How to handle 01-15-11
-                year, month, day = date_tokens
             else:
-                year, other_tokens = date_tokens[0], date_tokens[1:]
-                day, month = self._process_day_and_month(other_tokens)
+                # Input = YY-MM-DD
+                year, month, day = date_tokens
         elif self.config.year_first is False:
             if self.config.day_first is True:
                 # Input = DD-MM-YY
@@ -410,19 +411,28 @@ class DateTimeInfo:
                 day, month = self._process_day_and_month(other_tokens)
         else:
             if self.config.day_first is True:
-                day, others = date_tokens[0], date_tokens[1:]
-                month, year = self._decide_month_and_year(others)
+                # Input = DD-MM-YY
+                day, month, year = date_tokens
             elif self.config.day_first is False:
-                # This could be MM-DD-YY, YY-MM-DD
-                # Ambiguous
-                raise AmbiguousDateError(
-                    f"AmbiguousDateError: Date={matches[0]}; year_first=None; day_first=False")
+                # Could Be MM-DD-YY or YY-MM-DD
+                date_str = '-'.join([
+                    f"{int(token):02d}"
+                    for token in date_tokens
+                ])
+                day, month, year = self._try_formats(
+                    date_str,
+                    ["MM-DD-YY", "YY-MM-DD"]
+                )
             else:
-                # Could Be MM-DD-YY, DD-MM-YY
-                # Could Be YY-DD-MM, YY-MM-DD
-                # Could Be DD-YY-MM, MM-YY-DD
-                raise AmbiguousDateError(
-                    f"AmbiguousDateError: Date={matches[0]}; year_first=None; day_first=None")
+                # Could Be MM-DD-YY or YY-MM-DD or DD-MM-YY
+                date_str = '-'.join([
+                    f"{int(token):02d}"
+                    for token in date_tokens
+                ])
+                day, month, year = self._try_formats(
+                    date_str,
+                    ["MM-DD-YY", "YY-MM-DD", "DD-MM-YY"]
+                )
 
         if not (0 < int(month) <= 12):
             raise InvalidDateError(
@@ -435,9 +445,11 @@ class DateTimeInfo:
 
         if len(year) == 1:
             year = f"200{year}"
-        else:
+        elif len(year) == 2:
             year = f"20{year}"
 
+        day = f"{int(day):02d}"
+        month = f"{int(month):02d}"
         return day, month, year
 
     def _process_day_and_month(self, tokens: List[str]) -> tuple:
@@ -456,65 +468,27 @@ class DateTimeInfo:
         Returns:
             tuple: (day, month)
         """
-        tokens = [int(token) for token in tokens]
 
-        first_token_is_month = tokens[0] <= 12
-        second_token_is_month = tokens[1] <= 12
+        first_token_is_month = int(tokens[0]) <= 12
+        second_token_is_month = int(tokens[1]) <= 12
 
         if first_token_is_month and second_token_is_month:
             raise AmbiguousDateError(
-                f"Can't decide day and month between: {tokens}")
+                f"Can't decide day and month between: {tokens}"
+            )
 
         if not first_token_is_month and not second_token_is_month:
             # Both tokens could be month
             raise AmbiguousDateError(
-                f"Can't decide day and month between: {tokens}")
+                f"Can't decide day and month between: {tokens}"
+            )
 
         day, month = (
             (tokens[0], tokens[1])
             if second_token_is_month
             else (tokens[1], tokens[0])
         )
-        day = f"{day:02d}"
-        month = f"{month:02d}"
         return day, month
-
-    def _decide_month_and_year(self, tokens):
-        """Given a list of two numeric tokens,
-        try to decide which token is month and which
-        is year.
-
-        Args:
-            tokens (List): a list containing two
-            numeric tokens
-
-        Raises:
-            AmbiguousDateError: When we fail to decide between month and year
-
-
-        Returns:
-            tuple: (month, year)
-        """
-        first_token_is_month = int(tokens[0]) <= 12
-        second_token_is_month = int(tokens[1]) <= 12
-
-        if first_token_is_month and second_token_is_month:
-            raise AmbiguousDateError(
-                f"Can't decide month and year between: {tokens}")
-
-        if not first_token_is_month and not second_token_is_month:
-            # Both tokens could be month
-            raise AmbiguousDateError(
-                f"Can't decide month and year between: {tokens}")
-
-        month, year = (
-            (tokens[0], tokens[1])
-            if first_token_is_month
-            else (tokens[1], tokens[0])
-        )
-        month = f"{month:02d}"
-        year = f"{year:02d}"
-        return month, year
 
     def _pad_and_validate_offset_value(self, offset):
         if ":" in offset:
@@ -564,3 +538,56 @@ class DateTimeInfo:
                 new_string += string[i]
 
         return new_string
+
+    def _is_format(self, date_str: str, format: str):
+        """Given a date string and a format,
+        try to parse the date.
+
+        Args:
+            date_str (str): date string
+            format (str): date format built using
+            tokens used in `pendulum` library
+
+        Returns:
+            tuple: If date is parsed successfully return
+            (True, datetime object) else return (False, None)
+        """
+        try:
+            parsed = pendulum.from_format(date_str, format)
+            return True, parsed
+        except Exception as e:
+            return False, None
+
+    def _try_formats(self, date_str: str, formats: List[str]):
+        """Given a date string and a list for formats, make sure
+        sure only one of the format successfully parses the date.
+        If multiple or no format parses the date, raise AmbiguousDateError
+        Args:
+            date_str (str): date string
+            formats (List[str]): list of date format built using
+            tokens used in `pendulum` library
+
+        Raises:
+            AmbiguousDateError: If multiple or no format parses the date,
+            raise `AmbiguousDateError`
+
+
+        Returns:
+            tuple[str]: (day, month, year)
+        """
+        parsed_results = [
+            self._is_format(date_str, format_)
+            for format_ in formats
+        ]
+
+        parsed_results = list(filter(lambda x: x[0], parsed_results))
+        if len(parsed_results) != 1:
+            raise AmbiguousDateError(
+                f"Ambiguous date:{date_str}, possible formats: {formats}"
+            )
+        result = parsed_results[0][1]
+        return (
+            str(result.day),
+            str(result.month),
+            str(result.year)
+        )

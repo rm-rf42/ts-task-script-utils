@@ -36,36 +36,41 @@ pipeline_configs = {
 }
 
 two_digit_date_with_config_test_cases = [
-    #input, year_first, day_first, expected
+    # input, year_first, day_first, expected
+    # Expected date format = YYYY-MM-DD
     ("01/02/03", True, True, "2001-03-02"),
     ("01/02/03", False, True, "2003-02-01"),
     ("01/02/03", None, True, "2003-02-01"),
-    ("01/02/03", True, False, "2001-02-03"),
+    ("1/02/03", True, False, "2001-02-03"),
     ("01/02/03", False, False, "2003-01-02"),
-    ("01/02/03", None, False, "2003-01-02"),
-    ("01/02/03", True, None, None),
+    ("01/02/03", None, False, None),
+    ("01/02/03", True, None, "2001-02-03"),
     ("01/02/03", False, None, None),
-    ("01/02/03", None, None, None),
+    ("01/2/3", None, None, None),
     ("13/02/03", True, True, "2013-03-02"),
     ("13/02/03", False, True, "2003-02-13"),
     ("13/02/03", None, True, "2003-02-13"),
     ("13/02/03", True, False, "2013-02-03"),
     ("13/02/03", False, False, None),
-    ("13/02/03", None, False, None),
+    ("13/02/03", None, False, "2013-02-03"),
     ("13/02/03", True, None, "2013-02-03"),
     ("13/02/03", False, None, "2003-02-13"),
-    ("13/02/03", None, None, None)
+    ("13/02/03", None, None, None),
+    ("01/15/11", None, True, None),
+    ("01/15/11", True, False, None),
+    ("12/13/03", None, False, "2003-12-13")
 ]
 
 
 # Test them with year_first
 # The goal is to test regex
 regex_test_cases = [
-    ("1:2:32 20-13-1 AM America/Chicago", "13-01-2020 1:2:32 AM -05:00"),
-    ("1:2:32 20-13-1 -1 AM America/Chicago", "13-01-2020 1:2:32 AM -01:00"),
+    ("1:2:32 20-13-1 AM America/Chicago", None),
+    ("1:2:32 20-12-1 AM America/Chicago", "01-12-2020 1:2:32 AM -05:00"),
+    ("1:2:32 20-11-1 -1 AM America/Chicago", "01-11-2020 1:2:32 AM -01:00"),
     ("2021-11-13 12:34:43.442", "13-11-2021 12:34:43.442"),
     ("Date: 2021-11-13\nTime: 13:11:13 (UTC+2)", "13-11-2021 13:11:13 +02:00"),
-    ("Date: 12-13-1, Time: 17:18:48", "13-01-2012 17:18:48"),
+    ("Date: 12-9-1, Time: 17:18:48", "01-09-2012 17:18:48"),
     ("2018-13-09 16:15+2 PM", "13-09-2018 16:15:00 +02:00"),
     ("2018-13-09T16:15+2 AM", "13-09-2018 16:15:00 +02:00"),
     ("2018-13-09T11:12:23.000-05:30", "13-09-2018 11:12:23.000 -05:30"),
@@ -97,6 +102,8 @@ def test_regex_parsing(input, expected):
     d = DateTimeInfo(input, year_first)
     try:
         d.parse()
+        parsed_datetime = d.dtstamp
     except Exception as e:
-        pass
-    assert d.dtstamp == expected
+        parsed_datetime=None
+
+    assert parsed_datetime == expected
