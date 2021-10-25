@@ -2,6 +2,8 @@ import datetime as dt
 import pendulum
 from dateutil import tz
 from dateutil.parser import parse as dateutil_parse
+
+from task_script_utils.datetime_parser.parser_exceptions import DatetimeParserError
 from .pipeline_config import PipelineConfig
 from .datetime_info import DateTimeInfo
 from .date_formats import get_long_datetime_formats
@@ -44,12 +46,16 @@ def parse(
 
     # Use long date formats
     if not parsed_datetime:
-        parsed_datetime = parse_with_formats(
-            datetime_str,
-            get_long_datetime_formats()
-        )
-    return parsed_datetime
+        parsed_datetime, _ = parse_with_formats(
+            datetime_str=datetime_str,
+            formats = get_long_datetime_formats(),
+            pipeline_config=config
 
+        )
+    if parsed_datetime is None:
+        raise DatetimeParserError(f"Could no parse: {datetime_str}")
+
+    return parsed_datetime
 
 def parse_with_formats(
     datetime_str: str,
@@ -79,7 +85,7 @@ def parse_with_formats(
                 datetime_str_with_no_abbreviated_tz,
                 format_
             )
-            return parsed, format
+            return parsed, format_
         except Exception as e:
             continue
     return None, None
