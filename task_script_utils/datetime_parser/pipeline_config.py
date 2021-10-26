@@ -7,7 +7,7 @@ class PipelineConfig:
         day_first=None,
         year_first=None,
         tz_dict={},
-        fold=0
+        fold=None
     ):
 
         self.day_first = day_first

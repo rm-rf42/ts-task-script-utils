@@ -58,7 +58,8 @@ two_digit_date_with_config_test_cases = [
     ("13/02/03", None, None, None),
     ("01/15/11", None, True, None),
     ("01/15/11", True, False, None),
-    ("12/13/03", None, False, "2003-12-13")
+    ("12/13/03", None, False, "2003-12-13"),
+    ("2021/11/07", None, False, None)
 ]
 
 
@@ -77,9 +78,8 @@ regex_test_cases = [
     ("2018-13-09 11:12:23.000+05:30", "13-09-2018 11:12:23.000 +05:30"),
     ("2018-13-09T01:15+14 PM", "13-09-2018 01:15:00 PM +14:00"),
     ("2018-13-09T16:15-14 PM", "13-09-2018 16:15:00 -14:00"),
-    ("2018-13-09T16:15+05:30 PM", "13-09-2018 16:15:00 +05:30")
+    ("2018-13-09T16:15+05:30 PM", "13-09-2018 16:15:00 +05:30"),
 ]
-
 
 
 @pytest.mark.parametrize("input, year_first, day_first, expected", two_digit_date_with_config_test_cases)
@@ -96,6 +96,7 @@ def test_match_short_date(input, year_first, day_first, expected):
 
     assert result == expected
 
+
 @pytest.mark.parametrize("input, expected", regex_test_cases)
 def test_regex_parsing(input, expected):
     year_first = PipelineConfig(**{"year_first": True})
@@ -104,6 +105,6 @@ def test_regex_parsing(input, expected):
         d.parse()
         parsed_datetime = d.dtstamp
     except Exception as e:
-        parsed_datetime=None
+        parsed_datetime = None
 
     assert parsed_datetime == expected

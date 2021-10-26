@@ -1,5 +1,7 @@
-import datetime as dt
+from datetime import datetime
 import pendulum
+from pendulum.datetime import DateTime as PendulumDateTime
+from pendulum.tz.timezone import Timezone
 from dateutil import tz
 from dateutil.parser import parse as dateutil_parse
 
@@ -28,9 +30,11 @@ def parse(
     if formats_list:
         parsed_datetime, matched_format = parse_with_formats(
             datetime_str,
-            formats_list
+            pipeline_config=config,
+            formats=formats_list
         )
         if parsed_datetime:
+            parsed_datetime = change_fold(parsed_datetime, config.fold)
             return parsed_datetime
 
     # Parse Using dateutil.parser.parse
@@ -48,14 +52,16 @@ def parse(
     if not parsed_datetime:
         parsed_datetime, _ = parse_with_formats(
             datetime_str=datetime_str,
-            formats = get_long_datetime_formats(),
+            formats=get_long_datetime_formats(),
             pipeline_config=config
 
         )
+
     if parsed_datetime is None:
         raise DatetimeParserError(f"Could no parse: {datetime_str}")
 
     return parsed_datetime
+
 
 def parse_with_formats(
     datetime_str: str,
@@ -125,3 +131,15 @@ def change_time_zone(parsed_datetime, datetime_str, config: PipelineConfig):
     tz_local = tz.tzoffset(tz_, offset_seconds)
     local_parsed_time = parsed_datetime.replace(tzinfo=tz_local)
     return local_parsed_time
+
+
+def change_fold(dt_obj: PendulumDateTime, config_fold: int):
+    if (
+        dt_obj.tzinfo is None
+        or config_fold is None
+        or config_fold == dt_obj.fold
+    ):
+        return dt_obj
+
+    new_dt_obj: PendulumDateTime = dt_obj.replace(fold=config_fold)
+    return new_dt_obj
