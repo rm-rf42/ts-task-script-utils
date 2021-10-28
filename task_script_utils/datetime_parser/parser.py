@@ -40,6 +40,7 @@ def parse(
     # Parse Using dateutil.parser.parse
     parsed_datetime = parse_using_dateutils(datetime_str, config)
     if parsed_datetime:
+        parsed_datetime = change_fold(parsed_datetime, config.fold)
         return parsed_datetime
 
     # Otherwise use DateInfo Parser to parse short dates
@@ -47,6 +48,8 @@ def parse(
     dt_info.parse()
     if dt_info.dtstamp:
         parsed_datetime = dt_info.datetime
+        parsed_datetime = change_fold(parsed_datetime, config.fold)
+        return parsed_datetime
 
     # Use long date formats
     if not parsed_datetime:
@@ -60,6 +63,7 @@ def parse(
     if parsed_datetime is None:
         raise DatetimeParserError(f"Could no parse: {datetime_str}")
 
+    parsed_datetime = change_fold(parsed_datetime, config.fold)
     return parsed_datetime
 
 

@@ -59,7 +59,12 @@ two_digit_date_with_config_test_cases = [
     ("01/15/11", None, True, None),
     ("01/15/11", True, False, None),
     ("12/13/03", None, False, "2003-12-13"),
-    ("2021/11/07", None, False, None)
+    ("2021/11/07", None, False,'2021-11-07'),
+    ("2021/11/07", None, True,'2021-07-11'),
+    ("2021/11/07", None, None, None),
+    ("2021/32/07", None, True, None),
+    ("2021/11/14", None, True, None)
+
 ]
 
 

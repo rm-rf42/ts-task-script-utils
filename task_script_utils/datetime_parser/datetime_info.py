@@ -1,4 +1,4 @@
-from datetime import time
+from datetime import datetime as dt
 import re
 import json
 from typing import List, Union
@@ -381,6 +381,17 @@ class DateTimeInfo:
             month, day = others
         else:
             day, month = self._process_day_and_month(others)
+        
+        # Validate day, year, month
+        try:
+            dt_date = dt(
+                day=int(day),
+                month=int(month),
+                year=int(year)
+            )
+        except Exception as e:
+            msg = f"{str(e)}, date={date}, config={self.config}"
+            raise InvalidDateError(msg)
 
         return day, month, year
 
@@ -434,15 +445,6 @@ class DateTimeInfo:
                     ["MM-DD-YY", "YY-MM-DD", "DD-MM-YY"]
                 )
 
-        if not (0 < int(month) <= 12):
-            raise InvalidDateError(
-                f"Invalid month: {month}, Date={matches[0]}, year_first={self.config.year_first}, day_first={self.config.day_first}"
-            )
-        if not (0 < int(day) <= 31):
-            raise InvalidDateError(
-                f"Invalid day: {day}, Date={matches[0]}, year_first={self.config.year_first}, day_first={self.config.day_first}"
-            )
-
         if len(year) == 1:
             year = f"200{year}"
         elif len(year) == 2:
@@ -450,6 +452,18 @@ class DateTimeInfo:
 
         day = f"{int(day):02d}"
         month = f"{int(month):02d}"
+
+        # Validate day, year, month
+        try:
+            dt_date = dt(
+                day=int(day),
+                month=int(month),
+                year=int(year)
+            )
+        except Exception as e:
+            msg = f"{str(e)}, date={date}, config={self.config}"
+            raise InvalidDateError(msg)
+
         return day, month, year
 
     def _process_day_and_month(self, tokens: List[str]) -> tuple:
@@ -591,3 +605,4 @@ class DateTimeInfo:
             str(result.month),
             str(result.year)
         )
+
