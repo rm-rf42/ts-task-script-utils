@@ -23,7 +23,7 @@ class DateTimeInfo:
         self.hour = None
         self.minutes = None
         self.seconds = None
-        self.milliseconds = None
+        self.fractional_seconds = None
         self.config = config
 
         self.parse()
@@ -119,28 +119,36 @@ class DateTimeInfo:
         else:
             hour, minutes, seconds = time_
         if "." in seconds:
-            seconds, milliseconds = seconds.split(".")
-            # TODO: differentiate between milliseconds and microseconds
-            # see if `pendulum` has a generic way of handling fractional
-            # seconds
+            seconds, fractional_seconds = seconds.split(".")
         else:
-            milliseconds = None
+            fractional_seconds = None
+
+        if (
+            fractional_seconds is not None
+            and len(fractional_seconds) > 6
+        ):
+            raise InvalidDateError(
+                f"Invalid time : {time_}. Fractional Seconds value is incorrect"
+            )
 
         if not (0 <= int(hour) <= 24):
             raise InvalidTimeError(
-                f"Invalid time : {time_}. Hours value is incorrect")
+                f"Invalid time : {time_}. Hours value is incorrect"
+            )
         if not (0 <= int(minutes) <= 60):
             raise InvalidTimeError(
-                f"Invalid time : {time_}. Minutes value is incorrect")
+                f"Invalid time : {time_}. Minutes value is incorrect"
+            )
         if not (0 <= int(seconds) <= 60):
             raise InvalidTimeError(
-                f"Invalid time : {time_}. Seconds value is incorrect")
+                f"Invalid time : {time_}. Seconds value is incorrect"
+            )
 
         return {
             "hour": hour,
             "minutes": minutes,
             "seconds": seconds,
-            "milliseconds": milliseconds
+            "fractional_seconds": fractional_seconds
         }
 
     def _match_short_date(self, token: str) -> Union[str, None]:
@@ -301,8 +309,8 @@ class DateTimeInfo:
             return None
 
         result = f"{self.year}-{self.month}-{self.day}"
-        if self.milliseconds:
-            result = f"{result}.{self.milliseconds}"
+        if self.fractional_seconds:
+            result = f"{result}.{self.fractional_seconds}"
 
         return result
 
@@ -325,7 +333,7 @@ class DateTimeInfo:
     @property
     def dtstamp(self):
         """Created Datetime string from parsed raw input string.
-        The format is DD-MM-YYYY hh:mm:ss and milliseconds, AM/PM
+        The format is DD-MM-YYYY hh:mm:ss and fractional seconds, AM/PM
         and utc offset are appended conditionally
 
         Returns:
@@ -341,8 +349,8 @@ class DateTimeInfo:
         ):
             dt_str = f"{self.day}-{self.month}-{self.year}"
             dt_str += f" {self.hour}:{self.minutes}:{self.seconds}"
-            if self.milliseconds:
-                dt_str += f".{self.milliseconds}"
+            if self.fractional_seconds:
+                dt_str += f".{self.fractional_seconds}"
 
             if self.am_or_pm and int(self.hour) <= 12:
                 dt_str += f" {self.am_or_pm.upper()}"
@@ -379,8 +387,8 @@ class DateTimeInfo:
         seconds = "s" if len(self.seconds) == 1 else "ss"
         fmt = f"{day}-{month}-{year} {hrs}:{mins}:{seconds}"
 
-        if self.milliseconds:
-            fmt += ".SSS"
+        if self.fractional_seconds:
+            fmt += "." + ("S" * len(self.fractional_seconds))
         if self.am_or_pm and int(self.hour) <= 12:
             fmt += " A"
         if self.offset:
@@ -506,7 +514,7 @@ class DateTimeInfo:
                 year=int(year)
             )
         except Exception as e:
-            msg = f"{str(e)}, date={date}, config={self.config}"
+            msg = f"{str(e)}, date={date}, {self.config}"
             raise InvalidDateError(msg)
 
         return day, month, year
