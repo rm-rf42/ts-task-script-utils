@@ -29,6 +29,8 @@ class DateTimeInfo:
         self.milliseconds = None
         self.config = config
 
+        self.parse()
+
     def __str__(self):
         return json.dumps(self.__dict__, indent=2)
 
@@ -381,7 +383,7 @@ class DateTimeInfo:
             month, day = others
         else:
             day, month = self._process_day_and_month(others)
-        
+
         # Validate day, year, month
         try:
             dt_date = dt(
@@ -568,9 +570,9 @@ class DateTimeInfo:
         """
         try:
             parsed = pendulum.from_format(date_str, format)
-            return True, parsed
+            return parsed
         except Exception as e:
-            return False, None
+            return None
 
     def _try_formats(self, date_str: str, formats: List[str]):
         """Given a date string and a list for formats, make sure
@@ -594,15 +596,14 @@ class DateTimeInfo:
             for format_ in formats
         ]
 
-        parsed_results = list(filter(lambda x: x[0], parsed_results))
+        parsed_results = list(filter(lambda x: x is not None, parsed_results))
         if len(parsed_results) != 1:
             raise AmbiguousDateError(
                 f"Ambiguous date:{date_str}, possible formats: {formats}"
             )
-        result = parsed_results[0][1]
+        result = parsed_results[0]
         return (
             str(result.day),
             str(result.month),
             str(result.year)
         )
-

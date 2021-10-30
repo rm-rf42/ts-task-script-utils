@@ -16,13 +16,13 @@ from .utils import (
 )
 
 
-default_pipline_config = PipelineConfig(**{})
+DEFAULT_PIPELINE_CONFIG = PipelineConfig()
 
 
 def parse(
     datetime_str: str,
     formats_list: list = None,
-    config: PipelineConfig = default_pipline_config
+    config: PipelineConfig = DEFAULT_PIPELINE_CONFIG
 ):
     parsed_datetime = None
 

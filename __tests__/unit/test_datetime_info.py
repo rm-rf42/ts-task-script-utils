@@ -93,7 +93,6 @@ def test_match_short_date(input, year_first, day_first, expected):
     config = PipelineConfig(**config_dict)
     try:
         date_info = DateTimeInfo(input, config)
-        date_info.parse()
         result = date_info.short_date
     except Exception as e:
         s = str(e)
@@ -105,9 +104,8 @@ def test_match_short_date(input, year_first, day_first, expected):
 @pytest.mark.parametrize("input, expected", regex_test_cases)
 def test_regex_parsing(input, expected):
     year_first = PipelineConfig(**{"year_first": True})
-    d = DateTimeInfo(input, year_first)
     try:
-        d.parse()
+        d = DateTimeInfo(input, year_first)
         parsed_datetime = d.dtstamp
     except Exception as e:
         parsed_datetime = None
