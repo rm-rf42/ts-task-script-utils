@@ -26,6 +26,7 @@ def convert_to_ts_iso8601(
     Returns:
         [type]: IS08691 datetime string
     """
+    ts_format = "YYYY-MM-DDTHH:mm:ss.SSS"
     parsed_datetime = parse(
         datetime_str=datetime_str,
         formats_list=formats_list,
@@ -35,16 +36,8 @@ def convert_to_ts_iso8601(
     if parsed_datetime.tzinfo is not None:
         utc = pendulum.tz.UTC
         parsed_datetime = utc.convert(parsed_datetime)
-        iso_8601 = _get_iso8601(parsed_datetime) + "Z"
+        iso_8601 = parsed_datetime.format(ts_format) + "Z"
     else:
-        iso_8601 = _get_iso8601(parsed_datetime)
+        iso_8601 = parsed_datetime.format(ts_format)
 
     return iso_8601
-
-
-def _get_iso8601(datetime: PendulumDateTime):
-    fmt = "YYYY-MM-DDTHH:mm:ss"
-    if datetime.microsecond:
-        fmt += ".SSSSSS"
-
-    return datetime.format(fmt)
