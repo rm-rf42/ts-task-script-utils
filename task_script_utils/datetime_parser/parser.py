@@ -114,25 +114,6 @@ def _parse_using_dateutils(datetime_str: str, config: PipelineConfig):
         return None
 
 
-def _change_time_zone(parsed_datetime, datetime_str, config: PipelineConfig):
-    tz_ = None
-    offset = None
-    config_timezones = config.tz_dict
-    for timezone, potential_offset in config_timezones.items():
-        if timezone.lower() in datetime_str.lower():
-            tz_ = timezone
-            offset = potential_offset
-            break
-
-    if offset is None:
-        return parsed_datetime
-
-    offset_seconds = convert_offset_to_seconds(offset)
-    tz_local = tz.tzoffset(tz_, offset_seconds)
-    local_parsed_time = parsed_datetime.replace(tzinfo=tz_local)
-    return local_parsed_time
-
-
 def _change_fold(dt_obj: PendulumDateTime, config_fold: int):
     if (
         dt_obj.tzinfo is None

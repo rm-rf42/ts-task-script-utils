@@ -7,7 +7,7 @@ from .pipeline_config import PipelineConfig, DEFAULT_PIPELINE_CONFIG
 from .parser import parse
 
 
-def convert_to_iso8601(
+def convert_to_ts_iso8601(
     datetime_str: str,
     formats_list: List[str] = [],
     config: PipelineConfig = DEFAULT_PIPELINE_CONFIG

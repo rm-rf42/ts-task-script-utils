@@ -67,13 +67,12 @@ two_digit_date_with_config_test_cases = [
 
 ]
 
-
 # Test them with year_first
 # The goal is to test regex
 regex_test_cases = [
     ("1:2:32 20-13-1 AM America/Chicago", None),
-    ("1:2:32 20-12-1 AM America/Chicago", "01-12-2020 1:2:32 AM -05:00"),
-    ("1:2:32 20-11-1 -1 AM America/Chicago", "01-11-2020 1:2:32 AM -01:00"),
+    ("1:2:32 20-12-1 AM America/Chicago", "01-12-2020 1:2:32 AM America/Chicago"),
+    ("1:2:32 20-11-1 -1 AM America/Chicago", "01-11-2020 1:2:32 AM -01:00 America/Chicago"),
     ("2021-11-13 12:34:43.442", "13-11-2021 12:34:43.442"),
     ("Date: 2021-11-13\nTime: 13:11:13 (UTC+2)", "13-11-2021 13:11:13 +02:00"),
     ("Date: 12-9-1, Time: 17:18:48", "01-09-2012 17:18:48"),
@@ -110,3 +109,4 @@ def test_regex_parsing(input, expected):
         parsed_datetime = None
 
     assert parsed_datetime == expected
+

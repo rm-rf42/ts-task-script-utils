@@ -382,9 +382,6 @@ class DateTimeInfo:
         if self.abbreviated_tz:
             return self.config.tz_dict[self.abbreviated_tz]
 
-        if self.iana_tz:
-            return pendulum.now(tz=self.iana_tz).format("Z")
-
         return None
 
     @property
@@ -414,6 +411,9 @@ class DateTimeInfo:
 
             if self.offset:
                 dt_str += f" {self.offset}"
+            if self.iana_tz:
+                dt_str += f" {self.iana_tz}"
+
             return dt_str
 
         return None
@@ -450,6 +450,8 @@ class DateTimeInfo:
             fmt += " A"
         if self.offset:
             fmt += " Z"
+        if self.iana_tz:
+            fmt += " z"
         return fmt
 
     @property
