@@ -9,9 +9,23 @@ from .parser import parse
 
 def convert_to_iso8601(
     datetime_str: str,
-    formats_list: List[str] = None,
+    formats_list: List[str] = [],
     config: PipelineConfig = PipelineConfig(),
 ):
+    """Convert datetime_str to ISO8601 format, if datetime_str
+    is valid and parse-able.
+
+    Args:
+        datetime_str (str): raw datetime string
+        formats_list (List[str], optional): List of possible datetime formats.
+        These datetime formats must be built using `pendulum` datetime tokens.
+        Defaults to [].
+        config (PipelineConfig, optional): Pipeline Configuration.
+        Defaults to PipelineConfig().
+
+    Returns:
+        [type]: IS08691 datetime string
+    """
     parsed_datetime = parse(
         datetime_str=datetime_str,
         formats_list=formats_list,
@@ -31,6 +45,6 @@ def convert_to_iso8601(
 def _get_iso8601(datetime: PendulumDateTime):
     fmt = "YYYY-MM-DDTHH:mm:ss"
     if datetime.microsecond:
-        fmt += ".SSS"
+        fmt += ".SSSSSS"
 
     return datetime.format(fmt)

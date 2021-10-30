@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 import pendulum
 from pendulum.datetime import DateTime as PendulumDateTime
 from pendulum.tz.timezone import Timezone
@@ -21,7 +22,7 @@ DEFAULT_PIPELINE_CONFIG = PipelineConfig()
 
 def parse(
     datetime_str: str,
-    formats_list: list = None,
+    formats_list: List[str] = [],
     config: PipelineConfig = DEFAULT_PIPELINE_CONFIG
 ):
     parsed_datetime = None
