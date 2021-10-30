@@ -10,7 +10,9 @@ from task_script_utils.datetime_parser.pipeline_config import PipelineConfig
 formats_list = [
     "dddd, MMMM Do YYYY hh:mm:ss A zz z",
     "dddd, MMMM Do YYYY hh:mm:ss A z",
-    "dddd, MMMM Do YYYY hh:mm:ss A zz"
+    "dddd, MMMM Do YYYY hh:mm:ss A zz",
+    "dddd, MMMM DD YYYY hh:mm:ss A z",
+    "dddd, MMMM Do, YYYY hh:mm:ss A z"
 ]
 
 tz_dict = {
@@ -23,13 +25,26 @@ format_list_test_cases = {
     "Sunday, May 26th 2013 12:12:12 AM ZST Asia/Kolkata": None,
     "Sunday, May 26th 2013 12:12:12 AM BST": "2013-05-26T00:12:12+01:00",
     "Sunday, May 26th 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
+    "Sunday, May 26th, 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
+    "Sunday, May 26 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
+}
+
+prase_with_no_format_list_test_cases = {
+    **format_list_test_cases,
+    "1:2:32 2021-12-23 AM America/Chicago": "2021-12-23T01:02:32-06:00",
+    "1:2:32 2021-12-23 AM +530": "2021-12-23T01:02:32+05:30",
+    "May 26 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
+    "Sunday, 26 2013 12:12:12 AM Asia/Kolkata": None,
+
+    #Error Case
+    "Sunday, May 26th 2013 12:12:12 AM CST": None
 }
 
 format_list_with_no_tz_dict_test_cases = {
     "Sunday, May 26th 2013 12:12:12 AM IST Asia/Kolkata": None,
     "Sunday, May 26th 2013 12:12:12 AM ZST Asia/Kolkata": None,
     "Sunday, May 26th 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
-    "Sunday, May 26th 2013 12:12:12 AM": None
+    "Sunday, May 26th 2013 12:12:12 AM": None,
 }
 
 dateutil_parser_test_cases = {
@@ -42,8 +57,6 @@ dateutil_parser_test_cases = {
     ("11:12:00 13-05-10", True, None): None,
     ("11:12:00 13-05-10", None, None): None
 }
-
-
 
 
 @pytest.mark.parametrize(
@@ -107,7 +120,7 @@ def test_parse_with_formats_with_no_tz_dict(input, expected):
 
 @pytest.mark.parametrize(
     "input, expected",
-    format_list_test_cases.items()
+    prase_with_no_format_list_test_cases.items()
 )
 def test_parse(input, expected):
     pipe_config_dict = {
@@ -120,7 +133,8 @@ def test_parse(input, expected):
             datetime_str=input,
             config=pipeline_config,
         )
-        assert parsed_datetime.isoformat() == expected
+        parsed_datetime = parsed_datetime.isoformat()
     except Exception as e:
         parsed_datetime = None
-        assert parsed_datetime == expected
+
+    assert parsed_datetime == expected

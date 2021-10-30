@@ -2,7 +2,7 @@
 import pytest
 from task_script_utils.datetime_parser.datetime_info import DateTimeInfo
 from task_script_utils.datetime_parser.pipeline_config import PipelineConfig
-
+from task_script_utils.datetime_parser import tz_dicts
 pipeline_configs = {
     (None, None): {},
     (True, None): {
@@ -61,16 +61,15 @@ two_digit_date_with_config_test_cases = [
     ("12/13/03", None, False, "2003-12-13"),
     ("2021/11/07", None, False,'2021-11-07'),
     ("2021/11/07", None, True,'2021-07-11'),
+    ("11/12/2021", None, True, "2021-12-11"),
     ("2021/11/07", None, None, None),
     ("2021/32/07", None, True, None),
-    ("2021/11/14", None, True, None)
-
+    ("2021/11/14", None, True, None),
 ]
 
 # Test them with year_first
 # The goal is to test regex
 regex_test_cases = [
-    ("1:2:32 20-13-1 AM America/Chicago", None),
     ("1:2:32 20-12-1 AM America/Chicago", "01-12-2020 1:2:32 AM America/Chicago"),
     ("1:2:32 20-11-1 -1 AM America/Chicago", "01-11-2020 1:2:32 AM -01:00 America/Chicago"),
     ("2021-11-13 12:34:43.442", "13-11-2021 12:34:43.442"),
@@ -82,7 +81,22 @@ regex_test_cases = [
     ("2018-13-09 11:12:23.000+05:30", "13-09-2018 11:12:23.000 +05:30"),
     ("2018-13-09T01:15+14 PM", "13-09-2018 01:15:00 PM +14:00"),
     ("2018-13-09T16:15-14 PM", "13-09-2018 16:15:00 -14:00"),
-    ("2018-13-09T16:15+05:30 PM", "13-09-2018 16:15:00 +05:30"),
+    ("2018-13-09T16:15 +05:30 PM", "13-09-2018 16:15:00 +05:30"),
+    ("2018-13-09T16:15+5:30 PM", "13-09-2018 16:15:00 +05:30"),
+    ("2018-13-09T16:15-0530 PM", "13-09-2018 16:15:00 -05:30"),
+    ("2018-13-09T16:15 CST PM", "13-09-2018 16:15:00 -06:00"),
+
+    #Error Cases
+    ("2018-13-09T16:15:4:15 +05:30 PM", None),
+    ("2021-11-13 12:67:43.2322222", None),
+    ("2021-11-13 25:34:43.23", None),
+    ("2021-11-13 12:67:43.23", None),
+    ("2021-11-13 12:34:67.23", None),
+    ("202-11-13 12:34:09.23", None),
+    ("2020-40-40 12:34:09.23", None),
+    ("2018-13-09T16:15+5:3 PM", None),
+    ("2018-13-09T16:15+05332 PM", None),
+    ("1:2:32 20-13-1 AM America/Chicago", None),
 ]
 
 
@@ -101,7 +115,11 @@ def test_match_short_date(input, year_first, day_first, expected):
 
 @pytest.mark.parametrize("input, expected", regex_test_cases)
 def test_regex_parsing(input, expected):
-    year_first = PipelineConfig(**{"year_first": True})
+    config = {
+        "year_first": True,
+        "tz_dict": tz_dicts.usa
+        }
+    year_first = PipelineConfig(**config)
     try:
         d = DateTimeInfo(input, year_first)
         parsed_datetime = d.dtstamp

@@ -10,7 +10,6 @@ from task_script_utils.datetime_parser.parser_exceptions import DatetimeParserEr
 from .pipeline_config import PipelineConfig, DEFAULT_PIPELINE_CONFIG
 from .datetime_info import DateTimeInfo
 from .utils import (
-    convert_offset_to_seconds,
     replace_abbreviated_tz_with_utc_offset,
     replace_zz_with_Z
 )
@@ -30,22 +29,16 @@ def parse(
             pipeline_config=config,
             formats=formats_list
         )
-        if parsed_datetime:
-            parsed_datetime = _change_fold(parsed_datetime, config.fold)
-            return parsed_datetime
 
     # Parse Using dateutil.parser.parse
-    parsed_datetime = _parse_using_dateutils(datetime_str, config)
-    if parsed_datetime:
-        parsed_datetime = _change_fold(parsed_datetime, config.fold)
-        return parsed_datetime
+    if not parsed_datetime:
+        parsed_datetime = _parse_using_dateutils(datetime_str, config)
 
     # Otherwise use DateInfo Parser to parse short dates
-    dt_info = DateTimeInfo(datetime_str, config)
-    if dt_info.dtstamp:
-        parsed_datetime = dt_info.datetime
-        parsed_datetime = _change_fold(parsed_datetime, config.fold)
-        return parsed_datetime
+    if not parsed_datetime:
+        dt_info = DateTimeInfo(datetime_str, config)
+        if dt_info.dtstamp:
+            parsed_datetime = dt_info.datetime
 
     # Use long date formats
     if not parsed_datetime:
@@ -57,7 +50,7 @@ def parse(
         )
 
     if parsed_datetime is None:
-        raise DatetimeParserError(f"Could no parse: {datetime_str}")
+        raise DatetimeParserError(f"Could not parse: {datetime_str}")
 
     parsed_datetime = _change_fold(parsed_datetime, config.fold)
     return parsed_datetime

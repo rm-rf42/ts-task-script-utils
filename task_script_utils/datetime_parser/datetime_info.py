@@ -1,4 +1,4 @@
-from datetime import datetime as dt
+from datetime import datetime as dt, time
 import re
 import json
 from typing import List, Union
@@ -31,7 +31,6 @@ class DateTimeInfo:
         self.token_day_of_week = None
         self.token_day = None
         self.token_month = None
-        self.is_month_first = None
 
         self.config = config
         short_date_matcher = self._get_matchers_map()
@@ -134,11 +133,15 @@ class DateTimeInfo:
         time_ = time_.replace("-", "")
         time_ = time_.split(":")
 
+        if len(time_) > 3:
+            raise InvalidTimeError(matches[0])
+
         if len(time_) == 2:
             hour, minutes = time_
             seconds = "00"
         else:
             hour, minutes, seconds = time_
+
         if "." in seconds:
             seconds, fractional_seconds = seconds.split(".")
         else:
@@ -189,7 +192,7 @@ class DateTimeInfo:
         """
         year_first_pattern = r"\d{4,4}[-~!@#$%^&*.,;/\\]\d{1,2}[-~!@#$%^&*.,;/\\]\d{1,2}"
         year_last_pattern = r"\d{1,2}[-~!@#$%^&*.,;/\\]\d{1,2}[-!~@#$%^&*.,;/\\]\d{4,4}"
-        two_digit_date_pattern = r"\d{1,2}[-~!@#$%^&*.,;/\\]\d{1,2}[-!~@#$%^&*.,;/\\]\d{1,2}"
+        two_digit_date_pattern = r"^\d{1,2}[-~!@#$%^&*.,;/\\]\d{1,2}[-!~@#$%^&*.,;/\\]\d{1,2}"
         # no_sep_date_pattern = r"\d{6,6}"
 
         # YYYY-XX-XX
@@ -197,7 +200,7 @@ class DateTimeInfo:
         if year_first_matches:
             day, month, year = self._process_year_first_or_last_matches(
                 year_first_matches, True)
-            self.day, self.month, self.year = day, month, year
+
             return {
                 "year": year,
                 "month": month,
@@ -209,7 +212,6 @@ class DateTimeInfo:
         if year_last_matches:
             day, month, year = self._process_year_first_or_last_matches(
                 year_last_matches, False)
-            self.day, self.month, self.year = day, month, year
             return {
                 "year": year,
                 "month": month,
@@ -249,7 +251,8 @@ class DateTimeInfo:
         patterns = [
             r"[Uu][Tt][Cc][+-]\d+",
             r"[+-]\d{1,2}:\d{1,2}",
-            r"[+-]\d{1,2}",
+            #r"[+-]\d{1}:\d{1}", # match this and fail later
+            r"[+-]\d+",
         ]
 
         # if the token matched short date
@@ -465,21 +468,6 @@ class DateTimeInfo:
         )
 
     @property
-    def month_first(self):
-        months = locale.locale["translations"]["months"]
-        months_list = (
-            list(months["wide"].values())
-            + list(months["abbreviated"].values())
-        )
-        first_token = self.date_time_raw.split()[0]
-        first_token = first_token.replace(",", "")
-        return (
-            True
-            if first_token in months_list
-            else False
-        )
-
-    @property
     def long_date_format(self):
         self.parse_long_date_formats()
 
@@ -676,7 +664,7 @@ class DateTimeInfo:
             elif len(offset) == 5:
                 return offset
             else:
-                return None
+                raise InvalidOffsetError(offset)
         else:
             # 2 --> 02:00 | 09 --> 09:00 | 12 --> 12:00
             # 530 --> 05:30
@@ -690,7 +678,7 @@ class DateTimeInfo:
             elif len(offset) == 4:
                 return f"{offset[:2]}:{offset[2:]}"
             else:
-                return None
+                raise InvalidOffsetError(offset)
 
     def _replace_single_characters(self, string: str):
         # Input =  2018-13-09T11:12:23.000-05:30
