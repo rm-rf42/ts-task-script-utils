@@ -7,7 +7,7 @@ from dateutil import tz
 from dateutil.parser import parse as dateutil_parse
 
 from task_script_utils.datetime_parser.parser_exceptions import DatetimeParserError
-from .pipeline_config import PipelineConfig
+from .pipeline_config import PipelineConfig, DEFAULT_PIPELINE_CONFIG
 from .datetime_info import DateTimeInfo
 from .date_formats import get_long_datetime_formats
 from .utils import (
@@ -15,9 +15,6 @@ from .utils import (
     replace_abbreviated_tz_with_utc_offset,
     replace_zz_with_Z
 )
-
-
-DEFAULT_PIPELINE_CONFIG = PipelineConfig()
 
 
 def parse(

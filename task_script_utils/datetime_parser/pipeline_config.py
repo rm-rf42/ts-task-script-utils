@@ -23,3 +23,5 @@ class PipelineConfig:
             f"fold={self.fold}, ",
             f"tz_dict={self.tz_dict}"
         )
+
+DEFAULT_PIPELINE_CONFIG = PipelineConfig()

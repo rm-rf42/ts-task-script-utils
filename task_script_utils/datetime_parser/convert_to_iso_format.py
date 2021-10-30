@@ -3,14 +3,14 @@ from typing import List
 import pendulum
 from pendulum.datetime import DateTime as PendulumDateTime
 
-from .pipeline_config import PipelineConfig
+from .pipeline_config import PipelineConfig, DEFAULT_PIPELINE_CONFIG
 from .parser import parse
 
 
 def convert_to_iso8601(
     datetime_str: str,
     formats_list: List[str] = [],
-    config: PipelineConfig = PipelineConfig(),
+    config: PipelineConfig = DEFAULT_PIPELINE_CONFIG
 ):
     """Convert datetime_str to ISO8601 format, if datetime_str
     is valid and parse-able.
