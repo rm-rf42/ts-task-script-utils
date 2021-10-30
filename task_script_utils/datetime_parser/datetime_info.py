@@ -2,11 +2,14 @@ from datetime import datetime as dt
 import re
 import json
 from typing import List, Union
+from itertools import product
 
 import pendulum
+from pendulum.locales.en import locale
 
 from .parser_exceptions import *
 from .pipeline_config import PipelineConfig
+from .utils import get_time_formats_for_long_date
 
 
 class DateTimeInfo:
@@ -24,18 +27,23 @@ class DateTimeInfo:
         self.minutes = None
         self.seconds = None
         self.fractional_seconds = None
-        self.config = config
 
-        self.parse()
+        self.token_day_of_week = None
+        self.token_day = None
+        self.token_month = None
+        self.is_month_first = None
+
+        self.config = config
+        short_date_matcher = self._get_matchers_map()
+        self.parse(short_date_matcher)
 
     def __str__(self):
         return json.dumps(self.__dict__, indent=2)
 
-    def parse(self):
-        checks = self._get_checks()
+    def parse(self, matchers):
         tokens = self.date_time_raw.split()
         for token in tokens:
-            for var_name, func in checks.items():
+            for var_name, func in matchers.items():
                 if getattr(self, var_name) is None:
                     result = func(token)
                     if result and isinstance(result, dict):
@@ -47,21 +55,34 @@ class DateTimeInfo:
         # if self.iana_tz:
         #    self.offset_ = pendulum.now(tz=self.iana_tz).format("Z")
 
-    def _get_checks(self):
+    def parse_long_date_formats(self):
+        long_date_matchers = self._get_matchers_map(long_date_formats=True)
+        self.parse(long_date_matchers)
+        if self.token_day is None:
+            self.token_day = "DD"
+
+    def _get_matchers_map(self, long_date_formats=False):
         """It creates a `dict` that maps parsing functions to instance
         variable that should store the result.
 
         eg. if `self.match_short_date` is able to parse short
         date successfully, it will be stored in `self.short_date`
         """
-        methods_dict = {
-            "iana_tz": self._match_iana_tz,
-            "time_str": self._match_time,
-            "date_str": self._match_short_date,
-            "am_or_pm": self._match_am_or_pm,
-            "offset_": self._match_offset,
-            "abbreviated_tz": self._match_tz_abbreviation
-        }
+        if not long_date_formats:
+            methods_dict = {
+                "iana_tz": self._match_iana_tz,
+                "time_str": self._match_time,
+                "date_str": self._match_short_date,
+                "am_or_pm": self._match_am_or_pm,
+                "offset_": self._match_offset,
+                "abbreviated_tz": self._match_tz_abbreviation
+            }
+        else:
+            methods_dict = {
+                "token_day_of_week": self._match_day_of_week_token,
+                "token_month": self._match_month_token,
+                "token_day": self._match_day_token,
+            }
         return methods_dict
 
     def _match_iana_tz(self, token: str) -> str:
@@ -285,6 +306,42 @@ class DateTimeInfo:
                 return tz
         return None
 
+    def _match_day_of_week_token(self, token: str):
+        days = locale.locale["translations"]["days"]
+        token_map = {
+            "dddd": days["wide"].values(),
+            "ddd": days["abbreviated"].values(),
+            "dd": days["short"].values()
+        }
+        return self._get_token(token, token_map)
+
+    def _match_month_token(self, token: str):
+        months = locale.locale["translations"]["months"]
+        token_map = {
+            "MMMM": months["wide"].values(),
+            "MMM": months["abbreviated"].values(),
+        }
+        return self._get_token(token, token_map)
+
+    def _match_day_token(self, token: str):
+        ordinals = ['st', 'nd', 'rd', 'th']
+        for val in ordinals:
+            if token.endswith(val):
+                return "Do"
+            elif token.endswith(f"{val},"):
+                return "Do,"
+
+        return None
+
+    def _get_token(self, token, token_map: dict):
+
+        for key_, values in token_map.items():
+            if token in values:
+                return key_
+            elif token.replace(",", "") in values:
+                return f"{key_},"
+        return None
+
     @property
     def date_str(self):
         """Returns YYYY-MM-DD"""
@@ -404,6 +461,57 @@ class DateTimeInfo:
             self.dt_format,
             tz=None
         )
+
+    @property
+    def month_first(self):
+        months = locale.locale["translations"]["months"]
+        months_list = (
+            list(months["wide"].values())
+            + list(months["abbreviated"].values())
+        )
+        first_token = self.date_time_raw.split()[0]
+        first_token = first_token.replace(",", "")
+        return (
+            True
+            if first_token in months_list
+            else False
+        )
+
+    @property
+    def long_date_format(self):
+        self.parse_long_date_formats()
+
+        if not (
+                self.token_month
+                and self.token_day
+        ):
+            raise InvalidDateError(f"{self.date_time_raw}")
+        if self.token_day_of_week:
+            date_fmt = (
+                f"{self.token_day_of_week} "
+                f"{self.token_month} "
+                f"{self.token_day} "
+                f"YYYY"
+            )
+        else:
+            date_fmt = (
+                f"{self.token_month} "
+                f"{self.token_day} "
+                f"YYYY"
+            )
+        return date_fmt
+
+    @property
+    def long_datetime_formats(self):
+        parts = [
+            [self.long_date_format],
+            get_time_formats_for_long_date()
+        ]
+        formats = [
+            " ".join(values)
+            for values in product(*parts)
+        ]
+        return formats
 
     def _pre_process_datetime_string(self):
         """This method is used to pre-process the input string

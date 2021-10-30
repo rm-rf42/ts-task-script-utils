@@ -1,8 +1,43 @@
 import datetime as dt
 from typing import List
+from itertools import product
 
-from pendulum.formatting import formatter
+from pydash.arrays import flatten
 
+
+time_parts = [
+    ["h", "hh", "H", "HH"],
+    ["m", "mm"],
+    ["s", "ss"],
+]
+
+def get_time_formats_for_long_date():
+    def map_am_pm(time_format):
+        return (
+            time_format
+            if time_format.startswith("H")
+            else time_format + " A"
+        )
+
+    time_formats = [
+        ":".join(tokens)
+        for tokens in product(*time_parts)
+    ]
+    time_formats = map(lambda x: [x, x+".SSS"], time_formats)
+    time_formats = flatten(time_formats)
+    time_formats = map(lambda x: map_am_pm(x), time_formats)
+    time_formats = map(
+        lambda x: [
+            x,
+            x + " Z",
+            x + " z",
+            x + " ZZ",
+            x + " Z z",
+            x + " ZZ z"],
+        time_formats
+    )
+    time_formats = flatten(time_formats)
+    return time_formats
 
 def convert_offset_to_seconds(offset_value):
     """Convert +/-hh:mm utc offset string value
