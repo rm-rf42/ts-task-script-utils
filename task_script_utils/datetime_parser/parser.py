@@ -25,31 +25,31 @@ def parse(
 
     # Parse Using formats list
     if formats_list:
-        parsed_datetime, matched_format = parse_with_formats(
+        parsed_datetime, matched_format = _parse_with_formats(
             datetime_str,
             pipeline_config=config,
             formats=formats_list
         )
         if parsed_datetime:
-            parsed_datetime = change_fold(parsed_datetime, config.fold)
+            parsed_datetime = _change_fold(parsed_datetime, config.fold)
             return parsed_datetime
 
     # Parse Using dateutil.parser.parse
-    parsed_datetime = parse_using_dateutils(datetime_str, config)
+    parsed_datetime = _parse_using_dateutils(datetime_str, config)
     if parsed_datetime:
-        parsed_datetime = change_fold(parsed_datetime, config.fold)
+        parsed_datetime = _change_fold(parsed_datetime, config.fold)
         return parsed_datetime
 
     # Otherwise use DateInfo Parser to parse short dates
     dt_info = DateTimeInfo(datetime_str, config)
     if dt_info.dtstamp:
         parsed_datetime = dt_info.datetime
-        parsed_datetime = change_fold(parsed_datetime, config.fold)
+        parsed_datetime = _change_fold(parsed_datetime, config.fold)
         return parsed_datetime
 
     # Use long date formats
     if not parsed_datetime:
-        parsed_datetime, _ = parse_with_formats(
+        parsed_datetime, _ = _parse_with_formats(
             datetime_str=datetime_str,
             formats=dt_info.long_datetime_formats,
             pipeline_config=config
@@ -59,11 +59,11 @@ def parse(
     if parsed_datetime is None:
         raise DatetimeParserError(f"Could no parse: {datetime_str}")
 
-    parsed_datetime = change_fold(parsed_datetime, config.fold)
+    parsed_datetime = _change_fold(parsed_datetime, config.fold)
     return parsed_datetime
 
 
-def parse_with_formats(
+def _parse_with_formats(
     datetime_str: str,
     pipeline_config: PipelineConfig,
     formats: list = []
@@ -97,7 +97,7 @@ def parse_with_formats(
     return None, None
 
 
-def parse_using_dateutils(datetime_str: str, config: PipelineConfig):
+def _parse_using_dateutils(datetime_str: str, config: PipelineConfig):
     try:
         if (
             (config.day_first is not None)
@@ -114,7 +114,7 @@ def parse_using_dateutils(datetime_str: str, config: PipelineConfig):
         return None
 
 
-def change_time_zone(parsed_datetime, datetime_str, config: PipelineConfig):
+def _change_time_zone(parsed_datetime, datetime_str, config: PipelineConfig):
     tz_ = None
     offset = None
     config_timezones = config.tz_dict
@@ -133,7 +133,7 @@ def change_time_zone(parsed_datetime, datetime_str, config: PipelineConfig):
     return local_parsed_time
 
 
-def change_fold(dt_obj: PendulumDateTime, config_fold: int):
+def _change_fold(dt_obj: PendulumDateTime, config_fold: int):
     if (
         dt_obj.tzinfo is None
         or config_fold is None

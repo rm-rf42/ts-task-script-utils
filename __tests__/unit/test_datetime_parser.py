@@ -1,8 +1,8 @@
 import pytest
 from task_script_utils.datetime_parser.parser import (
     parse,
-    parse_with_formats,
-    parse_using_dateutils,
+    _parse_with_formats,
+    _parse_using_dateutils,
 )
 from task_script_utils.datetime_parser.pipeline_config import PipelineConfig
 
@@ -56,7 +56,7 @@ def test_date_util_parse(input_, expected):
     )
 
     try:
-        result = parse_using_dateutils(datetime_str, config)
+        result = _parse_using_dateutils(datetime_str, config)
         result = result.isoformat()
     except Exception as e:
         result = None
@@ -74,7 +74,7 @@ def test_parse_with_formats(input, expected):
     }
 
     pipeline_config = PipelineConfig(**pipe_config_dict)
-    parsed_datetime, _ = parse_with_formats(
+    parsed_datetime, _ = _parse_with_formats(
         input,
         pipeline_config,
         formats_list
@@ -91,7 +91,7 @@ def test_parse_with_formats(input, expected):
     format_list_with_no_tz_dict_test_cases.items()
 )
 def test_parse_with_formats_with_no_tz_dict(input, expected):
-    parsed_datetime, _ = parse_with_formats(
+    parsed_datetime, _ = _parse_with_formats(
         input,
         PipelineConfig(),
         formats_list
