@@ -12,11 +12,8 @@ from .pipeline_config import PipelineConfig
 class DateTimeInfo:
     def __init__(self, date_time_raw: str, config: PipelineConfig):
         self.date_time_raw = date_time_raw
-        self.pre_process_datetime_string()
-
+        self._pre_process_datetime_string()
         self.am_or_pm = None
-        self.short_date = None
-        self.time = None
         self.iana_tz = None
         self.offset_ = None
         self.abbreviated_tz = None
@@ -35,20 +32,22 @@ class DateTimeInfo:
         return json.dumps(self.__dict__, indent=2)
 
     def parse(self):
-        checks = self.get_checks()
+        checks = self._get_checks()
         tokens = self.date_time_raw.split()
         for token in tokens:
-            t = token
             for var_name, func in checks.items():
                 if getattr(self, var_name) is None:
                     result = func(token)
-                    if result:
+                    if result and isinstance(result, dict):
+                        for key, value in result.items():
+                            setattr(self, key, value)
+                    elif result is not None:
                         setattr(self, var_name, result)
 
         # if self.iana_tz:
         #    self.offset_ = pendulum.now(tz=self.iana_tz).format("Z")
 
-    def get_checks(self):
+    def _get_checks(self):
         """It creates a `dict` that maps parsing functions to instance
         variable that should store the result.
 
@@ -56,16 +55,16 @@ class DateTimeInfo:
         date successfully, it will be stored in `self.short_date`
         """
         methods_dict = {
-            "iana_tz": self.match_iana_tz,
-            "time": self.match_time,
-            "short_date": self.match_short_date,
-            "am_or_pm": self.match_am_or_pm,
-            "offset_": self.match_offset,
-            "abbreviated_tz": self.match_tz_abbreviation
+            "iana_tz": self._match_iana_tz,
+            "time_str": self._match_time,
+            "date_str": self._match_short_date,
+            "am_or_pm": self._match_am_or_pm,
+            "offset_": self._match_offset,
+            "abbreviated_tz": self._match_tz_abbreviation
         }
         return methods_dict
 
-    def match_iana_tz(self, token: str) -> str:
+    def _match_iana_tz(self, token: str) -> str:
         """Match and store IANA timezone
 
         Args:
@@ -78,7 +77,7 @@ class DateTimeInfo:
         if token in pendulum.timezones:
             return token
 
-    def match_time(self, token: str) -> Union[str, None]:
+    def _match_time(self, token: str) -> Union[str, None]:
         """Use Regex to find any time string present in
         input token
 
@@ -121,6 +120,9 @@ class DateTimeInfo:
             hour, minutes, seconds = time_
         if "." in seconds:
             seconds, milliseconds = seconds.split(".")
+            # TODO: differentiate between milliseconds and microseconds
+            # see if `pendulum` has a generic way of handling fractional
+            # seconds
         else:
             milliseconds = None
 
@@ -134,14 +136,14 @@ class DateTimeInfo:
             raise InvalidTimeError(
                 f"Invalid time : {time_}. Seconds value is incorrect")
 
-        self.hour = hour
-        self.minutes = minutes
-        self.seconds = seconds
-        if milliseconds:
-            self.milliseconds = milliseconds
-        return matches[0].strip()
+        return {
+            "hour": hour,
+            "minutes": minutes,
+            "seconds": seconds,
+            "milliseconds": milliseconds
+        }
 
-    def match_short_date(self, token: str) -> Union[str, None]:
+    def _match_short_date(self, token: str) -> Union[str, None]:
         """Use Regex to find any short date string present in
         input token
 
@@ -167,7 +169,11 @@ class DateTimeInfo:
             day, month, year = self._process_year_first_or_last_matches(
                 year_first_matches, True)
             self.day, self.month, self.year = day, month, year
-            return f"{year}-{month}-{day}"
+            return {
+                "year": year,
+                "month": month,
+                "day": day
+            }
 
         # XX-XX-YYYY
         year_last_matches = re.findall(year_last_pattern, token)
@@ -175,7 +181,11 @@ class DateTimeInfo:
             day, month, year = self._process_year_first_or_last_matches(
                 year_last_matches, False)
             self.day, self.month, self.year = day, month, year
-            return f"{year}-{month}-{day}"
+            return {
+                "year": year,
+                "month": month,
+                "day": day
+            }
 
         # Cases = [XX-XX-XX, XX-X-X, X-X-XX, X-X-X]
         two_digit_date_pattern_matches = re.findall(
@@ -183,12 +193,16 @@ class DateTimeInfo:
         if two_digit_date_pattern_matches:
             day, month, year = self._process_two_digit_date_pattern(
                 two_digit_date_pattern_matches)
-            self.day, self.month, self.year = day, month, year
-            return f"{year}-{month}-{day}"
+
+            return {
+                "year": year,
+                "month": month,
+                "day": day
+            }
 
         return None
 
-    def match_offset(self, token: str) -> Union[str, None]:
+    def _match_offset(self, token: str) -> Union[str, None]:
         """Use Regex to find if any utc offset value
         is present in input token
 
@@ -212,7 +226,7 @@ class DateTimeInfo:
         # if the token matched short date
         # then it is a date don't match for offset
         try:
-            short_date = self.match_short_date(token)
+            short_date = self._match_short_date(token)
         except Exception as e:
             short_date = None
 
@@ -233,7 +247,7 @@ class DateTimeInfo:
                     return f"{sign}{offset}"
         return None
 
-    def match_am_or_pm(self, token: str):
+    def _match_am_or_pm(self, token: str):
         """
         Use regex to check if input string contains
         AM or PM. Return the matched value
@@ -244,7 +258,7 @@ class DateTimeInfo:
             return None
         return matches[0].upper()
 
-    def match_tz_abbreviation(self, token: str) -> Union[str, None]:
+    def _match_tz_abbreviation(self, token: str) -> Union[str, None]:
         """ Check if the input token is an abbreviated timezone
         present in Pipeline Config's tz_dict
 
@@ -262,6 +276,35 @@ class DateTimeInfo:
             if tz == token.upper():
                 return tz
         return None
+
+    @property
+    def date_str(self):
+        """Returns YYYY-MM-DD"""
+        if (
+            self.day
+            and self.month
+            and self.year
+        ):
+            return f"{self.year}-{self.month}-{self.day}"
+
+    @property
+    def time_str(self):
+        """Returns:
+            - Hours:Minutes:seconds
+            - Hours:Minutes:seconds.Fraction
+        """
+        if not (
+            self.hour
+            and self.minutes
+            and self.seconds
+        ):
+            return None
+
+        result = f"{self.year}-{self.month}-{self.day}"
+        if self.milliseconds:
+            result = f"{result}.{self.milliseconds}"
+
+        return result
 
     @property
     def offset(self):
@@ -354,7 +397,7 @@ class DateTimeInfo:
             tz=None
         )
 
-    def pre_process_datetime_string(self):
+    def _pre_process_datetime_string(self):
         """This method is used to pre-process the input string
         if required, before the parsing starts. It performs following
         pre-processing:

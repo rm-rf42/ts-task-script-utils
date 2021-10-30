@@ -93,9 +93,8 @@ def test_match_short_date(input, year_first, day_first, expected):
     config = PipelineConfig(**config_dict)
     try:
         date_info = DateTimeInfo(input, config)
-        result = date_info.short_date
+        result = date_info.date_str
     except Exception as e:
-        s = str(e)
         result = None
 
     assert result == expected
