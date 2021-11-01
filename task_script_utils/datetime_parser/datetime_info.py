@@ -33,13 +33,12 @@ class DateTimeInfo:
         self.token_month = None
 
         self.config = config
-        short_date_matcher = self._get_matchers_map()
-        self.parse(short_date_matcher)
+        self._parse_short_date_formats()
 
     def __str__(self):
         return json.dumps(self.__dict__, indent=2)
 
-    def parse(self, matchers):
+    def _parse(self, matchers):
         tokens = self.date_time_raw.split()
         for token in tokens:
             for var_name, func in matchers.items():
@@ -54,11 +53,15 @@ class DateTimeInfo:
         # if self.iana_tz:
         #    self.offset_ = pendulum.now(tz=self.iana_tz).format("Z")
 
-    def parse_long_date_formats(self):
+    def _parse_long_date_formats(self):
         long_date_matchers = self._get_matchers_map(long_date_formats=True)
-        self.parse(long_date_matchers)
+        self._parse(long_date_matchers)
         if self.token_day is None:
             self.token_day = "DD"
+
+    def _parse_short_date_formats(self):
+        short_date_matcher = self._get_matchers_map()
+        self._parse(short_date_matcher)
 
     def _get_matchers_map(self, long_date_formats=False):
         """It creates a `dict` that maps parsing functions to instance
@@ -251,7 +254,7 @@ class DateTimeInfo:
         patterns = [
             r"[Uu][Tt][Cc][+-]\d+",
             r"[+-]\d{1,2}:\d{1,2}",
-            #r"[+-]\d{1}:\d{1}", # match this and fail later
+            # r"[+-]\d{1}:\d{1}", # match this and fail later
             r"[+-]\d+",
         ]
 
@@ -469,7 +472,7 @@ class DateTimeInfo:
 
     @property
     def long_date_format(self):
-        self.parse_long_date_formats()
+        self._parse_long_date_formats()
 
         if not (
                 self.token_month
