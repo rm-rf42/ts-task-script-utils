@@ -321,20 +321,20 @@ class DateTimeInfo:
         }
         return self._get_token(token, token_map)
 
-    def _match_month_token(self, token: str):
+    def _match_month_token(self, date_time_token: str):
         months = locale.locale["translations"]["months"]
         token_map = {
             "MMMM": months["wide"].values(),
             "MMM": months["abbreviated"].values(),
         }
-        return self._get_token(token, token_map)
+        return self._get_token(date_time_token, token_map)
 
-    def _match_day_token(self, token: str):
+    def _match_day_token(self, date_time_token: str):
         ordinals = ['st', 'nd', 'rd', 'th']
         for val in ordinals:
-            if token.endswith(val):
+            if date_time_token.endswith(val):
                 return "Do"
-            elif token.endswith(f"{val},"):
+            elif date_time_token.endswith(f"{val},"):
                 return "Do,"
 
         return None
@@ -471,7 +471,19 @@ class DateTimeInfo:
         )
 
     @property
-    def long_date_format(self):
+    def long_date_format(self) -> str:
+        """Parse the long date, return the Date format
+        built using pendulum format tokens.
+
+
+        Raises:
+            InvalidDateError: Raised if parsing fails to
+            detect tokens for month or day
+
+        Returns:
+            str: Return Date format built using pendulum
+            formatting tokens
+        """
         self._parse_long_date_formats()
 
         if not (
@@ -479,6 +491,7 @@ class DateTimeInfo:
                 and self.token_day
         ):
             raise InvalidDateError(f"{self.date_time_raw}")
+
         if self.token_day_of_week:
             date_fmt = (
                 f"{self.token_day_of_week} "
@@ -495,7 +508,10 @@ class DateTimeInfo:
         return date_fmt
 
     @property
-    def long_datetime_formats(self):
+    def long_datetime_formats(self) -> List[str]:
+        """Returns a list of long datetime formats built
+        using pendulum formatting tokens.
+        """
         parts = [
             [self.long_date_format],
             get_time_formats_for_long_date()
