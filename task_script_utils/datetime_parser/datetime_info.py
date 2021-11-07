@@ -52,9 +52,6 @@ class DateTimeInfo:
                     elif result is not None:
                         setattr(self, var_name, result)
 
-        # if self.iana_tz:
-        #    self.offset_ = pendulum.now(tz=self.iana_tz).format("Z")
-
     def _parse_long_date_formats(self):
         long_date_matchers = self._get_matchers_map(long_date_formats=True)
         self._parse(long_date_matchers)
