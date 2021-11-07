@@ -149,25 +149,34 @@ class DateTimeInfo:
         else:
             fractional_seconds = None
 
+        time_errors = []
         if (
             fractional_seconds is not None
             and len(fractional_seconds) > 6
         ):
-            raise InvalidDateError(
-                f"Invalid time : {time_}. Fractional Seconds value is incorrect"
+            time_errors.append(
+                (
+                    f"Invalid time : {time_}. Fractional Seconds value is incorrect."
+                    "Must be at most 6 digits"
+                )
             )
 
         if not (0 <= int(hour) <= 24):
-            raise InvalidTimeError(
-                f"Invalid time : {time_}. Hours value is incorrect"
+            time_errors.append(
+                f"Invalid time : {hour}. Hours value must be between 0 and 24"
             )
         if not (0 <= int(minutes) <= 60):
-            raise InvalidTimeError(
-                f"Invalid time : {time_}. Minutes value is incorrect"
+            time_errors.append(
+                f"Invalid time : {minutes}. Minutes value must be between 0 and 24"
             )
         if not (0 <= int(seconds) <= 60):
+            time_errors.append(
+                f"Invalid time : {seconds}. Seconds value must be between 0 and 24"
+            )
+
+        if time_errors:
             raise InvalidTimeError(
-                f"Invalid time : {time_}. Seconds value is incorrect"
+                f"Invalid time: {matches[0]}. {', '.join(time_errors)}"
             )
 
         return {
