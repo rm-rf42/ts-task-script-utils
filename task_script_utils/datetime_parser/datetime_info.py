@@ -13,6 +13,20 @@ from .utils import get_time_formats_for_long_date
 
 
 class DateTimeInfo:
+    """This class performs two function:
+    1. If the datetime string passed is a short datetime string, it tries to parse
+    it using regex and `PipelineConfig`. If parsing failed or it can not detect date and
+    time with confidence, an Exception will be raise otherwise `datetime` property will
+    return the parsed `datetime` object
+    2. If the datetime string passed is a long date time format, It will detect the formatting
+    tokens and their relative position in order to build a list datetime format that can be used
+    to parse the datetime string. eg for "Sunday, May 26th 2013 12:12:12 AM IST Asia/Kolkata",
+    `_parse_long_date_formats()` will detect token used are `DDDD`, `MMM` and `Do` and also that
+    day of the week comes first or not. Next, with help of `get_time_formats_for_long_date`, it will
+    try to build a list of possible long datetime formats. This list will be used to parse the
+    datetime string. `long_datetime_formats` property returns the list of possible formats.
+    """
+
     def __init__(self, date_time_raw: str, config: PipelineConfig):
         self.date_time_raw = date_time_raw
 
@@ -36,7 +50,6 @@ class DateTimeInfo:
         self._pre_process_datetime_string()
         self._parse_short_date_formats()
 
-
     def __str__(self):
         return json.dumps(self.__dict__, indent=2)
 
@@ -47,6 +60,9 @@ class DateTimeInfo:
                 if getattr(self, var_name) is None:
                     result = func(token)
                     if result and isinstance(result, dict):
+                        # if the result is a dict, then resultant
+                        # keys are the attributes that are
+                        # needed to be set.
                         for key, value in result.items():
                             setattr(self, key, value)
                     elif result is not None:
@@ -65,9 +81,6 @@ class DateTimeInfo:
     def _get_matchers_map(self, long_date_formats=False):
         """It creates a `dict` that maps parsing functions to instance
         variable that should store the result.
-
-        eg. if `self.match_short_date` is able to parse short
-        date successfully, it will be stored in `self.short_date`
         """
         if not long_date_formats:
             methods_dict = {
