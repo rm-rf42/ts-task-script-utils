@@ -710,26 +710,16 @@ class DateTimeInfo:
     def _replace_single_characters(self, string: str):
         # Input =  2018-13-09T11:12:23.000-05:30
         # output = 2018-13-09 11:12:23.000-05:30
-        prev_char: str = ""
-        indexes = []
-        for i, current_char in enumerate(string[:-1]):
-            next_char = string[i+1]
+        char_list = list(string)
+        for i, current_char in enumerate(char_list[1:-1]):
             if (
-                prev_char.isdigit()
-                and current_char.isalpha()
-                and next_char.isdigit()
+                char_list[i-1].isdigit()
+                and char_list[i].isalpha()
+                and char_list[i+1].isdigit()
             ):
-                indexes.append(i)
-            prev_char = current_char
+                char_list[i] = " "
 
-        new_string = ""
-        for i in range(len(string)):
-            if i in indexes:
-                new_string += " "
-            else:
-                new_string += string[i]
-
-        return new_string
+        return "".join(char_list)
 
     def _is_format(self, date_str: str, format: str):
         """Given a date string and a format,
