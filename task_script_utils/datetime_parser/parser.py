@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import Tuple
 import pendulum
 from pendulum.datetime import DateTime as PendulumDateTime
 from pendulum.tz.timezone import Timezone
@@ -17,7 +17,7 @@ from .utils import (
 
 def parse(
     datetime_str: str,
-    formats_list: List[str] = [],
+    formats_list: Tuple[str] = (),
     config: PipelineConfig = DEFAULT_PIPELINE_CONFIG
 ):
     parsed_datetime = None
@@ -59,7 +59,7 @@ def parse(
 def _parse_with_formats(
     datetime_str: str,
     pipeline_config: PipelineConfig,
-    formats: list = []
+    formats: Tuple = ()
 ):
     # If pipeline config contains tz_dict, then replace
     # abbreviated_tz in datetime_str with its corresponding

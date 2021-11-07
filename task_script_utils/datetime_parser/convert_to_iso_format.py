@@ -1,4 +1,4 @@
-from typing import List
+from typing import Tuple
 
 import pendulum
 from pendulum.datetime import DateTime as PendulumDateTime
@@ -9,7 +9,7 @@ from .parser import parse
 
 def convert_to_ts_iso8601(
     datetime_str: str,
-    formats_list: List[str] = [],
+    formats_list: Tuple[str] = (),
     config: PipelineConfig = DEFAULT_PIPELINE_CONFIG
 ):
     """Convert datetime_str to ISO8601 format, if datetime_str

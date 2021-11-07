@@ -37,7 +37,7 @@ def get_time_formats_for_long_date():
         time_formats
     )
     time_formats = flatten(time_formats)
-    return time_formats
+    return tuple(time_formats)
 
 def convert_offset_to_seconds(offset_value):
     """Convert +/-hh:mm utc offset string value

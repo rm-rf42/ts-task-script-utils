@@ -1,7 +1,7 @@
 from datetime import datetime as dt, time
 import re
 import json
-from typing import List, Union
+from typing import List, Tuple, Union
 from itertools import product
 
 import pendulum
@@ -508,7 +508,7 @@ class DateTimeInfo:
         return date_fmt
 
     @property
-    def long_datetime_formats(self) -> List[str]:
+    def long_datetime_formats(self) -> Tuple[str]:
         """Returns a list of long datetime formats built
         using pendulum formatting tokens.
         """
@@ -516,10 +516,10 @@ class DateTimeInfo:
             [self.long_date_format],
             get_time_formats_for_long_date()
         ]
-        formats = [
+        formats = (
             " ".join(values)
             for values in product(*parts)
-        ]
+        )
         return formats
 
     def _pre_process_datetime_string(self):
@@ -602,7 +602,7 @@ class DateTimeInfo:
                 ])
                 day, month, year = self._try_formats(
                     date_str,
-                    ["MM-DD-YY", "YY-MM-DD"]
+                    ("MM-DD-YY", "YY-MM-DD")
                 )
             else:
                 # Could Be MM-DD-YY or YY-MM-DD or DD-MM-YY
@@ -612,7 +612,7 @@ class DateTimeInfo:
                 ])
                 day, month, year = self._try_formats(
                     date_str,
-                    ["MM-DD-YY", "YY-MM-DD", "DD-MM-YY"]
+                    ("MM-DD-YY", "YY-MM-DD", "DD-MM-YY")
                 )
 
         if len(year) == 1:
@@ -742,7 +742,7 @@ class DateTimeInfo:
         except Exception as e:
             return None
 
-    def _try_formats(self, date_str: str, formats: List[str]):
+    def _try_formats(self, date_str: str, formats: Tuple[str]):
         """Given a date string and a list for formats, make sure
         sure only one of the format successfully parses the date.
         If multiple or no format parses the date, raise AmbiguousDateError
