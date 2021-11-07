@@ -15,7 +15,7 @@ from .utils import get_time_formats_for_long_date
 class DateTimeInfo:
     def __init__(self, date_time_raw: str, config: PipelineConfig):
         self.date_time_raw = date_time_raw
-        self._pre_process_datetime_string()
+
         self.am_or_pm = None
         self.iana_tz = None
         self.offset_ = None
@@ -33,7 +33,9 @@ class DateTimeInfo:
         self.token_month = None
 
         self.config = config
+        self._pre_process_datetime_string()
         self._parse_short_date_formats()
+
 
     def __str__(self):
         return json.dumps(self.__dict__, indent=2)
