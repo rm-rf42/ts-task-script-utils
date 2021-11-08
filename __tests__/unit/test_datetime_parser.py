@@ -29,7 +29,7 @@ format_list_test_cases = {
     "Sunday, May 26 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
 }
 
-prase_with_no_format_list_test_cases = {
+parse_with_no_format_list_test_cases = {
     **format_list_test_cases,
     "1:2:32 2021-12-23 AM America/Chicago": "2021-12-23T01:02:32-06:00",
     "1:2:32 2021-12-23 AM +530": "2021-12-23T01:02:32+05:30",
@@ -120,7 +120,7 @@ def test_parse_with_formats_with_no_tz_dict(input, expected):
 
 @pytest.mark.parametrize(
     "input, expected",
-    prase_with_no_format_list_test_cases.items()
+    parse_with_no_format_list_test_cases.items()
 )
 def test_parse(input, expected):
     pipe_config_dict = {
