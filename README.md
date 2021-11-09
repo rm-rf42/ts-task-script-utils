@@ -56,8 +56,8 @@ A `PipelineConfig` object has following attributes:
   }
 
   # Inbuilt tz_dict
-  from task_script_utils.datetime_parser.tz_dicts import usa
-  print(usa)
+  from task_script_utils.datetime_parser.tz_dicts import USA
+  print(USA)
   {
     "EDT": "-04:00",
     "EST": "-05:00",
@@ -85,7 +85,6 @@ A `PipelineConfig` object has following attributes:
 `convert_to_ts_iso8601` or `parse` accepts `formats_list: Tuple` as an arguments.
 Each format string in `formats_list` must be build using `Pendulum` 's format tokens
 
-Note: If `zz` token is used in format_string, passing `tz_dict` is a must.
 The following tokens are currently supported:
 
 |                            | Token    | Output                                  |
@@ -130,6 +129,8 @@ The following tokens are currently supported:
 |                            | zz       | EST CST ... MST PST                     |
 | **Seconds timestamp**      | X        | 1381685817, 1234567890.123              |
 | **Milliseconds timestamp** | x        | 1234567890123                           |
+
+**Note: If `zz` token is used in format_string, passing `tz_dict` is a must.**
 
 ## Test
 

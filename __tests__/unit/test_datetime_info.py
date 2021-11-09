@@ -117,7 +117,7 @@ def test_match_short_date(input, year_first, day_first, expected):
 def test_regex_parsing(input, expected):
     config = {
         "year_first": True,
-        "tz_dict": tz_dicts.usa
+        "tz_dict": tz_dicts.USA
         }
     year_first = PipelineConfig(**config)
     try:
