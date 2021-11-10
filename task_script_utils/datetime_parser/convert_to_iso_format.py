@@ -1,16 +1,15 @@
 from typing import Tuple
 
 import pendulum
-from pendulum.datetime import DateTime as PendulumDateTime
 
-from .pipeline_config import PipelineConfig, DEFAULT_PIPELINE_CONFIG
+from .datetime_config import DatetimeConfig, DEFAULT_DATETIME_CONFIG
 from .parser import parse
 
 
 def convert_to_ts_iso8601(
     datetime_str: str,
     formats_list: Tuple[str] = (),
-    config: PipelineConfig = DEFAULT_PIPELINE_CONFIG
+    config: DatetimeConfig = DEFAULT_DATETIME_CONFIG
 ):
     """Convert datetime_str to ISO8601 format, if datetime_str
     is valid and parse-able.
@@ -20,8 +19,8 @@ def convert_to_ts_iso8601(
         formats_list (List[str], optional): List of possible datetime formats.
         These datetime formats must be built using `pendulum` datetime tokens.
         Defaults to [].
-        config (PipelineConfig, optional): Pipeline Configuration.
-        Defaults to PipelineConfig().
+        config (DatetimeConfig, optional): Datetime Configuration.
+        Defaults to DatetimeCoonfig().
 
     Returns:
         [type]: IS08691 datetime string

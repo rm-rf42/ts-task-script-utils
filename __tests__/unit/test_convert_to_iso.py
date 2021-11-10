@@ -1,7 +1,7 @@
 import pytest
 from task_script_utils.datetime_parser import (
     convert_to_ts_iso8601,
-    PipelineConfig,
+    DatetimeConfig,
 )
 
 config_with_fold_test_cases = {
@@ -22,6 +22,6 @@ config_with_fold_test_cases = {
 )
 def test_convert_to_iso_with_fold(input_, fold, expected):
 
-    config = PipelineConfig(fold=fold, day_first=False)
+    config = DatetimeConfig(fold=fold, day_first=False)
     result = convert_to_ts_iso8601(input_, config=config)
     assert result == expected
