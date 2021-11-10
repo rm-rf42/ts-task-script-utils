@@ -34,10 +34,14 @@ parse_with_no_format_list_test_cases = {
     "1:2:32 2021-12-23 AM America/Chicago": "2021-12-23T01:02:32-06:00",
     "1:2:32 2021-12-23 AM +530": "2021-12-23T01:02:32+05:30",
     "May 26 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
-    "Sunday, 26 2013 12:12:12 AM Asia/Kolkata": None,
+    "Sunday, May 26th 2013 12:12:12 AM IST": "2013-05-26T00:12:12+05:30",
 
-    #Error Case
-    "Sunday, May 26th 2013 12:12:12 AM CST": None
+    # Error Case
+    # Ambiguity due to unknown abbreviated tz
+    # see test_parse() for tz_dict
+    "Sunday, May 26th 2013 12:12:12 AM CST": None,
+    # Missing Month
+    "Sunday, 26 2013 12:12:12 AM Asia/Kolkata": None,
 }
 
 format_list_with_no_tz_dict_test_cases = {
