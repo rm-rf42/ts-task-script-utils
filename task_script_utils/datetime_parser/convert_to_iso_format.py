@@ -1,6 +1,9 @@
+from datetime import date
 from typing import Tuple
 
 import pendulum
+
+from task_script_utils.datetime_parser.datetime_info import DateTimeInfo
 
 from .datetime_config import DatetimeConfig, DEFAULT_DATETIME_CONFIG
 from .parser import parse
@@ -23,14 +26,15 @@ def convert_to_ts_iso8601(
         Defaults to DatetimeCoonfig().
 
     Returns:
-        [type]: IS08691 datetime string
+        [type]: IS08601 datetime string
     """
-    ts_format = "YYYY-MM-DDTHH:mm:ss.SSS"
-    parsed_datetime = parse(
+    parsed_datetime, datetime_info = parse(
         datetime_str=datetime_str,
         formats_list=formats_list,
         config=config
     )
+
+    ts_format = _build_ts_format(datetime_info)
 
     if parsed_datetime.tzinfo is not None:
         utc = pendulum.tz.UTC
@@ -40,3 +44,17 @@ def convert_to_ts_iso8601(
         iso_8601 = parsed_datetime.format(ts_format)
 
     return iso_8601
+
+def _build_ts_format(datetime_info: DateTimeInfo):
+    default_format = "YYYY-MM-DDTHH:mm:ss"
+
+    if datetime_info is None:
+        return f"{default_format}.SSS"
+
+    if datetime_info.fractional_seconds is None:
+        return f"{default_format}.SSS"
+
+    subseconds = datetime_info.fractional_seconds
+    subseconds_token = "S"* len(subseconds)
+
+    return f"{default_format}.{subseconds_token}"

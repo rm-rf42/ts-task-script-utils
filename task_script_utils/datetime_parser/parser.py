@@ -18,6 +18,7 @@ def parse(
     config: DatetimeConfig = DEFAULT_DATETIME_CONFIG
 ):
     parsed_datetime = None
+    datetime_info = None
 
     # Parse Using formats list
     if formats_list:
@@ -33,15 +34,15 @@ def parse(
 
     # Otherwise use DateInfo Parser to parse short dates
     if not parsed_datetime:
-        dt_info = DateTimeInfo(datetime_str, config)
-        if dt_info.dtstamp:
-            parsed_datetime = dt_info.datetime
+        datetime_info = DateTimeInfo(datetime_str, config)
+        if datetime_info.dtstamp:
+            parsed_datetime = datetime_info.datetime
 
     # Use long date formats
     if not parsed_datetime:
         parsed_datetime, _ = _parse_with_formats(
             datetime_str=datetime_str,
-            formats=dt_info.long_datetime_formats,
+            formats=datetime_info.long_datetime_formats,
             datetime_config=config
 
         )
@@ -50,7 +51,7 @@ def parse(
         raise DatetimeParserError(f"Could not parse: {datetime_str}")
 
     parsed_datetime = _change_fold(parsed_datetime, config.fold)
-    return parsed_datetime
+    return parsed_datetime, datetime_info
 
 
 def _parse_with_formats(

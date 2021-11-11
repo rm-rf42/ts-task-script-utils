@@ -135,7 +135,7 @@ def test_parse(input, expected):
 
     datetime_config = DatetimeConfig(**datetime_config_dict)
     try:
-        parsed_datetime = parse(
+        parsed_datetime, _ = parse(
             datetime_str=input,
             config=datetime_config,
         )
