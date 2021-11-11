@@ -1,13 +1,10 @@
-from datetime import datetime
 from typing import Tuple
 import pendulum
 from pendulum.datetime import DateTime as PendulumDateTime
-from pendulum.tz.timezone import Timezone
-from dateutil import tz
 from dateutil.parser import parse as dateutil_parse
 
 from task_script_utils.datetime_parser.parser_exceptions import DatetimeParserError
-from .pipeline_config import PipelineConfig, DEFAULT_PIPELINE_CONFIG
+from .datetime_config import DatetimeConfig, DEFAULT_DATETIME_CONFIG
 from .datetime_info import DateTimeInfo
 from .utils import (
     replace_abbreviated_tz_with_utc_offset,
@@ -18,7 +15,7 @@ from .utils import (
 def parse(
     datetime_str: str,
     formats_list: Tuple[str] = (),
-    config: PipelineConfig = DEFAULT_PIPELINE_CONFIG
+    config: DatetimeConfig = DEFAULT_DATETIME_CONFIG
 ):
     parsed_datetime = None
 
@@ -26,7 +23,7 @@ def parse(
     if formats_list:
         parsed_datetime, matched_format = _parse_with_formats(
             datetime_str,
-            pipeline_config=config,
+            datetime_config=config,
             formats=formats_list
         )
 
@@ -45,7 +42,7 @@ def parse(
         parsed_datetime, _ = _parse_with_formats(
             datetime_str=datetime_str,
             formats=dt_info.long_datetime_formats,
-            pipeline_config=config
+            datetime_config=config
 
         )
 
@@ -58,15 +55,15 @@ def parse(
 
 def _parse_with_formats(
     datetime_str: str,
-    pipeline_config: PipelineConfig,
+    datetime_config: DatetimeConfig,
     formats: Tuple = ()
 ):
-    # If pipeline config contains tz_dict, then replace
+    # If datetime config contains tz_dict, then replace
     # abbreviated_tz in datetime_str with its corresponding
-    # utc offset values from pipeline_config.tz_dict
+    # utc offset values from datetime_config.tz_dict
     datetime_str_with_no_abbreviated_tz = replace_abbreviated_tz_with_utc_offset(
         datetime_str,
-        pipeline_config.tz_dict
+        datetime_config.tz_dict
     )
     if datetime_str_with_no_abbreviated_tz != datetime_str:
         # It means datetime_str did contain abbreviated_tz and we
@@ -90,7 +87,7 @@ def _parse_with_formats(
     return None, None
 
 
-def _parse_using_dateutils(datetime_str: str, config: PipelineConfig):
+def _parse_using_dateutils(datetime_str: str, config: DatetimeConfig):
     try:
         if (
             (config.day_first is not None)

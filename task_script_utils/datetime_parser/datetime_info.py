@@ -8,14 +8,14 @@ import pendulum
 from pendulum.locales.en import locale
 
 from .parser_exceptions import *
-from .pipeline_config import PipelineConfig
+from .datetime_config import DatetimeConfig
 from .utils import get_time_formats_for_long_date
 
 
 class DateTimeInfo:
     """This class performs two function:
     1. If the datetime string passed is a short datetime string, it tries to parse
-    it using regex and `PipelineConfig`. If parsing failed or it can not detect date and
+    it using regex and `DatetimeConfig`. If parsing failed or it can not detect date and
     time with confidence, an Exception will be raise otherwise `datetime` property will
     return the parsed `datetime` object
     2. If the datetime string passed is a long date time format, It will detect the formatting
@@ -27,7 +27,7 @@ class DateTimeInfo:
     datetime string. `long_datetime_formats` property returns the list of possible formats.
     """
 
-    def __init__(self, date_time_raw: str, config: PipelineConfig):
+    def __init__(self, date_time_raw: str, config: DatetimeConfig):
         self.date_time_raw = date_time_raw
 
         self.am_or_pm = None
@@ -316,7 +316,7 @@ class DateTimeInfo:
 
     def _match_tz_abbreviation(self, token: str) -> Union[str, None]:
         """ Check if the input token is an abbreviated timezone
-        present in Pipeline Config's tz_dict
+        present in Datetime Config's tz_dict
 
         Args:
             token (str): A string value from `self.date_time_raw`

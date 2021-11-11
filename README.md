@@ -8,7 +8,7 @@ Utility functions for Tetra Task Scripts
 - [Usage](#usage)
 - [Datetime Parser](#datetime-parser)
   - [Usage](#usage-1)
-  - [PipelineConfig](#pipelineconfig)
+  - [DatetimeConfig](#datetimeconfig)
   - [Datetime format resolution matrix](#datetime-format-resolution-matrix)
   - [Format Tokens](#format-tokens)
 - [Test](#test)
@@ -31,18 +31,18 @@ Utility functions for Tetra Task Scripts
 from task_script_utils.datetime_parser import convert_to_ts_iso8601
 
 convert_to_ts_iso8601("2004-12-23T12:30 AM +05:30")
-convert_to_ts_iso8601("2004-12-23T12:30 AM +05:30", <pipeline_config>)
+convert_to_ts_iso8601("2004-12-23T12:30 AM +05:30", <datetime_config>)
 convert_to_ts_iso8601("2004-12-23T12:30 AM +05:30", <format_list>)
-convert_to_ts_iso8601("2004-12-23T12:30 AM +05:30", <format_list>, <pipeline_config>)
+convert_to_ts_iso8601("2004-12-23T12:30 AM +05:30", <format_list>, <datetime_config>)
 ```
 
-### PipelineConfig
+### DatetimeConfig
 
 ```python
-from task_script_utils.datetime_parser import PipelineConfig
+from task_script_utils.datetime_parser import DatetimeConfig
 ```
 
-A `PipelineConfig` object has following attributes:
+A `DatetimeConfig` object has following attributes:
 
 - `day_first`: `True/False/None`
 - `year_first`: `True/False/None`

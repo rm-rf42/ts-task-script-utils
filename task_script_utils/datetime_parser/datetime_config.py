@@ -1,7 +1,7 @@
 from .utils import map_offset_to_seconds
 
 
-class PipelineConfig:
+class DatetimeConfig:
     def __init__(
         self,
         day_first=None,
@@ -24,4 +24,4 @@ class PipelineConfig:
             f"tz_dict={self.tz_dict}"
         )
 
-DEFAULT_PIPELINE_CONFIG = PipelineConfig()
+DEFAULT_DATETIME_CONFIG = DatetimeConfig()

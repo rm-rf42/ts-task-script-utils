@@ -4,7 +4,7 @@ from task_script_utils.datetime_parser.parser import (
     _parse_with_formats,
     _parse_using_dateutils,
 )
-from task_script_utils.datetime_parser.pipeline_config import PipelineConfig
+from task_script_utils.datetime_parser.datetime_config import DatetimeConfig
 
 
 formats_list = [
@@ -69,7 +69,7 @@ dateutil_parser_test_cases = {
 )
 def test_date_util_parse(input_, expected):
     datetime_str, year_first, day_first = input_
-    config = PipelineConfig(
+    config = DatetimeConfig(
         year_first=year_first,
         day_first=day_first
     )
@@ -88,14 +88,14 @@ def test_date_util_parse(input_, expected):
     format_list_test_cases.items()
 )
 def test_parse_with_formats(input, expected):
-    pipe_config_dict = {
+    datetime_config_dict = {
         "tz_dict": tz_dict
     }
 
-    pipeline_config = PipelineConfig(**pipe_config_dict)
+    datetime_config = DatetimeConfig(**datetime_config_dict)
     parsed_datetime, _ = _parse_with_formats(
         input,
-        pipeline_config,
+        datetime_config,
         formats_list
     )
 
@@ -112,7 +112,7 @@ def test_parse_with_formats(input, expected):
 def test_parse_with_formats_with_no_tz_dict(input, expected):
     parsed_datetime, _ = _parse_with_formats(
         input,
-        PipelineConfig(),
+        DatetimeConfig(),
         formats_list
     )
 
@@ -127,15 +127,15 @@ def test_parse_with_formats_with_no_tz_dict(input, expected):
     parse_with_no_format_list_test_cases.items()
 )
 def test_parse(input, expected):
-    pipe_config_dict = {
+    datetime_config_dict = {
         "tz_dict": tz_dict
     }
 
-    pipeline_config = PipelineConfig(**pipe_config_dict)
+    datetime_config = DatetimeConfig(**datetime_config_dict)
     try:
         parsed_datetime = parse(
             datetime_str=input,
-            config=pipeline_config,
+            config=datetime_config,
         )
         parsed_datetime = parsed_datetime.isoformat()
     except Exception as e:
