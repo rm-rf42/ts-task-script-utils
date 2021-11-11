@@ -11,7 +11,7 @@ time_parts = [
     ["s", "ss"],
 ]
 
-def get_time_formats_for_long_date():
+def get_time_formats_for_long_date(fractional_seconds):
     def map_am_pm(time_format):
         return (
             time_format
@@ -23,7 +23,10 @@ def get_time_formats_for_long_date():
         ":".join(tokens)
         for tokens in product(*time_parts)
     ]
-    time_formats = map(lambda x: [x, x+".SSS"], time_formats)
+    if fractional_seconds:
+        token = "S" * len(fractional_seconds)
+        time_formats = map(lambda x: [x, f"{x}.{token}"], time_formats)
+
     time_formats = flatten(time_formats)
     time_formats = map(lambda x: map_am_pm(x), time_formats)
     time_formats = map(

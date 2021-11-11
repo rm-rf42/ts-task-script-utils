@@ -53,6 +53,12 @@ class DateTimeInfo:
     def __str__(self):
         return json.dumps(self.__dict__, indent=2)
 
+    def parse_time(self):
+        matchers = {
+            "time_str": self._match_time,
+        }
+        self._parse(matchers)
+
     def _parse(self, matchers):
         tokens = self.date_time_raw.split()
         for token in tokens:
@@ -535,7 +541,7 @@ class DateTimeInfo:
         """
         parts = [
             [self.long_date_format],
-            get_time_formats_for_long_date()
+            get_time_formats_for_long_date(self.fractional_seconds)
         ]
         formats = (
             " ".join(values)

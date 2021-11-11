@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Tuple
+from typing import Optional, Tuple
 
 import pendulum
 
@@ -45,7 +45,8 @@ def convert_to_ts_iso8601(
 
     return iso_8601
 
-def _build_ts_format(datetime_info: DateTimeInfo):
+
+def _build_ts_format(datetime_info: Optional[DateTimeInfo]):
     default_format = "YYYY-MM-DDTHH:mm:ss"
 
     if datetime_info is None:

@@ -51,6 +51,7 @@ def parse(
         raise DatetimeParserError(f"Could not parse: {datetime_str}")
 
     parsed_datetime = _change_fold(parsed_datetime, config.fold)
+
     return parsed_datetime, datetime_info
 
 
@@ -80,7 +81,8 @@ def _parse_with_formats(
         try:
             parsed = pendulum.from_format(
                 datetime_str_with_no_abbreviated_tz,
-                format_
+                format_,
+                tz=None
             )
             return parsed, format_
         except Exception as e:
