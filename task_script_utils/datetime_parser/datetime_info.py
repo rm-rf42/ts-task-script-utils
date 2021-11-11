@@ -214,9 +214,9 @@ class DateTimeInfo:
             Union[str, None]: if a match occurs return DD-MM-YYYY formated
             date string else return None
         """
-        year_first_pattern = r"\d{4,4}[-~!@#$%^&*.,;/\\]\d{1,2}[-~!@#$%^&*.,;/\\]\d{1,2}"
-        year_last_pattern = r"\d{1,2}[-~!@#$%^&*.,;/\\]\d{1,2}[-!~@#$%^&*.,;/\\]\d{4,4}"
-        two_digit_date_pattern = r"^\d{1,2}[-~!@#$%^&*.,;/\\]\d{1,2}[-!~@#$%^&*.,;/\\]\d{1,2}"
+        year_first_pattern = r"\d{4,4}[-./\\]\d{1,2}[-./\\]\d{1,2}"
+        year_last_pattern = r"\d{1,2}[-./\\]\d{1,2}[-./\\]\d{4,4}"
+        two_digit_date_pattern = r"^\d{1,2}[-./\\]\d{1,2}[-./\\]\d{1,2}"
         # no_sep_date_pattern = r"\d{6,6}"
 
         # YYYY-XX-XX
@@ -557,7 +557,7 @@ class DateTimeInfo:
         if len(matches) > 1:
             raise MultipleDatesError(f"Multiple Dates Detected: {matches}")
 
-        date = re.sub(r"[-~!@#$%^&*.,;/\\]", "-", matches[0]).split("-")
+        date = re.sub(r"[-./\\]", "-", matches[0]).split("-")
         if year_first:
             year, others = date[0], date[1:]
         else:
@@ -590,7 +590,7 @@ class DateTimeInfo:
         if len(matches) > 1:
             raise MultipleDatesError(f"Multiple Dates Detected: {matches}")
 
-        date = re.sub(r"[-~!@#$%^&*.,;/\\]", "-", matches[0])
+        date = re.sub(r"[-./\\]", "-", matches[0])
         date_tokens = date.split("-")
 
         if self.config.year_first is True:
