@@ -1,15 +1,62 @@
+import re
 import datetime as dt
 from typing import List
 from itertools import product
+from decimal import Decimal
 
 from pydash.arrays import flatten
+from pendulum.formatting import Formatter
 
+
+_token_names = {
+    'Y': "year",
+    'YY': "year",
+    'YYYY': "year",
+
+    'Q': "quarter",
+    'Qo': "quarter",
+
+    'M': "month",
+    'MM': "month",
+    'MMM': "month",
+    'MMMM': "month",
+
+    'D': "day_of_month",
+    'DD': "day_of_month",
+    'Do': "day_of_month",
+
+    'DDD': "day_of_year",
+    'DDDD': "day_of_year",
+
+    'dddd': "day_of_week",
+    'ddd': "day_of_week",
+    'dd':  "day_of_week",
+    'd': "day_of_week",
+    'E': "day_of_week",
+
+    'H': "hour",
+    'HH': "hour",
+    'h': "hour",
+    'hh': "hour",
+
+    'm': "minutes",
+    'mm': "minutes",
+    's': "seconds",
+    'ss': "seconds",
+
+    'x': "milliseconds_ts",
+    'X': "seconds_ts",
+    'ZZ': "tz",
+    'Z': "tz",
+    'z': "tz",
+}
 
 time_parts = [
     ["h", "hh", "H", "HH"],
     ["m", "mm"],
     ["s", "ss"],
 ]
+
 
 def get_time_formats_for_long_date(fractional_seconds):
     def map_am_pm(time_format):
@@ -41,6 +88,7 @@ def get_time_formats_for_long_date(fractional_seconds):
     )
     time_formats = flatten(time_formats)
     return tuple(time_formats)
+
 
 def convert_offset_to_seconds(offset_value):
     """Convert +/-hh:mm utc offset string value
@@ -92,3 +140,36 @@ def replace_zz_with_Z(formats: List[str]):
             result_formats[idx] = format_.replace(" zz", " Z")
 
     return result_formats
+
+
+
+    re_format = matched_format
+    pendulum_token_regex = dict(Formatter._REGEX_TOKENS)
+
+    pendulum_subsecond_tokens = [
+        "S",
+        "SS",
+        "SSS",
+        "SSSS",
+        "SSSSS",
+        "SSSSSS",
+    ]
+    for token in pendulum_subsecond_tokens:
+        pendulum_token_regex.pop(token)
+
+    present_tokens = []
+    for token, regex in pendulum_token_regex.items():
+        if token in matched_format:
+            present_tokens.append((
+                token,
+                f"r'(?P<{_token_names.get(token)}>{regex})'"
+            ))
+
+    num_S = matched_format.count("S")
+    fractional_second_token = "S" * num_S
+    present_tokens.append((
+        fractional_second_token,
+        r'(?P<subsecond>\d+)'
+    ))
+    match = re.fullmatch(re_format, "13:00:00.010")
+    return Decimal('0.' + match.group('subsecond'))

@@ -19,6 +19,7 @@ def parse(
 ):
     parsed_datetime = None
     datetime_info = None
+    matched_format = None
 
     # Parse Using formats list
     if formats_list:
@@ -52,7 +53,7 @@ def parse(
 
     parsed_datetime = _change_fold(parsed_datetime, config.fold)
 
-    return parsed_datetime, datetime_info
+    return parsed_datetime, datetime_info, matched_format
 
 
 def _parse_with_formats(
