@@ -169,16 +169,6 @@ class DateTimeInfo:
             fractional_seconds = None
 
         time_errors = []
-        if (
-            fractional_seconds is not None
-            and len(fractional_seconds) > 6
-        ):
-            time_errors.append(
-                (
-                    f"Invalid time : {time_}. Fractional Seconds value is incorrect."
-                    "Must be at most 6 digits"
-                )
-            )
 
         if not (0 <= int(hour) <= 24):
             time_errors.append(
@@ -437,7 +427,8 @@ class DateTimeInfo:
             dt_str = f"{self.day}-{self.month}-{self.year}"
             dt_str += f" {self.hour}:{self.minutes}:{self.seconds}"
             if self.fractional_seconds:
-                dt_str += f".{self.fractional_seconds}"
+                # Pendulum support upto 6 fractional seconds
+                dt_str += f".{self.fractional_seconds[:6]}"
 
             if self.am_or_pm and int(self.hour) <= 12:
                 dt_str += f" {self.am_or_pm.upper()}"
@@ -478,7 +469,8 @@ class DateTimeInfo:
         fmt = f"{day}-{month}-{year} {hrs}:{mins}:{seconds}"
 
         if self.fractional_seconds:
-            fmt += "." + ("S" * len(self.fractional_seconds))
+            # Pendulum support upto 6 fractional seconds
+            fmt += "." + ("S" * len(self.fractional_seconds[:6]))
         if self.am_or_pm and int(self.hour) <= 12:
             fmt += " A"
         if self.offset:

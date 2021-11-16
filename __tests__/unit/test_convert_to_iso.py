@@ -28,7 +28,7 @@ fractional_seconds_test_cases = {
     ("2021-11-07T04:30:00.01 America/New_York","2021-11-07T09:30:00.01Z"),
     ("2021-11-07T04:30:00.010 America/New_York","2021-11-07T09:30:00.010Z"),
     # Error Case as length of subseconds > 7
-    ("2021-11-07T04:30:00.1234567 America/New_York", None),
+    ("2021-11-07T04:30:00.1234567 America/New_York", '2021-11-07T09:30:00.1234567Z'),
 }
 
 @pytest.mark.parametrize(
