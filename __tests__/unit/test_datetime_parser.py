@@ -5,6 +5,7 @@ from task_script_utils.datetime_parser.parser import (
     _parse_using_dateutils,
 )
 from task_script_utils.datetime_parser.datetime_config import DatetimeConfig
+from task_script_utils.datetime_parser.ts_datetime import TSDatetime
 
 
 formats_list = [
@@ -135,7 +136,7 @@ def test_parse(input, expected):
 
     datetime_config = DatetimeConfig(**datetime_config_dict)
     try:
-        parsed_datetime, _, _ = parse(
+        parsed_datetime: TSDatetime = parse(
             datetime_str=input,
             config=datetime_config,
         )

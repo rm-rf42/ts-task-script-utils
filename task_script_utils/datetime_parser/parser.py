@@ -19,7 +19,7 @@ def parse(
     datetime_str: str,
     formats_list: Tuple[str] = (),
     config: DatetimeConfig = DEFAULT_DATETIME_CONFIG
-):
+) -> TSDatetime:
     parsed_datetime = None
     datetime_info = None
     matched_format = None
@@ -63,7 +63,7 @@ def parse(
     parsed_datetime = _change_fold(parsed_datetime, config.fold)
     parsed_datetime = TSDatetime(parsed_datetime, subseconds)
 
-    return parsed_datetime, datetime_info, matched_format
+    return parsed_datetime
 
 
 def _parse_with_formats(

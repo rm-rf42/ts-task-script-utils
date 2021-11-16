@@ -28,7 +28,7 @@ def convert_to_ts_iso8601(
     Returns:
         [type]: IS08601 datetime string
     """
-    parsed_datetime, datetime_info, matched_format = parse(
+    parsed_datetime = parse(
         datetime_str=datetime_str,
         formats_list=formats_list,
         config=config
