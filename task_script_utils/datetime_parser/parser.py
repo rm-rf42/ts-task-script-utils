@@ -1,14 +1,17 @@
+from re import sub
 from typing import Tuple
 import pendulum
 from pendulum.datetime import DateTime as PendulumDateTime
 from dateutil.parser import parse as dateutil_parse
 
 from task_script_utils.datetime_parser.parser_exceptions import DatetimeParserError
+from task_script_utils.datetime_parser.ts_datetime import TSDatetime
 from .datetime_config import DatetimeConfig, DEFAULT_DATETIME_CONFIG
 from .datetime_info import DateTimeInfo
 from .utils import (
     replace_abbreviated_tz_with_utc_offset,
-    replace_zz_with_Z
+    replace_zz_with_Z,
+    get_subseconds
 )
 
 
@@ -20,6 +23,7 @@ def parse(
     parsed_datetime = None
     datetime_info = None
     matched_format = None
+    subseconds = None
 
     # Parse Using formats list
     if formats_list:
@@ -28,6 +32,8 @@ def parse(
             datetime_config=config,
             formats=formats_list
         )
+        if matched_format and "S" in matched_format:
+            subseconds = get_subseconds(datetime_str, matched_format)
 
     # Parse Using dateutil.parser.parse
     if not parsed_datetime:
@@ -38,20 +44,24 @@ def parse(
         datetime_info = DateTimeInfo(datetime_str, config)
         if datetime_info.dtstamp:
             parsed_datetime = datetime_info.datetime
+            subseconds = datetime_info.fractional_seconds
 
     # Use long date formats
     if not parsed_datetime:
-        parsed_datetime, _ = _parse_with_formats(
+        parsed_datetime, matched_format = _parse_with_formats(
             datetime_str=datetime_str,
             formats=datetime_info.long_datetime_formats,
             datetime_config=config
 
         )
+        if matched_format and "S" in matched_format:
+            subseconds = get_subseconds(datetime_str, matched_format)
 
     if parsed_datetime is None:
         raise DatetimeParserError(f"Could not parse: {datetime_str}")
 
     parsed_datetime = _change_fold(parsed_datetime, config.fold)
+    parsed_datetime = TSDatetime(parsed_datetime, subseconds)
 
     return parsed_datetime, datetime_info, matched_format
 

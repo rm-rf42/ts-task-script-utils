@@ -2,13 +2,14 @@ import re
 import datetime as dt
 from typing import List
 from itertools import product
-from decimal import Decimal
+from decimal import Decimal, getcontext
 
 from pydash.arrays import flatten
 from pendulum.formatting import Formatter
+from pendulum.utils._compat import decode
 
 
-_token_names = {
+TOKEN_NAMES = {
     'Y': "year",
     'YY': "year",
     'YYYY': "year",
@@ -51,11 +52,14 @@ _token_names = {
     'z': "tz",
 }
 
-time_parts = [
+TIME_PARTS = [
     ["h", "hh", "H", "HH"],
     ["m", "mm"],
     ["s", "ss"],
 ]
+
+REGEX_TOKENS = dict(Formatter._REGEX_TOKENS)
+FROM_FORMAT_RE = Formatter._FROM_FORMAT_RE
 
 
 def get_time_formats_for_long_date(fractional_seconds):
@@ -68,7 +72,7 @@ def get_time_formats_for_long_date(fractional_seconds):
 
     time_formats = [
         ":".join(tokens)
-        for tokens in product(*time_parts)
+        for tokens in product(*TIME_PARTS)
     ]
     if fractional_seconds:
         token = "S" * len(fractional_seconds)
@@ -142,34 +146,26 @@ def replace_zz_with_Z(formats: List[str]):
     return result_formats
 
 
+def get_subseconds(raw_datetime_string, matched_format):
+    escaped_fmt = re.escape(matched_format)
+    tokens = FROM_FORMAT_RE.findall(escaped_fmt)
+    tokens = map(lambda x: [token for token in x if token], tokens)
+    tokens = map(lambda x: x[0], tokens)
+    tokens = filter(lambda x: x.isalpha() and "S" not in x, tokens)
+    tokens = {token: REGEX_TOKENS[token] for token in tokens}
 
     re_format = matched_format
-    pendulum_token_regex = dict(Formatter._REGEX_TOKENS)
+    for token, regex in tokens.items():
+        candidates = regex
+        if not isinstance(candidates, tuple):
+            candidates = (candidates, )
+        pattern = "(?P<{}>{})".format(TOKEN_NAMES.get(
+            token, "subsecond"), "|".join([decode(p) for p in regex]))
+        re_format = re_format.replace(token, pattern)
 
-    pendulum_subsecond_tokens = [
-        "S",
-        "SS",
-        "SSS",
-        "SSSS",
-        "SSSSS",
-        "SSSSSS",
-    ]
-    for token in pendulum_subsecond_tokens:
-        pendulum_token_regex.pop(token)
-
-    present_tokens = []
-    for token, regex in pendulum_token_regex.items():
-        if token in matched_format:
-            present_tokens.append((
-                token,
-                f"r'(?P<{_token_names.get(token)}>{regex})'"
-            ))
-
-    num_S = matched_format.count("S")
-    fractional_second_token = "S" * num_S
-    present_tokens.append((
-        fractional_second_token,
-        r'(?P<subsecond>\d+)'
-    ))
-    match = re.fullmatch(re_format, "13:00:00.010")
-    return Decimal('0.' + match.group('subsecond'))
+    num_S = re_format.count("S")
+    subsecond_token = num_S * "S"
+    re_format = re_format.replace(subsecond_token, r'(?P<subsecond>\d+)')
+    match = re.fullmatch(re_format, raw_datetime_string)
+    subseconds =  match.group('subsecond')
+    return subseconds
