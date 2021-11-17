@@ -11,7 +11,7 @@ from .datetime_info import DateTimeInfo
 from .utils import (
     replace_abbreviated_tz_with_utc_offset,
     replace_zz_with_Z,
-    get_subseconds
+    from_pendulum_format
 )
 
 
@@ -22,8 +22,7 @@ def parse(
 ) -> TSDatetime:
     parsed_datetime = None
     datetime_info = None
-    matched_format = None
-    subseconds = None
+
 
     # Parse Using formats list
     if formats_list:
@@ -32,8 +31,6 @@ def parse(
             datetime_config=config,
             formats=formats_list
         )
-        if matched_format and "S" in matched_format:
-            subseconds = get_subseconds(datetime_str, matched_format)
 
     # Parse Using dateutil.parser.parse
     if not parsed_datetime:
@@ -43,8 +40,10 @@ def parse(
     if not parsed_datetime:
         datetime_info = DateTimeInfo(datetime_str, config)
         if datetime_info.dtstamp:
-            parsed_datetime = datetime_info.datetime
-            subseconds = datetime_info.fractional_seconds
+            parsed_datetime = TSDatetime(
+                datetime_=datetime_info.datetime,
+                subseconds=datetime_info.fractional_seconds
+            )
 
     # Use long date formats
     if not parsed_datetime:
@@ -54,15 +53,14 @@ def parse(
             datetime_config=config
 
         )
-        if matched_format and "S" in matched_format:
-            subseconds = get_subseconds(datetime_str, matched_format)
 
     if parsed_datetime is None:
         raise DatetimeParserError(f"Could not parse: {datetime_str}")
 
-    parsed_datetime = _change_fold(parsed_datetime, config.fold)
-    parsed_datetime = TSDatetime(parsed_datetime, subseconds)
+    if not isinstance(parsed_datetime, TSDatetime):
+        parsed_datetime = TSDatetime(datetime_=parsed_datetime)
 
+    parsed_datetime.change_fold(config.fold)
     return parsed_datetime
 
 
@@ -90,7 +88,7 @@ def _parse_with_formats(
 
     for format_ in formats_with_no_zz:
         try:
-            parsed = pendulum.from_format(
+            parsed = from_pendulum_format(
                 datetime_str_with_no_abbreviated_tz,
                 format_,
                 tz=None
@@ -116,15 +114,3 @@ def _parse_using_dateutils(datetime_str: str, config: DatetimeConfig):
             return parsed_datetime
     except Exception as e:
         return None
-
-
-def _change_fold(dt_obj: PendulumDateTime, config_fold: int):
-    if (
-        dt_obj.tzinfo is None
-        or config_fold is None
-        or config_fold == dt_obj.fold
-    ):
-        return dt_obj
-
-    new_dt_obj: PendulumDateTime = dt_obj.replace(fold=config_fold)
-    return new_dt_obj

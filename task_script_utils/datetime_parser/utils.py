@@ -4,62 +4,21 @@ from typing import List
 from itertools import product
 
 from pydash.arrays import flatten
+from pendulum import now
+from pendulum.formatting import Formatter
+from pendulum import datetime as pendulum_datetime
 
-from task_script_utils.datetime_parser.patterns import (
-    token_to_regex,
-    token_to_name,
-    tokens_regex
-)
+from task_script_utils.datetime_parser.ts_datetime import TSDatetime
 
-TOKEN_NAMES = {
-    'Y': "year",
-    'YY': "year",
-    'YYYY': "year",
 
-    'Q': "quarter",
-    'Qo': "quarter",
-
-    'M': "month",
-    'MM': "month",
-    'MMM': "month",
-    'MMMM': "month",
-
-    'D': "day_of_month",
-    'DD': "day_of_month",
-    'Do': "day_of_month",
-
-    'DDD': "day_of_year",
-    'DDDD': "day_of_year",
-
-    'dddd': "day_of_week",
-    'ddd': "day_of_week",
-    'dd':  "day_of_week",
-    'd': "day_of_week",
-    'E': "day_of_week",
-
-    'H': "hour",
-    'HH': "hour",
-    'h': "hour",
-    'hh': "hour",
-
-    'm': "minutes",
-    'mm': "minutes",
-    's': "seconds",
-    'ss': "seconds",
-
-    'x': "milliseconds_ts",
-    'X': "seconds_ts",
-    'ZZ': "tz",
-    'Z': "tz",
-    'z': "tz",
-    'A': "am_pm"
-}
+_formatter = Formatter()
 
 TIME_PARTS = [
     ["h", "hh", "H", "HH"],
     ["m", "mm"],
     ["s", "ss"],
 ]
+
 
 def get_time_formats_for_long_date(fractional_seconds):
     def map_am_pm(time_format):
@@ -145,36 +104,29 @@ def replace_zz_with_Z(formats: List[str]):
     return result_formats
 
 
-def get_subseconds(raw_datetime_string, matched_format):
-    format_ = [re.escape(token) for token in matched_format.split(" ")]
+def from_pendulum_format(
+    string,
+    fmt,
+    tz=None,
+    locale=None,
+) -> TSDatetime:
+    """
+    Creates a DateTime instance from a specific format.
+    """
+    subseconds = None
+    parts = _formatter.parse(string, fmt, now(), locale=locale)
+    if parts["tz"] is None:
+        parts["tz"] = tz
 
-    for idx, part in enumerate(format_):
-        # Get tokens present in he format part
-        tokens = tokens_regex.findall(part)
-        tokens = map(lambda x: [token for token in x if token], tokens)
-        tokens = map(lambda x: x[0], tokens)
-        tokens = filter(lambda x: x.isalpha() and "S" not in x, tokens)
+    if "microsecond" in parts:
+        subseconds = parts["microsecond"]
+        if str(subseconds) not in string:
+            subseconds = int(str(subseconds).rstrip("0"))
+        if len(str(parts["microsecond"])) > 6:
+            parts["microsecond"] = int(str(parts["microsecond"])[:6])
 
-        # map tokens to their corresponding regex
-        tokens = {token: token_to_regex[token] for token in tokens}
-
-        # for each token in the part
-        # replace it with its corresponding pattern
-        for token, regex in tokens.items():
-            candidates = regex
-            if not isinstance(candidates, tuple):
-                candidates = (candidates, )
-
-            pattern = "(?P<{}>{})".format(
-                token_to_name[token], "|".join([p for p in candidates]))
-            format_[idx] = format_[idx].replace(token, pattern)
-        if "S" in part:
-            num_S = part.count("S")
-            subsecond_token = num_S * "S"
-            format_[idx] = format_[idx].replace(
-                subsecond_token, r'(?P<subsecond>\d+)')
-
-    re_format = " ".join(format_)
-    match = re.fullmatch(re_format,raw_datetime_string)
-    return match.group('subsecond')
-
+    ts_date_time = TSDatetime(
+        datetime_=pendulum_datetime(**parts),
+        subseconds=subseconds
+    )
+    return ts_date_time

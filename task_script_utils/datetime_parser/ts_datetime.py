@@ -52,10 +52,21 @@ class TSDatetime:
     def iso_format(self):
         iso_str = self._datetime.format("YYYY-MM-DDTHH:mm:ss")
         if self._subseconds:
-            iso_str += f".{self._subseconds[:6]}"
+            iso_str += f".{str(self._subseconds)[:6]}"
         if self.tzinfo:
-            offset=self._datetime.format("ZZ")
+            offset = self._datetime.format("ZZ")
             if ":" not in offset:
                 offset = f"{offset[:3]}:{offset[-2:]}"
             iso_str += offset
         return iso_str
+
+    def change_fold(self, new_fold: int):
+        if (
+            self._datetime.tzinfo is None
+            or new_fold is None
+            or new_fold == self._datetime.fold
+        ):
+            return
+
+        self._datetime = self._datetime.replace(fold=new_fold)
+
