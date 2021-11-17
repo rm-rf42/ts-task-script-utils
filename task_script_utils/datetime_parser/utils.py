@@ -149,11 +149,17 @@ def get_subseconds(raw_datetime_string, matched_format):
     format_ = [re.escape(token) for token in matched_format.split(" ")]
 
     for idx, part in enumerate(format_):
+        # Get tokens present in he format part
         tokens = tokens_regex.findall(part)
         tokens = map(lambda x: [token for token in x if token], tokens)
         tokens = map(lambda x: x[0], tokens)
         tokens = filter(lambda x: x.isalpha() and "S" not in x, tokens)
+
+        # map tokens to their corresponding regex
         tokens = {token: token_to_regex[token] for token in tokens}
+
+        # for each token in the part
+        # replace it with its corresponding pattern
         for token, regex in tokens.items():
             candidates = regex
             if not isinstance(candidates, tuple):
