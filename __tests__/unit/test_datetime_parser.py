@@ -14,7 +14,9 @@ formats_list = [
     "dddd, MMMM Do YYYY hh:mm:ss A zz",
     "dddd, MMMM DD YYYY hh:mm:ss A z",
     "dddd, MMMM Do, YYYY hh:mm:ss A z",
-    "dddd, MMMM DD YYYY hh:mm:ss.SSSSSS A z"
+    "dddd, MMMM DD YYYY hh:mm:ss.SSSSSS A z",
+    "dddd, MMMM Do, YYYY hh:mm:ss.SSSSSS A z",
+
 ]
 
 tz_dict = {
@@ -29,6 +31,8 @@ format_list_test_cases = {
     "Sunday, May 26th 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
     "Sunday, May 26th, 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
     "Sunday, May 26 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
+    "Sunday, May 26 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",
+    "Sunday, May 26th 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",
 }
 
 parse_with_no_format_list_test_cases = {
@@ -101,16 +105,19 @@ def test_parse_with_formats(input, expected):
     }
 
     datetime_config = DatetimeConfig(**datetime_config_dict)
-    parsed_datetime, _ = _parse_with_formats(
-        input,
-        datetime_config,
-        formats_list
-    )
+    try:
+        parsed_datetime = parse(
+            input,
+            formats_list,
+            datetime_config,
+        )
+    except Exception as e:
+        parsed_datetime = None
 
     if parsed_datetime is None:
         assert parsed_datetime == expected
     else:
-        assert parsed_datetime.isoformat() == expected
+        assert parsed_datetime.iso_format == expected
 
 
 @pytest.mark.parametrize(
