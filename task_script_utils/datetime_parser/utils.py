@@ -2,12 +2,14 @@ import re
 import datetime as dt
 from typing import List
 from itertools import product
-from decimal import Decimal, getcontext
 
 from pydash.arrays import flatten
-from pendulum.formatting import Formatter
-from pendulum.utils._compat import decode
 
+from task_script_utils.datetime_parser.patterns import (
+    token_to_regex,
+    token_to_name,
+    tokens_regex
+)
 
 TOKEN_NAMES = {
     'Y': "year",
@@ -50,6 +52,7 @@ TOKEN_NAMES = {
     'ZZ': "tz",
     'Z': "tz",
     'z': "tz",
+    'A': "am_pm"
 }
 
 TIME_PARTS = [
@@ -57,10 +60,6 @@ TIME_PARTS = [
     ["m", "mm"],
     ["s", "ss"],
 ]
-
-REGEX_TOKENS = dict(Formatter._REGEX_TOKENS)
-FROM_FORMAT_RE = Formatter._FROM_FORMAT_RE
-
 
 def get_time_formats_for_long_date(fractional_seconds):
     def map_am_pm(time_format):
@@ -147,25 +146,29 @@ def replace_zz_with_Z(formats: List[str]):
 
 
 def get_subseconds(raw_datetime_string, matched_format):
-    escaped_fmt = re.escape(matched_format)
-    tokens = FROM_FORMAT_RE.findall(escaped_fmt)
-    tokens = map(lambda x: [token for token in x if token], tokens)
-    tokens = map(lambda x: x[0], tokens)
-    tokens = filter(lambda x: x.isalpha() and "S" not in x, tokens)
-    tokens = {token: REGEX_TOKENS[token] for token in tokens}
+    format_ = [re.escape(token) for token in matched_format.split(" ")]
 
-    re_format = matched_format
-    for token, regex in tokens.items():
-        candidates = regex
-        if not isinstance(candidates, tuple):
-            candidates = (candidates, )
-        pattern = "(?P<{}>{})".format(TOKEN_NAMES.get(
-            token, "subsecond"), "|".join([decode(p) for p in regex]))
-        re_format = re_format.replace(token, pattern)
+    for idx, part in enumerate(format_):
+        tokens = tokens_regex.findall(part)
+        tokens = map(lambda x: [token for token in x if token], tokens)
+        tokens = map(lambda x: x[0], tokens)
+        tokens = filter(lambda x: x.isalpha() and "S" not in x, tokens)
+        tokens = {token: token_to_regex[token] for token in tokens}
+        for token, regex in tokens.items():
+            candidates = regex
+            if not isinstance(candidates, tuple):
+                candidates = (candidates, )
 
-    num_S = re_format.count("S")
-    subsecond_token = num_S * "S"
-    re_format = re_format.replace(subsecond_token, r'(?P<subsecond>\d+)')
-    match = re.fullmatch(re_format, raw_datetime_string)
-    subseconds =  match.group('subsecond')
-    return subseconds
+            pattern = "(?P<{}>{})".format(
+                token_to_name[token], "|".join([p for p in candidates]))
+            format_[idx] = format_[idx].replace(token, pattern)
+        if "S" in part:
+            num_S = part.count("S")
+            subsecond_token = num_S * "S"
+            format_[idx] = format_[idx].replace(
+                subsecond_token, r'(?P<subsecond>\d+)')
+
+    re_format = " ".join(format_)
+    match = re.fullmatch(re_format,raw_datetime_string)
+    return match.group('subsecond')
+

@@ -13,7 +13,8 @@ formats_list = [
     "dddd, MMMM Do YYYY hh:mm:ss A z",
     "dddd, MMMM Do YYYY hh:mm:ss A zz",
     "dddd, MMMM DD YYYY hh:mm:ss A z",
-    "dddd, MMMM Do, YYYY hh:mm:ss A z"
+    "dddd, MMMM Do, YYYY hh:mm:ss A z",
+    "dddd, MMMM DD YYYY hh:mm:ss.SSSSSS A z"
 ]
 
 tz_dict = {
@@ -36,6 +37,9 @@ parse_with_no_format_list_test_cases = {
     "1:2:32 2021-12-23 AM +530": "2021-12-23T01:02:32+05:30",
     "May 26 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
     "Sunday, May 26th 2013 12:12:12 AM IST": "2013-05-26T00:12:12+05:30",
+    "Sunday, May 26 2013 12:12:12.5677 Asia/Kolkata": "2013-05-26T12:12:12.5677+05:30",
+    "Sunday, May 26 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",
+
     # Single digit day
     "Thursday, Nov 4 2021 12:12:12 AM Asia/Kolkata": "2021-11-04T00:12:12+05:30",
 
@@ -140,7 +144,7 @@ def test_parse(input, expected):
             datetime_str=input,
             config=datetime_config,
         )
-        parsed_datetime = parsed_datetime.isoformat()
+        parsed_datetime = parsed_datetime.iso_format
     except Exception as e:
         parsed_datetime = None
 
