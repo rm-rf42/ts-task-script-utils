@@ -52,7 +52,7 @@ class TSDatetime:
     def iso_format(self):
         iso_str = self._datetime.format("YYYY-MM-DDTHH:mm:ss")
         if self._subseconds:
-            iso_str += f".{str(self._subseconds)[:6]}"
+            iso_str += f".{str(self._subseconds)}"
         if self.tzinfo:
             offset = self._datetime.format("ZZ")
             if ":" not in offset:
