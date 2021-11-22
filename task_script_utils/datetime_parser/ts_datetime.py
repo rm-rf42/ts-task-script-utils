@@ -31,6 +31,8 @@ class TSDatetime:
 
     @property
     def ts_format(self):
+        """Returns datetime string in Tetrascience DateTime
+        format"""
         minimal_format = "YYYY-MM-DDTHH:mm:ss"
 
         if self.tzinfo is not None:
@@ -50,6 +52,7 @@ class TSDatetime:
 
     @property
     def iso_format(self):
+        """Returns datetime string in ISO format with offset values"""
         iso_str = self._datetime.format("YYYY-MM-DDTHH:mm:ss")
         if self._subseconds:
             iso_str += f".{str(self._subseconds)}"
@@ -69,4 +72,3 @@ class TSDatetime:
             return
 
         self._datetime = self._datetime.replace(fold=new_fold)
-
