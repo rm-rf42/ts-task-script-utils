@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-from re import sub
-from typing import Tuple
-=======
 from typing import Sequence, Tuple
->>>>>>> DE-2591-datetime-parser
 import pendulum
 from pendulum.datetime import DateTime as PendulumDateTime
 from dateutil.parser import parse as dateutil_parse
