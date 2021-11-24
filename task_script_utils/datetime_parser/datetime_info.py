@@ -410,7 +410,7 @@ class DateTimeInfo:
     @property
     def dtstamp(self):
         """Created Datetime string from parsed raw input string.
-        The format is DD-MM-YYYY hh:mm:ss and fractional seconds, AM/PM
+        The format is DD-MM-YYYY hh:mm:ss and fractional seconds (upto 6 digit), AM/PM
         and utc offset are appended conditionally
 
         Returns:
@@ -427,7 +427,9 @@ class DateTimeInfo:
             dt_str = f"{self.day}-{self.month}-{self.year}"
             dt_str += f" {self.hour}:{self.minutes}:{self.seconds}"
             if self.fractional_seconds:
-                # Pendulum support upto 6 fractional seconds
+                # This property along with dt_format is used to create
+                # a datetime object. Since python datetime support 6 digits for
+                # microseconds, therefore truncating fraction seconds to 6 digits
                 dt_str += f".{self.fractional_seconds[:6]}"
 
             if self.am_or_pm and int(self.hour) <= 12:
