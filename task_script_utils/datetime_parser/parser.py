@@ -1,6 +1,5 @@
-from typing import Sequence, Tuple
-import pendulum
-from pendulum.datetime import DateTime as PendulumDateTime
+from typing import Sequence
+
 from dateutil.parser import parse as dateutil_parse
 
 from task_script_utils.datetime_parser.parser_exceptions import DatetimeParserError

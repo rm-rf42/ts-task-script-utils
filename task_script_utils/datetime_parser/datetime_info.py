@@ -1,7 +1,7 @@
-from datetime import datetime as dt, time
 import re
 import json
 from typing import List, Tuple, Union
+from datetime import datetime as dt
 from itertools import product
 
 import pendulum
