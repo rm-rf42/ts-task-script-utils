@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Sequence, Tuple
 import pendulum
 from pendulum.datetime import DateTime as PendulumDateTime
 from dateutil.parser import parse as dateutil_parse
@@ -14,7 +14,7 @@ from .utils import (
 
 def parse(
     datetime_str: str,
-    formats_list: Tuple[str] = (),
+    formats_list: Sequence[str] = (),
     config: DatetimeConfig = DEFAULT_DATETIME_CONFIG
 ):
     parsed_datetime = None
@@ -56,7 +56,7 @@ def parse(
 def _parse_with_formats(
     datetime_str: str,
     datetime_config: DatetimeConfig,
-    formats: Tuple = ()
+    formats: Sequence[str] = ()
 ):
     # If datetime config contains tz_dict, then replace
     # abbreviated_tz in datetime_str with its corresponding

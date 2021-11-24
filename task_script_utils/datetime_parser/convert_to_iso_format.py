@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Sequence
 
 import pendulum
 
@@ -8,7 +8,7 @@ from .parser import parse
 
 def convert_to_ts_iso8601(
     datetime_str: str,
-    formats_list: Tuple[str] = (),
+    formats_list: Sequence[str] = (),
     config: DatetimeConfig = DEFAULT_DATETIME_CONFIG
 ):
     """Convert datetime_str to ISO8601 format, if datetime_str

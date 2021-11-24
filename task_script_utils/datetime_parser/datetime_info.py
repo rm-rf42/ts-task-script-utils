@@ -112,7 +112,7 @@ class DateTimeInfo:
         if token in pendulum.timezones:
             return token
 
-    def _match_time(self, token: str) -> Union[str, None]:
+    def _match_time(self, token: str) -> dict:
         """Use Regex to find any time string present in
         input token
 
