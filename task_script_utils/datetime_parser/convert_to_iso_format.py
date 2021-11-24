@@ -1,9 +1,4 @@
-from datetime import date
-from typing import Optional, Tuple
-
-import pendulum
-
-from task_script_utils.datetime_parser.datetime_info import DateTimeInfo
+from typing import Sequence
 
 from .datetime_config import DatetimeConfig, DEFAULT_DATETIME_CONFIG
 from .parser import parse
@@ -11,7 +6,7 @@ from .parser import parse
 
 def convert_to_ts_iso8601(
     datetime_str: str,
-    formats_list: Tuple[str] = (),
+    formats_list: Sequence[str] = (),
     config: DatetimeConfig = DEFAULT_DATETIME_CONFIG
 ):
     """Convert datetime_str to ISO8601 format, if datetime_str

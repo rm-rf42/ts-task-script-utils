@@ -1,6 +1,6 @@
 import re
 import datetime as dt
-from typing import List
+from typing import Sequence
 from itertools import product
 
 from pydash.arrays import flatten
@@ -92,7 +92,7 @@ def replace_abbreviated_tz_with_utc_offset(datetime_str: str, tz_dict):
     return datetime_str
 
 
-def replace_zz_with_Z(formats: List[str]):
+def replace_zz_with_Z(formats: Sequence[str]):
     """
     eg. `DD-MM-YYYY hh:m:ss zz` -> `DD-MM-YYYY hh:m:ss Z`
     """
