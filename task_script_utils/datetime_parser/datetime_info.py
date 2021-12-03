@@ -381,7 +381,7 @@ class DateTimeInfo:
 
     @property
     def date_str(self):
-        """Returns YYYY-MM-DD"""
+        """Returns year-month-day"""
         if (
             self.day
             and self.month
