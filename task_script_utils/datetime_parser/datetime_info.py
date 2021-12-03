@@ -1,9 +1,15 @@
-from datetime import datetime as dt, time
+from datetime import datetime as dt
 import re
 import json
-from typing import List, Tuple, Union
 from itertools import product
-
+from typing import (
+    Dict,
+    List,
+    Optional,
+    Tuple,
+    Union
+)
+from typing import Dict, List, Optional, Tuple, Union
 import pendulum
 from pendulum.locales.en import locale
 
@@ -202,7 +208,7 @@ class DateTimeInfo:
             "fractional_seconds": fractional_seconds
         }
 
-    def _match_short_date(self, token: str) -> Union[str, None]:
+    def _match_short_date(self, token: str) -> Optional[Dict[str, str]]:
         """Use Regex to find any short date string present in
         input token
 
@@ -214,8 +220,8 @@ class DateTimeInfo:
             when splitted by whitespace
 
         Returns:
-            Union[str, None]: if a match occurs return DD-MM-YYYY formated
-            date string else return None
+            Optional[Dict[str,str]]: returns a dict containing `year`,
+            `month` and `day`
         """
         year_first_pattern = r"\d{4,4}[-./\\]\d{1,2}[-./\\]\d{1,2}"
         year_last_pattern = r"\d{1,2}[-./\\]\d{1,2}[-./\\]\d{4,4}"
@@ -296,7 +302,8 @@ class DateTimeInfo:
             matches = re.findall(pattern, token)
             if matches:
                 if len(matches) != 1:
-                    return MultipleOffsetsError(f"Multiple offsets found: {matches}")
+                    raise MultipleOffsetsError(
+                        f"Multiple offsets found: {matches}")
                 match = matches[0].strip()
                 if match.lower().startswith("utc"):
                     match = match[3:]
