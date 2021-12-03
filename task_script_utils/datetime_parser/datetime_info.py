@@ -78,6 +78,9 @@ class DateTimeInfo:
         short_date_matcher = self._get_matchers_map()
         self._parse(short_date_matcher)
 
+        # Add Validators here
+        self._validate_meridiem()
+
     def _get_matchers_map(self, long_date_formats=False):
         """It creates a `dict` that maps parsing functions to instance
         variable that should store the result.
@@ -786,3 +789,16 @@ class DateTimeInfo:
             str(result.month),
             str(result.year)
         )
+
+    def _validate_meridiem(self):
+        if (
+            self.hour is None
+            or self.am_or_pm is None
+        ):
+            # Nothing to check.
+            return
+
+        if self.am_or_pm.upper() == "AM":
+            if int(self.hour) > 12:
+                raise InvalidTimeError(
+                    f"Hour is {self.hour} but meridiem is {self.am_or_pm}")
