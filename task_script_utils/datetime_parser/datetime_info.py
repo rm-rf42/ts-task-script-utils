@@ -139,8 +139,8 @@ class DateTimeInfo:
             Union[str, None]: return if any time string is found
             else return None
         """
-        hh_mm_ss_pattern = r"\d+:\d+:\d+.\d+|\d+:\d+:\d+"
-        hh_mm_pattern = r"^(?![+-])\d{1,2}:\d{1,2}"
+        hh_mm_ss_pattern = r"\d+:\d+:\d+\.\d+|^\d+:\d+:\d+$|^\d+:\d+:\d+[+-]{1,1}"
+        hh_mm_pattern = r"^(?![+-])\d{1,2}:\d{1,2}$|^(?![+-])\d{1,2}:\d{1,2}[+-]{1,1}"
 
         matches = re.findall(hh_mm_ss_pattern, token)
         if not matches:
@@ -371,7 +371,6 @@ class DateTimeInfo:
         return None
 
     def _get_token(self, token, token_map: dict):
-
         for key_, values in token_map.items():
             if token in values:
                 return key_
