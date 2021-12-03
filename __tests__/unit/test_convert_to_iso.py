@@ -21,7 +21,6 @@ config_with_fold_test_cases = {
     config_with_fold_test_cases
 )
 def test_convert_to_iso_with_fold(input_, fold, expected):
-
     config = DatetimeConfig(fold=fold, day_first=False)
     result = convert_to_ts_iso8601(input_, config=config)
     assert result == expected

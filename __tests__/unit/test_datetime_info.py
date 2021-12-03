@@ -3,6 +3,7 @@ import pytest
 from task_script_utils.datetime_parser.datetime_info import DateTimeInfo
 from task_script_utils.datetime_parser.datetime_config import DatetimeConfig
 from task_script_utils.datetime_parser import tz_dicts
+from task_script_utils.datetime_parser.parser_exceptions import DatetimeParserError
 
 
 datetime_configs = {
@@ -111,7 +112,7 @@ def test_match_short_date(input, year_first, day_first, expected):
     try:
         date_info = DateTimeInfo(input, config)
         result = date_info.date_str
-    except Exception as e:
+    except DatetimeParserError as e:
         result = None
 
     assert result == expected
@@ -127,7 +128,7 @@ def test_regex_parsing(input, expected):
     try:
         d = DateTimeInfo(input, year_first)
         parsed_datetime = d.dtstamp
-    except Exception as e:
+    except DatetimeParserError as e:
         parsed_datetime = None
 
     assert parsed_datetime == expected
