@@ -1,6 +1,6 @@
-from datetime import datetime as dt
 import re
 import json
+from datetime import datetime as dt
 from itertools import product
 from typing import (
     Dict,
@@ -9,7 +9,7 @@ from typing import (
     Tuple,
     Union
 )
-from typing import Dict, List, Optional, Tuple, Union
+
 import pendulum
 from pendulum.locales.en import locale
 
@@ -58,6 +58,12 @@ class DateTimeInfo:
 
     def __str__(self):
         return json.dumps(self.__dict__, indent=2)
+
+    def parse_time(self):
+        matchers = {
+            "time_str": self._match_time,
+        }
+        self._parse(matchers)
 
     def _parse(self, matchers):
         tokens = self.date_time_raw.split()
@@ -172,16 +178,6 @@ class DateTimeInfo:
             fractional_seconds = None
 
         time_errors = []
-        if (
-            fractional_seconds is not None
-            and len(fractional_seconds) > 6
-        ):
-            time_errors.append(
-                (
-                    f"Invalid time : {time_}. Fractional Seconds value is incorrect."
-                    "Must be at most 6 digits"
-                )
-            )
 
         if not (0 <= int(hour) <= 24):
             time_errors.append(
@@ -430,7 +426,7 @@ class DateTimeInfo:
     @property
     def dtstamp(self):
         """Created Datetime string from parsed raw input string.
-        The format is DD-MM-YYYY hh:mm:ss and fractional seconds, AM/PM
+        The format is DD-MM-YYYY hh:mm:ss and fractional seconds (upto 6 digit), AM/PM
         and utc offset are appended conditionally
 
         Returns:
@@ -447,7 +443,10 @@ class DateTimeInfo:
             dt_str = f"{self.day}-{self.month}-{self.year}"
             dt_str += f" {self.hour}:{self.minutes}:{self.seconds}"
             if self.fractional_seconds:
-                dt_str += f".{self.fractional_seconds}"
+                # This property along with dt_format is used to create
+                # a datetime object. Since python datetime support 6 digits for
+                # microseconds, therefore truncating fraction seconds to 6 digits
+                dt_str += f".{self.fractional_seconds[:6]}"
 
             if self.am_or_pm and int(self.hour) <= 12:
                 dt_str += f" {self.am_or_pm.upper()}"
@@ -488,7 +487,8 @@ class DateTimeInfo:
         fmt = f"{day}-{month}-{year} {hrs}:{mins}:{seconds}"
 
         if self.fractional_seconds:
-            fmt += "." + ("S" * len(self.fractional_seconds))
+            # Pendulum support upto 6 fractional seconds
+            fmt += "." + ("S" * len(self.fractional_seconds[:6]))
         if self.am_or_pm and int(self.hour) <= 12:
             fmt += " A"
         if self.offset:
@@ -551,7 +551,7 @@ class DateTimeInfo:
         """
         parts = [
             [self.long_date_format],
-            get_time_formats_for_long_date()
+            get_time_formats_for_long_date(self.fractional_seconds)
         ]
         formats = (
             " ".join(values)

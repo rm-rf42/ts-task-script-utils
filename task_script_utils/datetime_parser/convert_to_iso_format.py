@@ -31,12 +31,4 @@ def convert_to_ts_iso8601(
         formats_list=formats_list,
         config=config
     )
-
-    if parsed_datetime.tzinfo is not None:
-        utc = pendulum.tz.UTC
-        parsed_datetime = utc.convert(parsed_datetime)
-        iso_8601 = parsed_datetime.format(ts_format) + "Z"
-    else:
-        iso_8601 = parsed_datetime.format(ts_format)
-
-    return iso_8601
+    return parsed_datetime.ts_format

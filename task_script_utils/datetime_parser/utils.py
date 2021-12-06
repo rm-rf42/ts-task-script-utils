@@ -3,15 +3,23 @@ from typing import Sequence
 from itertools import product
 
 from pydash.arrays import flatten
+from pendulum import now
+from pendulum.formatting import Formatter
+from pendulum import datetime as pendulum_datetime
+
+from task_script_utils.datetime_parser.ts_datetime import TSDatetime
 
 
-time_parts = [
+_formatter = Formatter()
+
+TIME_PARTS = [
     ["h", "hh", "H", "HH"],
     ["m", "mm"],
     ["s", "ss"],
 ]
 
-def get_time_formats_for_long_date():
+
+def get_time_formats_for_long_date(fractional_seconds):
     def map_am_pm(time_format):
         return (
             time_format
@@ -21,9 +29,12 @@ def get_time_formats_for_long_date():
 
     time_formats = [
         ":".join(tokens)
-        for tokens in product(*time_parts)
+        for tokens in product(*TIME_PARTS)
     ]
-    time_formats = map(lambda x: [x, x+".SSS"], time_formats)
+    if fractional_seconds:
+        token = "S" * len(fractional_seconds)
+        time_formats = map(lambda x: [x, f"{x}.{token}"], time_formats)
+
     time_formats = flatten(time_formats)
     time_formats = map(lambda x: map_am_pm(x), time_formats)
     time_formats = map(
@@ -38,6 +49,7 @@ def get_time_formats_for_long_date():
     )
     time_formats = flatten(time_formats)
     return tuple(time_formats)
+
 
 def convert_offset_to_seconds(offset_value):
     """Convert +/-hh:mm utc offset string value
@@ -89,3 +101,31 @@ def replace_zz_with_Z(formats: Sequence[str]):
             result_formats[idx] = format_.replace(" zz", " Z")
 
     return result_formats
+
+
+def from_pendulum_format(
+    string,
+    fmt,
+    tz=None,
+    locale=None,
+) -> TSDatetime:
+    """
+    Creates a DateTime instance from a specific format.
+    """
+    subseconds = None
+    parts = _formatter.parse(string, fmt, now(), locale=locale)
+    if parts["tz"] is None:
+        parts["tz"] = tz
+
+    if "microsecond" in parts:
+        subseconds = parts["microsecond"]
+        if str(subseconds) not in string:
+            subseconds = int(str(subseconds).rstrip("0"))
+        if len(str(parts["microsecond"])) > 6:
+            parts["microsecond"] = int(str(parts["microsecond"])[:6])
+
+    ts_date_time = TSDatetime(
+        datetime_=pendulum_datetime(**parts),
+        subseconds=subseconds
+    )
+    return ts_date_time

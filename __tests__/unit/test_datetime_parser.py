@@ -13,7 +13,10 @@ formats_list = [
     "dddd, MMMM Do YYYY hh:mm:ss A z",
     "dddd, MMMM Do YYYY hh:mm:ss A zz",
     "dddd, MMMM DD YYYY hh:mm:ss A z",
-    "dddd, MMMM Do, YYYY hh:mm:ss A z"
+    "dddd, MMMM Do, YYYY hh:mm:ss A z",
+    "dddd, MMMM DD YYYY hh:mm:ss.SSSSSS A z",
+    "dddd, MMMM Do, YYYY hh:mm:ss.SSSSSS A z",
+
 ]
 
 tz_dict = {
@@ -28,6 +31,8 @@ format_list_test_cases = {
     "Sunday, May 26th 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
     "Sunday, May 26th, 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
     "Sunday, May 26 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
+    "Sunday, May 26 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",
+    "Sunday, May 26th 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",
 }
 
 parse_with_no_format_list_test_cases = {
@@ -36,6 +41,10 @@ parse_with_no_format_list_test_cases = {
     "1:2:32 2021-12-23 AM +530": "2021-12-23T01:02:32+05:30",
     "May 26 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
     "Sunday, May 26th 2013 12:12:12 AM IST": "2013-05-26T00:12:12+05:30",
+    "Sunday, May 26 2013 12:12:12.5677 Asia/Kolkata": "2013-05-26T12:12:12.5677+05:30",
+    "Sunday, May 26 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",
+    "Sunday, May 26th 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",
+
     # Single digit day
     "Thursday, Nov 4 2021 12:12:12 AM Asia/Kolkata": "2021-11-04T00:12:12+05:30",
 
@@ -96,16 +105,19 @@ def test_parse_with_formats(input, expected):
     }
 
     datetime_config = DatetimeConfig(**datetime_config_dict)
-    parsed_datetime, _ = _parse_with_formats(
-        input,
-        datetime_config,
-        formats_list
-    )
+    try:
+        parsed_datetime = parse(
+            input,
+            formats_list,
+            datetime_config,
+        )
+    except Exception as e:
+        parsed_datetime = None
 
     if parsed_datetime is None:
         assert parsed_datetime == expected
     else:
-        assert parsed_datetime.isoformat() == expected
+        assert parsed_datetime.iso_format == expected
 
 
 @pytest.mark.parametrize(
@@ -122,7 +134,7 @@ def test_parse_with_formats_with_no_tz_dict(input, expected):
     if parsed_datetime is None:
         assert parsed_datetime == expected
     else:
-        assert parsed_datetime.isoformat() == expected
+        assert parsed_datetime.iso_format == expected
 
 
 @pytest.mark.parametrize(
@@ -140,7 +152,7 @@ def test_parse(input, expected):
             datetime_str=input,
             config=datetime_config,
         )
-        parsed_datetime = parsed_datetime.isoformat()
+        parsed_datetime = parsed_datetime.iso_format
     except DatetimeParserError as e:
         parsed_datetime = None
 
