@@ -73,11 +73,10 @@ class TSDatetime:
             and self._is_fold_required
         ):
             raise AmbiguousFoldError(
-                "Fold is required to prase datetime string.")
+                "DatetimeConfig.fold must not be None to parse datetime without ambiguity.")
 
         if (
             self._datetime.tzinfo is None
-            or new_fold is None
             or new_fold == self._datetime.fold
         ):
             return
