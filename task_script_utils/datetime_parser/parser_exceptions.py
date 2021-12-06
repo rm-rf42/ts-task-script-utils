@@ -14,6 +14,10 @@ class MultipleDatesError(DatetimeParserError):
     pass
 
 
+class MultipleDatePartsError(DatetimeParserError):
+    pass
+
+
 class MultipleTimesFoundError(DatetimeParserError):
     pass
 

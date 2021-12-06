@@ -5,7 +5,7 @@ from task_script_utils.datetime_parser.parser import (
     _parse_using_dateutils,
 )
 from task_script_utils.datetime_parser.datetime_config import DatetimeConfig
-from task_script_utils.datetime_parser.ts_datetime import TSDatetime
+from task_script_utils.datetime_parser.parser_exceptions import DatetimeParserError
 
 
 formats_list = [
@@ -148,12 +148,12 @@ def test_parse(input, expected):
 
     datetime_config = DatetimeConfig(**datetime_config_dict)
     try:
-        parsed_datetime: TSDatetime = parse(
+        parsed_datetime = parse(
             datetime_str=input,
             config=datetime_config,
         )
         parsed_datetime = parsed_datetime.iso_format
-    except Exception as e:
+    except DatetimeParserError as e:
         parsed_datetime = None
 
     assert parsed_datetime == expected

@@ -3,6 +3,7 @@ import pytest
 from task_script_utils.datetime_parser.datetime_info import DateTimeInfo
 from task_script_utils.datetime_parser.datetime_config import DatetimeConfig
 from task_script_utils.datetime_parser import tz_dicts
+from task_script_utils.datetime_parser.parser_exceptions import DatetimeParserError
 
 
 datetime_configs = {
@@ -78,7 +79,6 @@ regex_test_cases = [
     ("Date: 2021-11-13\nTime: 13:11:13 (UTC+2)", "13-11-2021 13:11:13 +02:00"),
     ("Date: 12-9-1, Time: 17:18:48", "01-09-2012 17:18:48"),
     ("2018-13-09 16:15+2 PM", "13-09-2018 16:15:00 +02:00"),
-    ("2018-13-09T16:15+2 AM", "13-09-2018 16:15:00 +02:00"),
     ("2018-13-09T11:12:23.000-05:30", "13-09-2018 11:12:23.000 -05:30"),
     ("2018-13-09 11:12:23.000+05:30", "13-09-2018 11:12:23.000 +05:30"),
     ("2018-13-09T01:15+14 PM", "13-09-2018 01:15:00 PM +14:00"),
@@ -87,6 +87,8 @@ regex_test_cases = [
     ("2018-13-09T16:15+5:30 PM", "13-09-2018 16:15:00 +05:30"),
     ("2018-13-09T16:15-0530 PM", "13-09-2018 16:15:00 -05:30"),
     ("2018-13-09T16:15 CST PM", "13-09-2018 16:15:00 -06:00"),
+    ("2018-13-09T16:15:4.15 +05:30 PM", "13-09-2018 16:15:4.15 +05:30"),
+
 
     #Error Cases
     ("2018-13-09T16:15:4:15 +05:30 PM", None),
@@ -99,6 +101,7 @@ regex_test_cases = [
     ("2018-13-09T16:15+5:3 PM", None),
     ("2018-13-09T16:15+05332 PM", None),
     ("1:2:32 20-13-1 AM America/Chicago", None),
+    ("2018-13-09T16:15+2 AM", None) # hrs = 16 but meridiem=AM
 ]
 
 
@@ -109,7 +112,7 @@ def test_match_short_date(input, year_first, day_first, expected):
     try:
         date_info = DateTimeInfo(input, config)
         result = date_info.date_str
-    except Exception as e:
+    except DatetimeParserError as e:
         result = None
 
     assert result == expected
@@ -125,7 +128,7 @@ def test_regex_parsing(input, expected):
     try:
         d = DateTimeInfo(input, year_first)
         parsed_datetime = d.dtstamp
-    except Exception as e:
+    except DatetimeParserError as e:
         parsed_datetime = None
 
     assert parsed_datetime == expected

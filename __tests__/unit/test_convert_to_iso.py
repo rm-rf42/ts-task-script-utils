@@ -41,6 +41,7 @@ def test_convert_to_iso_with_fold(input_, fold, expected):
         result = convert_to_ts_iso8601(input_, config=config)
     except Exception as e:
         result = None
+        print(e)
     assert result == expected
 
 

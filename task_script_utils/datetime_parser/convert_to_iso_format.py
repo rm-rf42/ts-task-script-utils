@@ -1,5 +1,7 @@
 from typing import Sequence
 
+import pendulum
+
 from .datetime_config import DatetimeConfig, DEFAULT_DATETIME_CONFIG
 from .parser import parse
 
@@ -8,7 +10,7 @@ def convert_to_ts_iso8601(
     datetime_str: str,
     formats_list: Sequence[str] = (),
     config: DatetimeConfig = DEFAULT_DATETIME_CONFIG
-):
+) -> str:
     """Convert datetime_str to ISO8601 format, if datetime_str
     is valid and parse-able.
 
@@ -21,12 +23,12 @@ def convert_to_ts_iso8601(
         Defaults to DatetimeCoonfig().
 
     Returns:
-        [type]: IS08601 datetime string
+        str: IS08691 datetime string
     """
+    ts_format = "YYYY-MM-DDTHH:mm:ss.SSS"
     parsed_datetime = parse(
         datetime_str=datetime_str,
         formats_list=formats_list,
         config=config
     )
-
     return parsed_datetime.ts_format

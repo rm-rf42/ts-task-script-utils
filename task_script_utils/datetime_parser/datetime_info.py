@@ -1,8 +1,14 @@
 import re
 import json
-from typing import List, Tuple, Union
 from datetime import datetime as dt
 from itertools import product
+from typing import (
+    Dict,
+    List,
+    Optional,
+    Tuple,
+    Union
+)
 
 import pendulum
 from pendulum.locales.en import locale
@@ -84,6 +90,9 @@ class DateTimeInfo:
         short_date_matcher = self._get_matchers_map()
         self._parse(short_date_matcher)
 
+        # Add Validators here
+        self._validate_meridiem()
+
     def _get_matchers_map(self, long_date_formats=False):
         """It creates a `dict` that maps parsing functions to instance
         variable that should store the result.
@@ -118,7 +127,7 @@ class DateTimeInfo:
         if token in pendulum.timezones:
             return token
 
-    def _match_time(self, token: str) -> dict:
+    def _match_time(self, token: str) -> Optional[dict]:
         """Use Regex to find any time string present in
         input token
 
@@ -133,11 +142,11 @@ class DateTimeInfo:
             numeric value of hrs, minutes and seconds are out of bound.
 
         Returns:
-            Union[str, None]: return if any time string is found
-            else return None
+            Optional[dict]: return a dict with `hour`, `minutes`, `seconds`
+            and `milliseconds`, if any time string is found else return None
         """
-        hh_mm_ss_pattern = r"\d+:\d+:\d+.\d+|\d+:\d+:\d+"
-        hh_mm_pattern = r"^(?![+-])\d{1,2}:\d{1,2}"
+        hh_mm_ss_pattern = r"\d{1,2}:\d{1,2}:\d{1,2}\.\d+|^\d{1,2}:\d{1,2}:\d{1,2}$|^\d{1,2}:\d{1,2}:\d{1,2}[+-]{1,1}"
+        hh_mm_pattern = r"^(?![+-])\d{1,2}:\d{1,2}$|^(?![+-])\d{1,2}:\d{1,2}[+-]{1,1}"
 
         matches = re.findall(hh_mm_ss_pattern, token)
         if not matches:
@@ -195,7 +204,7 @@ class DateTimeInfo:
             "fractional_seconds": fractional_seconds
         }
 
-    def _match_short_date(self, token: str) -> Union[str, None]:
+    def _match_short_date(self, token: str) -> Optional[Dict[str, str]]:
         """Use Regex to find any short date string present in
         input token
 
@@ -207,19 +216,21 @@ class DateTimeInfo:
             when splitted by whitespace
 
         Returns:
-            Union[str, None]: if a match occurs return DD-MM-YYYY formated
-            date string else return None
+            Optional[Dict[str,str]]: returns a dict containing `year`,
+            `month` and `day`
         """
-        year_first_pattern = r"\d{4,4}[-./\\]\d{1,2}[-./\\]\d{1,2}"
-        year_last_pattern = r"\d{1,2}[-./\\]\d{1,2}[-./\\]\d{4,4}"
-        two_digit_date_pattern = r"^\d{1,2}[-./\\]\d{1,2}[-./\\]\d{1,2}"
+        year_first_pattern = r"(\d{4,4})[-./\\](\d{1,2})[-./\\](\d{1,2})"
+        year_last_pattern = r"(\d{1,2})[-./\\](\d{1,2})[-./\\](\d{4,4})"
+        two_digit_date_pattern = r"^(\d{1,2})[-./\\](\d{1,2})[-./\\](\d{1,2})"
         # no_sep_date_pattern = r"\d{6,6}"
 
         # YYYY-XX-XX
-        year_first_matches = re.findall(year_first_pattern, token)
+        year_first_matches = re.match(year_first_pattern, token)
         if year_first_matches:
             day, month, year = self._process_year_first_or_last_matches(
-                year_first_matches, True)
+                year_first_matches.groups(),
+                True
+            )
 
             return {
                 "year": year,
@@ -228,10 +239,12 @@ class DateTimeInfo:
             }
 
         # XX-XX-YYYY
-        year_last_matches = re.findall(year_last_pattern, token)
+        year_last_matches = re.match(year_last_pattern, token)
         if year_last_matches:
             day, month, year = self._process_year_first_or_last_matches(
-                year_last_matches, False)
+                year_last_matches.groups(),
+                False
+            )
             return {
                 "year": year,
                 "month": month,
@@ -239,11 +252,14 @@ class DateTimeInfo:
             }
 
         # Cases = [XX-XX-XX, XX-X-X, X-X-XX, X-X-X]
-        two_digit_date_pattern_matches = re.findall(
-            two_digit_date_pattern, token)
+        two_digit_date_pattern_matches = re.match(
+            two_digit_date_pattern,
+            token
+        )
         if two_digit_date_pattern_matches:
             day, month, year = self._process_two_digit_date_pattern(
-                two_digit_date_pattern_matches)
+                two_digit_date_pattern_matches.groups()
+            )
 
             return {
                 "year": year,
@@ -289,7 +305,8 @@ class DateTimeInfo:
             matches = re.findall(pattern, token)
             if matches:
                 if len(matches) != 1:
-                    return MultipleOffsetsError(f"Multiple offsets found: {matches}")
+                    raise MultipleOffsetsError(
+                        f"Multiple offsets found: {matches}")
                 match = matches[0].strip()
                 if match.lower().startswith("utc"):
                     match = match[3:]
@@ -357,7 +374,6 @@ class DateTimeInfo:
         return None
 
     def _get_token(self, token, token_map: dict):
-
         for key_, values in token_map.items():
             if token in values:
                 return key_
@@ -367,7 +383,7 @@ class DateTimeInfo:
 
     @property
     def date_str(self):
-        """Returns YYYY-MM-DD"""
+        """Returns year-month-day"""
         if (
             self.day
             and self.month
@@ -553,18 +569,14 @@ class DateTimeInfo:
         raw_dt = self._replace_single_characters(raw_dt)
         self.date_time_raw = raw_dt
 
-    def _process_year_first_or_last_matches(self, matches, year_first):
-        if len(matches) > 1:
-            raise MultipleDatesError(f"Multiple Dates Detected: {matches}")
-
-        date = re.sub(r"[-./\\]", "-", matches[0]).split("-")
+    def _process_year_first_or_last_matches(self, date_parts, year_first):
         if year_first:
-            year, others = date[0], date[1:]
+            year, others = date_parts[0], date_parts[1:]
         else:
-            others, year = date[: -1], date[-1]
+            others, year = date_parts[: -1], date_parts[-1]
 
         if len(year) == 3:
-            raise InvalidYearError(f"{date} has invalid year.")
+            raise InvalidYearError(f"{date_parts} has invalid year.")
 
         if self.config.day_first is True:
             day, month = others
@@ -581,45 +593,41 @@ class DateTimeInfo:
                 year=int(year)
             )
         except Exception as e:
-            msg = f"{str(e)}, date={date}, config={self.config}"
+            msg = f"{str(e)}, date={date_parts}, config={self.config}"
             raise InvalidDateError(msg)
 
         return day, month, year
 
-    def _process_two_digit_date_pattern(self, matches):
-        if len(matches) > 1:
-            raise MultipleDatesError(f"Multiple Dates Detected: {matches}")
+    def _process_two_digit_date_pattern(self, date_parts):
 
-        date = re.sub(r"[-./\\]", "-", matches[0])
-        date_tokens = date.split("-")
 
         if self.config.year_first is True:
             if self.config.day_first is True:
                 # Input = YY-DD-MM
-                year, day, month = date_tokens
+                year, day, month = date_parts
             else:
                 # Input = YY-MM-DD
-                year, month, day = date_tokens
+                year, month, day = date_parts
         elif self.config.year_first is False:
             if self.config.day_first is True:
                 # Input = DD-MM-YY
-                day, month, year = date_tokens
+                day, month, year = date_parts
             elif self.config.day_first is False:
                 # Input = MM-DD-YY
-                month, day, year = date_tokens
+                month, day, year = date_parts
             else:
                 # Input = XX-XX-YY
-                year, other_tokens = date_tokens[-1], date_tokens[:-1]
+                year, other_tokens = date_parts[-1], date_parts[:-1]
                 day, month = self._process_day_and_month(other_tokens)
         else:
             if self.config.day_first is True:
                 # Input = DD-MM-YY
-                day, month, year = date_tokens
+                day, month, year = date_parts
             elif self.config.day_first is False:
                 # Could Be MM-DD-YY or YY-MM-DD
                 date_str = '-'.join([
                     f"{int(token):02d}"
-                    for token in date_tokens
+                    for token in date_parts
                 ])
                 day, month, year = self._try_formats(
                     date_str,
@@ -629,7 +637,7 @@ class DateTimeInfo:
                 # Could Be MM-DD-YY or YY-MM-DD or DD-MM-YY
                 date_str = '-'.join([
                     f"{int(token):02d}"
-                    for token in date_tokens
+                    for token in date_parts
                 ])
                 day, month, year = self._try_formats(
                     date_str,
@@ -652,7 +660,7 @@ class DateTimeInfo:
                 year=int(year)
             )
         except Exception as e:
-            msg = f"{str(e)}, date={date}, {self.config}"
+            msg = f"{str(e)}, date={'-'.join(date_parts)}, {self.config}"
             raise InvalidDateError(msg)
 
         return day, month, year
@@ -786,3 +794,16 @@ class DateTimeInfo:
             str(result.month),
             str(result.year)
         )
+
+    def _validate_meridiem(self):
+        if (
+            self.hour is None
+            or self.am_or_pm is None
+        ):
+            # Nothing to check.
+            return
+
+        if self.am_or_pm.upper() == "AM":
+            if int(self.hour) > 12:
+                raise InvalidTimeError(
+                    f"Hour is {self.hour} but meridiem is {self.am_or_pm}")
