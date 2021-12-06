@@ -1,3 +1,4 @@
+import copy
 import datetime as dt
 from typing import Sequence
 from itertools import product

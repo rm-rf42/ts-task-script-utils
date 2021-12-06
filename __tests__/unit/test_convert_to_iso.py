@@ -5,31 +5,45 @@ from task_script_utils.datetime_parser import (
 )
 
 config_with_fold_test_cases = {
-    ("2021-11-07T01:30:00 America/New_York", 0, "2021-11-07T05:30:00Z"),
-    ("2021-11-07T01:30:00.000 America/New_York", 0, "2021-11-07T05:30:00.000Z"),
-    ("2021-11-07T01:30:00.032001 America/New_York", 1, "2021-11-07T06:30:00.032001Z"),
+    # Cases where fold is relevant
     ("2021-11-07T01:30:00.032 America/New_York", 1, "2021-11-07T06:30:00.032Z"),
-    ("2021-11-07T01:30:00.032", None, "2021-11-07T01:30:00.032"),
+    ("2021-11-07T01:30:00.032 America/New_York", 0, "2021-11-07T05:30:00.032Z"),
+    ("2021-10-31T01:15:00 Europe/London", 1, "2021-10-31T01:15:00Z"),
+    ("2021-10-31T01:15:00 Europe/London", 0, "2021-10-31T00:15:00Z"),
+    ("2021-10-31T02:45:00 Europe/Rome", 1, "2021-10-31T01:45:00Z"),
+    ("2021-10-31T02:45:00 Europe/Rome", 0, "2021-10-31T00:45:00Z"),
 
-    #TODO: Confirm these cases
-    ("2021-11-07T04:30:00.032001 America/New_York", 1, "2021-11-07T09:30:00.032001Z"),
-    ("2021-11-07T01:30:00.032 America/New_York", 1, "2021-11-07T06:30:00.032Z"),
+    # On a date when the fold is irrelevant, it is ignored
+    ("2021-11-06T01:30:00 America/New_York", 0, "2021-11-06T05:30:00Z"),
+    ("2021-11-06T01:30:00 America/New_York", 1, "2021-11-06T05:30:00Z"),
+    ("2021-11-08T01:30:00 America/New_York", 1, "2021-11-08T06:30:00Z"),
+    ("2021-11-08T01:30:00 America/New_York", 0, "2021-11-08T06:30:00Z"),
+
+    # Test cases when fold is None but is required to parse
+    # datetime with no ambiguity. Hence these are error cases.
+    ("2021-10-31T02:45:00 Europe/Rome", None, None),
+    ("2021-11-07T01:30:00.032 America/New_York", None, None),
+
+    # Fold is None and is not needed to parse datetime
+    ("2021-11-07T04:30:00.032001 America/New_York", None, "2021-11-07T09:30:00.032001Z"),
 }
 
 
 fractional_seconds_test_cases = {
-    #Subseconds Cases
+    # Subseconds Cases
     ("2021-11-07T04:30:00 America/New_York", "2021-11-07T09:30:00Z"),
     ("2021-11-07T04:30:00.1 America/New_York", "2021-11-07T09:30:00.1Z"),
     ("2021-11-07T04:30:00.12 America/New_York", "2021-11-07T09:30:00.12Z"),
     ("2021-11-07T04:30:00.123 America/New_York", "2021-11-07T09:30:00.123Z"),
     ("2021-11-07T04:30:00.01230 America/New_York", "2021-11-07T09:30:00.01230Z"),
-    ("2021-11-07T04:30:00.123456 America/New_York","2021-11-07T09:30:00.123456Z"),
-    ("2021-11-07T04:30:00.00123456 America/New_York","2021-11-07T09:30:00.00123456Z"),
-    ("2021-11-07T04:30:00.01 America/New_York","2021-11-07T09:30:00.01Z"),
-    ("2021-11-07T04:30:00.010 America/New_York","2021-11-07T09:30:00.010Z"),
+    ("2021-11-07T04:30:00.123456 America/New_York", "2021-11-07T09:30:00.123456Z"),
+    ("2021-11-07T04:30:00.00123456 America/New_York",
+     "2021-11-07T09:30:00.00123456Z"),
+    ("2021-11-07T04:30:00.01 America/New_York", "2021-11-07T09:30:00.01Z"),
+    ("2021-11-07T04:30:00.010 America/New_York", "2021-11-07T09:30:00.010Z"),
     ("2021-11-07T04:30:00.1234567 America/New_York", '2021-11-07T09:30:00.1234567Z'),
 }
+
 
 @pytest.mark.parametrize(
     "input_, fold, expected",
@@ -41,7 +55,6 @@ def test_convert_to_iso_with_fold(input_, fold, expected):
         result = convert_to_ts_iso8601(input_, config=config)
     except Exception as e:
         result = None
-        print(e)
     assert result == expected
 
 
