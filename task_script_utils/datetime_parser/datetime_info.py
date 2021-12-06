@@ -121,7 +121,7 @@ class DateTimeInfo:
         if token in pendulum.timezones:
             return token
 
-    def _match_time(self, token: str) -> dict:
+    def _match_time(self, token: str) -> Optional[dict]:
         """Use Regex to find any time string present in
         input token
 
@@ -136,8 +136,8 @@ class DateTimeInfo:
             numeric value of hrs, minutes and seconds are out of bound.
 
         Returns:
-            Union[str, None]: return if any time string is found
-            else return None
+            Optional[dict]: return a dict with `hour`, `minutes`, `seconds`
+            and `milliseconds`, if any time string is found else return None
         """
         hh_mm_ss_pattern = r"\d{1,2}:\d{1,2}:\d{1,2}\.\d+|^\d{1,2}:\d{1,2}:\d{1,2}$|^\d{1,2}:\d{1,2}:\d{1,2}[+-]{1,1}"
         hh_mm_pattern = r"^(?![+-])\d{1,2}:\d{1,2}$|^(?![+-])\d{1,2}:\d{1,2}[+-]{1,1}"
