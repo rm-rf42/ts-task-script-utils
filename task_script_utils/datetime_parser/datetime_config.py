@@ -14,6 +14,10 @@ class DatetimeConfig:
         self.year_first = year_first
         self.tz_dict = tz_dict
         self.tz_dict_seconds = map_offset_to_seconds(tz_dict)
+
+        # The "fold" is required during the 2 hour window when clocks are set back in
+        # a timezone which keeps track of daylight savings (such as IANA timezones
+        # like `Europe/London`).
         self.fold = fold
 
     def __str__(self):

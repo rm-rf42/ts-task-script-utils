@@ -70,7 +70,7 @@ A `DatetimeConfig` object has following attributes:
   }
 ```
 
-- `fold`: `0` or `1`
+- `fold`: `0` or `1`. It is required during the 2 hour window when clocks are set back in a timezone which keeps track of daylight savings (such as IANA timezones like `Europe/London`).
 
 ### Datetime format resolution matrix
 

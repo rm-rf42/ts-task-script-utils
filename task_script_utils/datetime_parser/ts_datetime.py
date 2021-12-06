@@ -86,11 +86,6 @@ class TSDatetime:
     @property
     def _is_fold_required(self) -> bool:
         """Check whether an undefined `fold` would cause an ambiguous TSDatetime
-
-        The "fold" is required during the 2 hour window when clocks are set back in
-        a timezone which keeps track of daylight savings (such as IANA timezones
-        like `Europe/London`).
-
         This function returns True if "fold" is required to disambiguate a
         datetime, False otherwise.
         """
