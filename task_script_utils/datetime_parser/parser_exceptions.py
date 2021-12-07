@@ -40,3 +40,7 @@ class InvalidDateError(DatetimeParserError):
 
 class TimestampBuildError(DatetimeParserError):
     pass
+
+
+class AmbiguousFoldError(DatetimeParserError):
+    pass

@@ -1,7 +1,11 @@
+import copy
 from datetime import datetime
 from typing import Optional
 
 import pendulum
+
+from .parser_exceptions import AmbiguousFoldError
+
 
 
 class TSDatetime:
@@ -65,10 +69,30 @@ class TSDatetime:
 
     def change_fold(self, new_fold: int):
         if (
+            new_fold is None
+            and self._is_fold_required
+        ):
+            raise AmbiguousFoldError(
+                "DatetimeConfig.fold must not be None to parse datetime without ambiguity.")
+
+        if (
             self._datetime.tzinfo is None
-            or new_fold is None
             or new_fold == self._datetime.fold
         ):
             return
 
         self._datetime = self._datetime.replace(fold=new_fold)
+
+    @property
+    def _is_fold_required(self) -> bool:
+        """Check whether an undefined `fold` would cause an ambiguous TSDatetime
+        This function returns True if "fold" is required to disambiguate a
+        datetime, False otherwise.
+        """
+        # Copy because TSDatetime is mutable
+        dt = copy.deepcopy(self)
+        dt.change_fold(0)
+        dt_before_fold = dt.ts_format
+        dt.change_fold(1)
+        dt_after_fold = dt.ts_format
+        return dt_before_fold != dt_after_fold

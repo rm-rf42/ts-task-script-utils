@@ -70,7 +70,11 @@ A `DatetimeConfig` object has following attributes:
   }
 ```
 
-- `fold`: `0` or `1`
+- `fold`: `0`, `1` or `None`.
+  - It is required during the 2 hour window when clocks are set back in a timezone which keeps track of daylight savings (such as IANA timezones like `Europe/London`).
+  - The allowed values for the fold attribute will be 0 and 1 with 0 corresponding to the earlier and 1 to the later of the two possible readings of an ambiguous local time.
+  - If fold is `None`, Parser will check if `fold` is needed or not to parse the time with no ambiguity.
+  - `AmbiguousFoldError` will be raised if `fold` is needed.
 
 ### Datetime format resolution matrix
 
