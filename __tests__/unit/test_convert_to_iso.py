@@ -7,6 +7,7 @@ from task_script_utils.datetime_parser import (
 config_with_fold_test_cases = {
     # Cases where fold is relevant
     ("2021-11-07T01:30:00.032 America/New_York", 1, "2021-11-07T06:30:00.032Z"),
+    ("2021-11-7T01:30:00.032 America/New_York", 1, "2021-11-07T06:30:00.032Z"),
     ("2021-11-07T01:30:00.032 America/New_York", 0, "2021-11-07T05:30:00.032Z"),
     ("2021-10-31T01:15:00 Europe/London", 1, "2021-10-31T01:15:00Z"),
     ("2021-10-31T01:15:00 Europe/London", 0, "2021-10-31T00:15:00Z"),

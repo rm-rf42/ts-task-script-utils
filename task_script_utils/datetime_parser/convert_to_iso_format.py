@@ -25,7 +25,6 @@ def convert_to_ts_iso8601(
     Returns:
         str: IS08691 datetime string
     """
-    ts_format = "YYYY-MM-DDTHH:mm:ss.SSS"
     parsed_datetime = parse(
         datetime_str=datetime_str,
         formats_list=formats_list,
