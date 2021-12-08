@@ -596,6 +596,9 @@ class DateTimeInfo:
             msg = f"{str(e)}, date={date_parts}, config={self.config}"
             raise InvalidDateError(msg)
 
+        day = f"{int(day):02d}"
+        month = f"{int(month):02d}"
+
         return day, month, year
 
     def _process_two_digit_date_pattern(self, date_parts):

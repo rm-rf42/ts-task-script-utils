@@ -51,13 +51,13 @@ two_digit_date_with_config_test_cases = [
     ("01/02/03", False, None, None),
     ("01/2/3", None, None, None),
     ("13/02/03", True, True, "2013-03-02"),
-    ("13/02/03", False, True, "2003-02-13"),
+    ("13/2/03", False, True, "2003-02-13"),
     ("13/02/03", None, True, "2003-02-13"),
     ("13/02/03", True, False, "2013-02-03"),
-    ("13/02/03", False, False, None),
+    ("13/02/3", False, False, None),
     ("13-02-03", None, False, "2013-02-03"),
     ("13/02/03", True, None, "2013-02-03"),
-    ("13/02/03", False, None, "2003-02-13"),
+    ("13/2/03", False, None, "2003-02-13"),
     ("13/02/03", None, None, None),
     ("01/15/11", None, True, None),
     ("01/15/11", True, False, None),
@@ -68,6 +68,7 @@ two_digit_date_with_config_test_cases = [
     ("2021/11/07", None, None, None),
     ("2021/32/07", None, True, None),
     ("2021/11/14", None, True, None),
+    ("2021.11.7", None, False,'2021-11-07')
 ]
 
 # Test them with year_first
