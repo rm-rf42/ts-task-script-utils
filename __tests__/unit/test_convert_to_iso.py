@@ -3,6 +3,7 @@ from task_script_utils.datetime_parser import (
     convert_to_ts_iso8601,
     DatetimeConfig,
 )
+from task_script_utils.datetime_parser.parser_exceptions import DatetimeParserError
 
 config_with_fold_test_cases = {
     # Cases where fold is relevant
@@ -26,7 +27,8 @@ config_with_fold_test_cases = {
     ("2021-11-07T01:30:00.032 America/New_York", None, None),
 
     # Fold is None and is not needed to parse datetime
-    ("2021-11-07T04:30:00.032001 America/New_York", None, "2021-11-07T09:30:00.032001Z"),
+    ("2021-11-07T04:30:00.032001 America/New_York",
+     None, "2021-11-07T09:30:00.032001Z"),
 }
 
 
@@ -43,6 +45,12 @@ fractional_seconds_test_cases = {
     ("2021-11-07T04:30:00.01 America/New_York", "2021-11-07T09:30:00.01Z"),
     ("2021-11-07T04:30:00.010 America/New_York", "2021-11-07T09:30:00.010Z"),
     ("2021-11-07T04:30:00.1234567 America/New_York", '2021-11-07T09:30:00.1234567Z'),
+}
+
+datetime_parts_padding_tests = {
+    ("01/02/03T04:30:00 America/New_York", False, True, "2003-02-01T09:30:00Z"),
+    ("01/02/3T04:30:00 America/New_York", False, True, "2003-02-01T09:30:00Z"),
+    ("1/2/3T4:30:00 America/New_York", False, True, "2003-02-01T09:30:00Z")
 }
 
 
@@ -69,5 +77,21 @@ def test_convert_to_iso_with_fractional_seconds(input_, expected):
     try:
         result = convert_to_ts_iso8601(input_, config=config)
     except Exception as e:
+        result = None
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    "input_, year_first, day_first, expected",
+    datetime_parts_padding_tests
+)
+def test_convert_to_ts_format_for_padding(input_, year_first, day_first, expected):
+    config = DatetimeConfig(
+        year_first=year_first,
+        day_first=day_first
+    )
+    try:
+        result = convert_to_ts_iso8601(input_, config=config)
+    except DatetimeParserError as e:
         result = None
     assert result == expected
