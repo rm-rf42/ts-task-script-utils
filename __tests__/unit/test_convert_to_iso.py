@@ -50,7 +50,9 @@ fractional_seconds_test_cases = {
 datetime_parts_padding_tests = {
     ("01/02/03T04:30:00 America/New_York", False, True, "2003-02-01T09:30:00Z"),
     ("01/02/3T04:30:00 America/New_York", False, True, "2003-02-01T09:30:00Z"),
-    ("1/2/3T4:30:00 America/New_York", False, True, "2003-02-01T09:30:00Z")
+    ("1/2/3T4:30:00 America/New_York", False, True, "2003-02-01T09:30:00Z"),
+    ("1/2/3T4:3:00 America/New_York", False, True, "2003-02-01T09:03:00Z"),
+    ("01/02/13T04:03:00 America/New_York", False, True, "2013-02-01T09:03:00Z")
 }
 
 
