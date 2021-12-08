@@ -62,7 +62,7 @@ def test_convert_to_iso_with_fold(input_, fold, expected):
     config = DatetimeConfig(fold=fold, day_first=False)
     try:
         result = convert_to_ts_iso8601(input_, config=config)
-    except Exception as e:
+    except DatetimeParserError as e:
         result = None
     assert result == expected
 
@@ -76,7 +76,7 @@ def test_convert_to_iso_with_fractional_seconds(input_, expected):
     config = DatetimeConfig(day_first=False)
     try:
         result = convert_to_ts_iso8601(input_, config=config)
-    except Exception as e:
+    except DatetimeParserError as e:
         result = None
     assert result == expected
 
