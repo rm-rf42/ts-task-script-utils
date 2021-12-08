@@ -198,9 +198,9 @@ class DateTimeInfo:
             )
 
         return {
-            "hour": hour,
-            "minutes": minutes,
-            "seconds": seconds,
+            "hour": f"{int(hour):02d}",
+            "minutes": f"{int(minutes):02d}",
+            "seconds": f"{int(seconds):02d}",
             "fractional_seconds": fractional_seconds
         }
 
