@@ -1,6 +1,6 @@
 import re
 import json
-from datetime import datetime as dt
+from datetime import datetime as dt, time
 from itertools import product
 from typing import (
     Dict,
@@ -159,8 +159,10 @@ class DateTimeInfo:
                 f"Multiple Time values found: {matches}")
 
         time_ = matches[0].strip()
-        time_ = time_.replace("+", "")
-        time_ = time_.replace("-", "")
+        if "+" in time_:
+            time_ = time_.replace("+", "")
+        if "-" in time_:
+            time_ = time_.replace("-", "")
         time_ = time_.split(":")
 
         if len(time_) > 3:
