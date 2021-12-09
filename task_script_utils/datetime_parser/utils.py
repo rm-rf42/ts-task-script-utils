@@ -1,3 +1,4 @@
+import re
 import datetime as dt
 from typing import Sequence
 from itertools import product
@@ -130,7 +131,8 @@ def from_pendulum_format(
     )
     return ts_date_time
 
-def replace_z_with_offset(datetime_str: str)->str:
+
+def replace_z_with_offset(datetime_str: str) -> str:
     char_list = list(datetime_str + " ")
     for idx in range(1, len(char_list)-1):
         prev_char = char_list[idx - 1]
@@ -144,5 +146,3 @@ def replace_z_with_offset(datetime_str: str)->str:
         ):
             char_list[idx] = "+00:00"
     return "".join(char_list[:-1])
-
-

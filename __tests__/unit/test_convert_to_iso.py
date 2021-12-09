@@ -55,6 +55,13 @@ datetime_parts_padding_tests = {
     ("01/02/13T04:03:00 America/New_York", False, True, "2013-02-01T09:03:00Z")
 }
 
+datetime_strings_with_and_without_Z = {
+    ("2021-12-13T13:00:00.1234567Z", (), "2021-12-13T13:00:00.1234567Z"),
+    ("2021-12-13T13:00:00.1234567 Z", (), "2021-12-13T13:00:00.1234567Z"),
+    ("2021-12-13T13:00:00.1234567", (), "2021-12-13T13:00:00.1234567"),
+    ("21-12-12T13:00:00", ("YY-MM-DDTHH:mm:ss",), "2021-12-13T13:00:00")
+}
+
 
 @pytest.mark.parametrize(
     "input_, fold, expected",
@@ -95,5 +102,18 @@ def test_convert_to_ts_format_for_padding(input_, year_first, day_first, expecte
     try:
         result = convert_to_ts_iso8601(input_, config=config)
     except DatetimeParserError as e:
+        result = None
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    "input_, dt_formats, expected",
+    datetime_strings_with_and_without_Z
+)
+def test_datetime_str_with_Z(input_, dt_formats, expected):
+    try:
+        result = convert_to_ts_iso8601(input_, formats_list=list(dt_formats))
+    except DatetimeParserError as e:
+        print(str(e))
         result = None
     assert result == expected
