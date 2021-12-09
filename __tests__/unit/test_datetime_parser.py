@@ -24,7 +24,7 @@ tz_dict = {
     "BST": "+01:00"
 }
 
-format_list_test_cases = {
+datetime_formats_list_test_cases = {
     "Sunday, May 26th 2013 12:12:12 AM IST Asia/Kolkata": "2013-05-26T00:12:12+05:30",
     "Sunday, May 26th 2013 12:12:12 AM ZST Asia/Kolkata": None,
     "Sunday, May 26th 2013 12:12:12 AM BST": "2013-05-26T00:12:12+01:00",
@@ -35,7 +35,7 @@ format_list_test_cases = {
     "Sunday, May 26th 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",
 }
 
-parse_with_no_format_list_test_cases = {
+parse_with_no_datetime_formats_list_test_cases = {
     "Sunday, May 26th 2013 12:12:12 AM IST Asia/Kolkata": "2013-05-26T00:12:12+05:30",
     "Sunday, May 26th 2013 12:12:12 AM BST": "2013-05-26T00:12:12+01:00",
     "Sunday, May 26th 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
@@ -106,7 +106,7 @@ def test_date_util_parse(input_, expected):
 
 @pytest.mark.parametrize(
     "input, expected",
-    format_list_test_cases.items()
+    datetime_formats_list_test_cases.items()
 )
 def test_parse_with_formats(input, expected):
     datetime_config_dict = {
@@ -148,7 +148,7 @@ def test_parse_with_formats_with_no_tz_dict(input, expected):
 
 @pytest.mark.parametrize(
     "input, expected",
-    parse_with_no_format_list_test_cases.items()
+    parse_with_no_datetime_formats_list_test_cases.items()
 )
 def test_parse(input, expected):
     datetime_config_dict = {
