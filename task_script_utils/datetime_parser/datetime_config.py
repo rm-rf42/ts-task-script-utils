@@ -1,23 +1,33 @@
+from typing import Optional
 from .utils import map_offset_to_seconds
 
 
 class DatetimeConfig:
     def __init__(
         self,
-        day_first=None,
-        year_first=None,
-        tz_dict={},
-        fold=None
+        day_first: Optional[bool] = None,
+        year_first: Optional[bool] = None,
+        tz_dict: dict = {},
+        fold: Optional[int] = None
     ):
+        """DatetimeConfig is used to provide complementary information that helps
+        to parse datetime
 
+        Args:
+            day_first (Optional[bool], optional): Whether to interpret the first value in an ambiguous
+            3-integer date (e.g. 01/05/09) as the day (True) or month (False). Defaults to None.
+            year_first (Optional[bool], optional): Whether to interpret the first value in an ambiguous
+            3-integer date (e.g. 01/05/09) as the year. Defaults to None.
+            tz_dict (dict, optional): A python dict that maps abbreviated timezone names
+            to their corresponding offset. Defaults to {}.
+            fold (Optional[int], optional): 0 or 1. It is required during the 2 hour window when clocks
+            are set back in a timezone which keeps track of daylight savings (such as IANA timezones
+            like `Europe/London`). Defaults to None.
+        """
         self.day_first = day_first
         self.year_first = year_first
         self.tz_dict = tz_dict
         self.tz_dict_seconds = map_offset_to_seconds(tz_dict)
-
-        # The "fold" is required during the 2 hour window when clocks are set back in
-        # a timezone which keeps track of daylight savings (such as IANA timezones
-        # like `Europe/London`).
         self.fold = fold
 
     def __str__(self):
@@ -27,5 +37,6 @@ class DatetimeConfig:
             f"fold={self.fold}, "
             f"tz_dict={self.tz_dict}"
         )
+
 
 DEFAULT_DATETIME_CONFIG = DatetimeConfig()
