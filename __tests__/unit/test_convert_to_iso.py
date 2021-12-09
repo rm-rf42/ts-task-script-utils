@@ -48,11 +48,40 @@ fractional_seconds_test_cases = {
 }
 
 datetime_parts_padding_tests = {
+    # input, year_first, day_first, expected(TD datetime format)
     ("01/02/03T04:30:00 America/New_York", False, True, "2003-02-01T09:30:00Z"),
     ("01/02/3T04:30:00 America/New_York", False, True, "2003-02-01T09:30:00Z"),
     ("1/2/3T4:30:00 America/New_York", False, True, "2003-02-01T09:30:00Z"),
     ("1/2/3T4:3:00 America/New_York", False, True, "2003-02-01T09:03:00Z"),
-    ("01/02/13T04:03:00 America/New_York", False, True, "2013-02-01T09:03:00Z")
+    ("01/02/13T04:03:00 America/New_York", False, True, "2013-02-01T09:03:00Z"),
+    ("01/02/03 04:03:00 America/New_York", True, True, "2001-03-02T09:03:00Z"),
+    ("01/02/03 04:03:00 America/New_York", False, True, "2003-02-01T09:03:00Z"),
+    ("01/02/03 04:03:00 America/New_York", None, True, "2003-02-01T09:03:00Z"),
+    ("1/02/03 04:03:00 America/New_York", True, False, "2001-02-03T09:03:00Z"),
+    ("01/02/03 04:03:00 America/New_York", False, False, "2003-01-02T09:03:00Z"),
+    ("01/02/03 04:03:00 America/New_York", None, False, None),
+    ("01/02/03 04:03:00.0 America/New_York", True, None, "2001-02-03T09:03:00.0Z"),
+    ("01/02/03 04:03:00 America/New_York", False, None, None),
+    ("01/2/3 04:03:00 America/New_York", None, None, None),
+    ("13/02/03 04:03:00 America/New_York", True, True, "2013-03-02T09:03:00Z"),
+    ("13/2/03 04:03:00.43500 America/New_York", False, True, "2003-02-13T09:03:00.43500Z"),
+    ("13/02/03 04:03:00 America/New_York", None, True, "2003-02-13T09:03:00Z"),
+    ("13/02/03 04:03:00 +05:30", True, False, "2013-02-02T22:33:00Z"),
+    ("13/02/3 04:03:00 America/New_York", False, False, None),
+    ("13-02-03 04:03:00 America/New_York", None, False, "2013-02-03T09:03:00Z"),
+    ("13/02/03 04:03:00 America/New_York", True, None, "2013-02-03T09:03:00Z"),
+    ("13/2/03 04:03:00 America/New_York", False, None, "2003-02-13T09:03:00Z"),
+    ("13/02/03 04:03:00 America/New_York", None, None, None),
+    ("01/15/11 04:03:00 America/New_York", None, True, None),
+    ("01/15/11 04:03:00 America/New_York", True, False, None),
+    ("12/13/03 04:03:00 America/New_York", None, False, "2003-12-13T09:03:00Z"),
+    ("2021.11.07 04:03:00.00045000 America/New_York", None, False,"2021-11-07T09:03:00.00045000Z"),
+    ("2021/11/07 04:03:00 America/New_York", None, True,"2021-07-11T08:03:00Z"),
+    ("11\\12\\2021 04:03:00 America/New_York", None, True, "2021-12-11T09:03:00Z"),
+    ("2021/11/07 04:03:00 America/New_York", None, None, None),
+    ("2021/32/07 04:03:00 America/New_York", None, True, None),
+    ("2021/11/14 04:03:00 America/New_York", None, True, None),
+    ("2021.11.7 04:03:00 America/New_York", None, False,"2021-11-07T09:03:00Z")
 }
 
 datetime_strings_with_and_without_Z = {

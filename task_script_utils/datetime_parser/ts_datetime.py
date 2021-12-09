@@ -40,8 +40,7 @@ class TSDatetime:
 
         if self.tzinfo is not None:
             utc = pendulum.tz.UTC
-            utc_date = self._datetime
-            utc_date = utc.convert(utc_date)
+            utc_date = utc.convert(self._datetime)
             iso_8601 = utc_date.format(minimal_format)
             if self._subseconds is not None:
                 iso_8601 = f"{iso_8601}.{self._subseconds}"

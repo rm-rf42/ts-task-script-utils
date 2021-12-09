@@ -1,5 +1,6 @@
 from typing import Sequence
 
+import pendulum
 from dateutil.parser import parse as dateutil_parse
 
 from task_script_utils.datetime_parser.parser_exceptions import DatetimeParserError
@@ -74,6 +75,7 @@ def parse(
         raise DatetimeParserError(f"Could not parse: {datetime_str}")
 
     if not isinstance(parsed_datetime, TSDatetime):
+        parsed_datetime = pendulum.instance(parsed_datetime)
         parsed_datetime = TSDatetime(datetime_=parsed_datetime)
 
     parsed_datetime.change_fold(config.fold)
