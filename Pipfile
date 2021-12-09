@@ -15,7 +15,7 @@ numpy = "*"
 python-dateutil = "*"
 dateparser = "*"
 arrow = "*"
-pendulum = "*"
+pendulum = "2.1.2"
 pydash = "*"
 
 [requires]
