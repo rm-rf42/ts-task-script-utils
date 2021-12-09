@@ -12,7 +12,7 @@ class TSDatetime:
     def __init__(
         self,
         datetime_: datetime,
-        subseconds: Optional[int] = None
+        subseconds: Optional[str] = None
     ):
         if not isinstance(datetime_, datetime):
             raise TypeError("datetime_ must be a datetime object")
@@ -29,7 +29,7 @@ class TSDatetime:
         if self._subseconds is None:
             return self._datetime
 
-        microseconds = int(str(self._subseconds)[:6])
+        microseconds = int(self._subseconds)[:6]
         new_datetime = self._datetime.replace(microsecond=microseconds)
         return new_datetime
 
