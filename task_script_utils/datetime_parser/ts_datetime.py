@@ -33,8 +33,7 @@ class TSDatetime:
         new_datetime = self._datetime.replace(microsecond=microseconds)
         return new_datetime
 
-    @property
-    def ts_format(self):
+    def tsformat(self):
         """Returns datetime string in Tetrascience DateTime
         format"""
         minimal_format = "YYYY-MM-DDTHH:mm:ss"
@@ -54,8 +53,7 @@ class TSDatetime:
 
         return iso_8601
 
-    @property
-    def iso_format(self):
+    def isoformat(self):
         """Returns datetime string in ISO format with offset values"""
         iso_str = self._datetime.format("YYYY-MM-DDTHH:mm:ss")
         if self._subseconds:
@@ -92,7 +90,7 @@ class TSDatetime:
         # Copy because TSDatetime is mutable
         dt = copy.deepcopy(self)
         dt.change_fold(0)
-        dt_before_fold = dt.ts_format
+        dt_before_fold = dt.tsformat()
         dt.change_fold(1)
-        dt_after_fold = dt.ts_format
+        dt_after_fold = dt.tsformat()
         return dt_before_fold != dt_after_fold

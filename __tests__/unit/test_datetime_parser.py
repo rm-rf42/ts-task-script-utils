@@ -117,7 +117,7 @@ def test_parse_with_formats(input, expected):
     if parsed_datetime is None:
         assert parsed_datetime == expected
     else:
-        assert parsed_datetime.iso_format == expected
+        assert parsed_datetime.isoformat() == expected
 
 
 @pytest.mark.parametrize(
@@ -134,7 +134,7 @@ def test_parse_with_formats_with_no_tz_dict(input, expected):
     if parsed_datetime is None:
         assert parsed_datetime == expected
     else:
-        assert parsed_datetime.iso_format == expected
+        assert parsed_datetime.isoformat() == expected
 
 
 @pytest.mark.parametrize(
@@ -152,7 +152,7 @@ def test_parse(input, expected):
             datetime_str=input,
             config=datetime_config,
         )
-        parsed_datetime = parsed_datetime.iso_format
+        parsed_datetime = parsed_datetime.isoformat()
     except DatetimeParserError as e:
         parsed_datetime = None
 

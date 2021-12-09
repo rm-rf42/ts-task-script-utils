@@ -30,4 +30,4 @@ def convert_to_ts_iso8601(
         formats_list=formats_list,
         config=config
     )
-    return parsed_datetime.ts_format
+    return parsed_datetime.tsformat()
