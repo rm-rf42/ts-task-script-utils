@@ -129,3 +129,20 @@ def from_pendulum_format(
         subseconds=subseconds
     )
     return ts_date_time
+
+def replace_z_with_offset(datetime_str: str)->str:
+    char_list = list(datetime_str + " ")
+    for idx in range(1, len(char_list)-1):
+        prev_char = char_list[idx - 1]
+        current_char = char_list[idx]
+        next_char = char_list[idx + 1]
+        if (
+            (prev_char.isdigit() or prev_char.isspace())
+            and current_char == "Z"
+            and next_char.isspace()
+
+        ):
+            char_list[idx] = "+00:00"
+    return "".join(char_list[:-1])
+
+

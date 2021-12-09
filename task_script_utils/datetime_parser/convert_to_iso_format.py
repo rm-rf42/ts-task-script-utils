@@ -7,7 +7,7 @@ from .parser import parse
 
 
 def convert_to_ts_iso8601(
-    datetime_str: str,
+    datetime_raw_str: str,
     formats_list: Sequence[str] = (),
     config: DatetimeConfig = DEFAULT_DATETIME_CONFIG
 ) -> str:
@@ -26,7 +26,7 @@ def convert_to_ts_iso8601(
         str: IS08691 datetime string
     """
     parsed_datetime = parse(
-        datetime_str=datetime_str,
+        datetime_raw_str=datetime_raw_str,
         formats_list=formats_list,
         config=config
     )
