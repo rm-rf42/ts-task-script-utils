@@ -16,7 +16,7 @@ def convert_to_ts_iso8601(
 
     Args:
         datetime_str (str): raw datetime string
-        formats_list (List[str], optional): List of possible datetime formats.
+        formats_list (Sequence[str], optional): List of possible datetime formats.
         These datetime formats must be built using `pendulum` datetime tokens.
         Defaults to [].
         config (DatetimeConfig, optional): Datetime Configuration.

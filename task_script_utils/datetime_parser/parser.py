@@ -18,6 +18,21 @@ def parse(
     formats_list: Sequence[str] = (),
     config: DatetimeConfig = DEFAULT_DATETIME_CONFIG
 ) -> TSDatetime:
+    """Parse datetime_str and construct a TSDatetime Object
+
+    Args:
+        datetime_str (str): Raw datetime string
+        formats_list (Sequence[str], optional): List of possible datetime formats.
+        These datetime formats must be built using `pendulum` datetime tokens.
+        Defaults to [].
+        config (DatetimeConfig, optional): Datetime Configuration.
+        Defaults to DEFAULT_DATETIME_CONFIG.
+
+    Raises:
+        DatetimeParserError: When datetime_str can be parsed into TSDatetime object
+    Returns:
+        TSDatetime
+    """
     parsed_datetime = None
     datetime_info = None
 
