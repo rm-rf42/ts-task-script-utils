@@ -100,8 +100,8 @@ class DateTimeInfo:
         if not long_date_formats:
             methods_dict = {
                 "iana_tz": self._match_iana_tz,
-                "time_str": self._match_time,
-                "date_str": self._match_short_date,
+                "_time_str": self._match_time,
+                "_date_str": self._match_short_date,
                 "am_or_pm": self._match_am_or_pm,
                 "offset_": self._match_offset,
                 "abbreviated_tz": self._match_tz_abbreviation
@@ -384,7 +384,7 @@ class DateTimeInfo:
         return None
 
     @property
-    def date_str(self):
+    def _date_str(self):
         """Returns year-month-day"""
         if (
             self.day
@@ -394,7 +394,7 @@ class DateTimeInfo:
             return f"{self.year}-{self.month}-{self.day}"
 
     @property
-    def time_str(self):
+    def _time_str(self):
         """Returns:
             - Hours:Minutes:seconds
             - Hours:Minutes:seconds.Fraction

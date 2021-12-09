@@ -112,7 +112,7 @@ def test_match_short_date(input, year_first, day_first, expected):
     config = DatetimeConfig(**config_dict)
     try:
         date_info = DateTimeInfo(input, config)
-        result = date_info.date_str
+        result = date_info._date_str
     except DatetimeParserError as e:
         result = None
 
