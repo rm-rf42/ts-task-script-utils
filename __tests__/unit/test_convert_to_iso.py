@@ -56,12 +56,14 @@ datetime_parts_padding_tests = {
 }
 
 datetime_strings_with_and_without_Z = {
+    #(input, datetime_formats_lists, expected)
     ("2021-12-13T13:00:00.1234567Z", (), "2021-12-13T13:00:00.1234567Z"),
     ("2021-12-13T13:00:00.1234567 Z", (), "2021-12-13T13:00:00.1234567Z"),
     ("2021-12-13T13:00:00.1234567", (), "2021-12-13T13:00:00.1234567"),
-    ("21-12-12T13:00:00", ("YY-MM-DDTHH:mm:ss",), "2021-12-13T13:00:00")
+    ("21-12-12T13:00:00", ("YY-MM-DDTHH:mm:ss",), "2021-12-12T13:00:00"),
+    ("21-12-12T13:00:00Z", ("YY-MM-DDTHH:mm:ssZ",), "2021-12-12T13:00:00Z"),
+    ("21-12-12T13:00:00 Z", ("YY-MM-DDTHH:mm:ss Z",), "2021-12-12T13:00:00Z")
 }
-
 
 @pytest.mark.parametrize(
     "input_, fold, expected",

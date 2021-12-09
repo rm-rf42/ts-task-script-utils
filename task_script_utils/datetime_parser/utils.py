@@ -105,7 +105,7 @@ def replace_zz_with_Z(formats: Sequence[str]):
 
 
 def from_pendulum_format(
-    string,
+    datetime_string,
     fmt,
     tz=None,
     locale=None,
@@ -114,14 +114,19 @@ def from_pendulum_format(
     Creates a DateTime instance from a specific format.
     """
     subseconds = None
-    parts = _formatter.parse(string, fmt, now(), locale=locale)
+    parts = _formatter.parse(datetime_string, fmt, now(), locale=locale)
     if parts["tz"] is None:
         parts["tz"] = tz
 
     if "microsecond" in parts:
         subseconds = parts["microsecond"]
-        if str(subseconds) not in string:
-            subseconds = int(str(subseconds).rstrip("0"))
+        sub_seconds_pattern = r"[:]{1}(\d{1,2})[.]{1}(\d+)"
+        sub_seconds_matches = re.search(sub_seconds_pattern, datetime_string)
+        if not sub_seconds_matches:
+            subseconds = None
+        else:
+            subseconds = sub_seconds_matches.groups()[1]
+
         if len(str(parts["microsecond"])) > 6:
             parts["microsecond"] = int(str(parts["microsecond"])[:6])
 
