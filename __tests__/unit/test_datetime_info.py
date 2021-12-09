@@ -6,38 +6,6 @@ from task_script_utils.datetime_parser import tz_dicts
 from task_script_utils.datetime_parser.parser_exceptions import DatetimeParserError
 
 
-datetime_configs = {
-    (None, None): {},
-    (True, None): {
-        "year_first": True,
-    },
-    (True, True): {
-        "year_first": True,
-        "day_first": True
-    },
-    (True, False): {
-        "year_first": True,
-        "day_first": False
-    },
-    (False, None): {
-        "year_first": False,
-    },
-    (False, True): {
-        "year_first": False,
-        "day_first": True
-    },
-    (False, False): {
-        "year_first": False,
-        "day_first": False
-    },
-    (None, True): {
-        "day_first": True
-    },
-    (None, False): {
-        "day_first": False
-    }
-}
-
 two_digit_date_with_config_test_cases = [
     # input, year_first, day_first, expected
     # Expected date format = YYYY-MM-DD
@@ -108,8 +76,10 @@ regex_test_cases = [
 
 @pytest.mark.parametrize("input, year_first, day_first, expected", two_digit_date_with_config_test_cases)
 def test_match_short_date(input, year_first, day_first, expected):
-    config_dict = datetime_configs[(year_first, day_first)]
-    config = DatetimeConfig(**config_dict)
+    config = DatetimeConfig(
+        year_first=year_first,
+        day_first=day_first
+    )
     try:
         date_info = DateTimeInfo(input, config)
         result = date_info._date_str

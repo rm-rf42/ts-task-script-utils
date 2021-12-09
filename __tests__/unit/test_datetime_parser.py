@@ -36,7 +36,14 @@ format_list_test_cases = {
 }
 
 parse_with_no_format_list_test_cases = {
-    **format_list_test_cases,
+    "Sunday, May 26th 2013 12:12:12 AM IST Asia/Kolkata": "2013-05-26T00:12:12+05:30",
+    "Sunday, May 26th 2013 12:12:12 AM BST": "2013-05-26T00:12:12+01:00",
+    "Sunday, May 26th 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
+    "Sunday, May 26th, 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
+    "Sunday, May 26 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
+    "Sunday, May 26 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",
+    "Sunday, May 26th 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",
+
     "1:2:32 2021-12-23 AM America/Chicago": "2021-12-23T01:02:32-06:00",
     "1:2:32 2021-12-23 AM +530": "2021-12-23T01:02:32+05:30",
     "May 26 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
@@ -52,6 +59,8 @@ parse_with_no_format_list_test_cases = {
     # Ambiguity due to unknown abbreviated tz
     # see test_parse() for tz_dict
     "Sunday, May 26th 2013 12:12:12 AM CST": None,
+    "Sunday, May 26th 2013 12:12:12 AM ZST Asia/Kolkata": None,
+
     # Missing Month
     "Sunday, 26 2013 12:12:12 AM Asia/Kolkata": None,
 }
