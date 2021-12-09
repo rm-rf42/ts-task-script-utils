@@ -442,7 +442,7 @@ class DateTimeInfo:
             and self.minutes
             and self.seconds
         ):
-            dt_str = f"{self.day}-{self.month}-{self.year}"
+            dt_str = f"{self.year}-{self.month}-{self.day}"
             dt_str += f" {self.hour}:{self.minutes}:{self.seconds}"
             if self.fractional_seconds:
                 # This property along with dt_format is used to create
@@ -486,7 +486,7 @@ class DateTimeInfo:
             hrs = "H" if len(self.hour) == 1 else "HH"
         mins = "m" if len(self.minutes) == 1 else "mm"
         seconds = "s" if len(self.seconds) == 1 else "ss"
-        fmt = f"{day}-{month}-{year} {hrs}:{mins}:{seconds}"
+        fmt = f"{year}-{month}-{day} {hrs}:{mins}:{seconds}"
 
         if self.fractional_seconds:
             # Pendulum support upto 6 fractional seconds
