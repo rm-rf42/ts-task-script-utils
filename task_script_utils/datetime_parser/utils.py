@@ -123,12 +123,12 @@ def from_pendulum_format(
         # Extract subseconds using regex
         # This subseconds becomes a part of TSDatetime
         # allows us to handle subseconds with more than 6 digits
-        sub_seconds_pattern = r"[:]{1}(\d{1,2})[.]{1}(\d+)"
+        sub_seconds_pattern = r":(\d{1,2})\.(\d+)"
         sub_seconds_matches = re.search(sub_seconds_pattern, datetime_string)
         if not sub_seconds_matches:
             subseconds = None
         else:
-            subseconds = sub_seconds_matches.groups()[1]
+            subseconds = sub_seconds_matches.group(2)
 
         # parts: dict is used to build datetime object
         # of if microseconds has more than 6 digits,
