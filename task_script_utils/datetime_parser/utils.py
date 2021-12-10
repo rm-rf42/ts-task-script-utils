@@ -120,6 +120,9 @@ def from_pendulum_format(
 
     if "microsecond" in parts:
         subseconds = parts["microsecond"]
+        # Extract subseconds using regex
+        # This subseconds becomes a part of TSDatetime
+        # allows us to handle subseconds with more than 6 digits
         sub_seconds_pattern = r"[:]{1}(\d{1,2})[.]{1}(\d+)"
         sub_seconds_matches = re.search(sub_seconds_pattern, datetime_string)
         if not sub_seconds_matches:
@@ -127,6 +130,9 @@ def from_pendulum_format(
         else:
             subseconds = sub_seconds_matches.groups()[1]
 
+        # parts: dict is used to build datetime object
+        # of if microseconds has more than 6 digits,
+        # it will be truncated to 6 digits
         if len(str(parts["microsecond"])) > 6:
             parts["microsecond"] = int(str(parts["microsecond"])[:6])
 
@@ -138,6 +144,10 @@ def from_pendulum_format(
 
 
 def replace_z_with_offset(datetime_str: str) -> str:
+    """
+    12-12-12T14:53:00Z -> 12-12-12T14:53:00+00:00
+    12-12-12T14:53:00 Z -> 12-12-12T14:53:00 +00:00
+    """
     char_list = list(datetime_str + " ")
     for idx in range(1, len(char_list)-1):
         prev_char = char_list[idx - 1]
