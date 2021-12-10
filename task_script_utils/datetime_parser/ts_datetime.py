@@ -29,7 +29,7 @@ class TSDatetime:
         if self._subseconds is None:
             return self._datetime
 
-        microseconds = int(self._subseconds)[:6]
+        microseconds = int(self._subseconds[:6])
         new_datetime = self._datetime.replace(microsecond=microseconds)
         return new_datetime
 
