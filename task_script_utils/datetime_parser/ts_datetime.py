@@ -25,7 +25,7 @@ class TSDatetime:
         return self._datetime.tzinfo
 
     @property
-    def datetime(self):
+    def __datetime(self):
         microseconds = self._subseconds[:6]
         microseconds = datetime.strptime(microseconds,"%f").microsecond
         new_datetime = self._datetime.replace(microsecond=microseconds)
