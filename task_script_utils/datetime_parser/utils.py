@@ -5,13 +5,12 @@ from itertools import product
 
 from pydash.arrays import flatten
 from pendulum import now
-from pendulum.formatting import Formatter
 from pendulum import datetime as pendulum_datetime
 
 from task_script_utils.datetime_parser.ts_datetime import TSDatetime
+from .fractional_seconds_formatter import FractionalSecondsFormatter
 
-
-_formatter = Formatter()
+_formatter = FractionalSecondsFormatter()
 
 TIME_PARTS = [
     ["h", "hh", "H", "HH"],
@@ -33,7 +32,7 @@ def get_time_formats_for_long_date(fractional_seconds):
         for tokens in product(*TIME_PARTS)
     ]
     if fractional_seconds:
-        token = "S" * len(fractional_seconds)
+        token = "SSSSSS"
         time_formats = map(lambda x: [x, f"{x}.{token}"], time_formats)
 
     time_formats = flatten(time_formats)
@@ -118,23 +117,9 @@ def from_pendulum_format(
     if parts["tz"] is None:
         parts["tz"] = tz
 
-    if "microsecond" in parts:
+    if "S" in fmt:
         subseconds = parts["microsecond"]
-        # Extract subseconds using regex
-        # This subseconds becomes a part of TSDatetime
-        # allows us to handle subseconds with more than 6 digits
-        sub_seconds_pattern = r":(\d{1,2})\.(\d+)"
-        sub_seconds_matches = re.search(sub_seconds_pattern, datetime_string)
-        if not sub_seconds_matches:
-            subseconds = None
-        else:
-            subseconds = sub_seconds_matches.group(2)
-
-        # parts: dict is used to build datetime object
-        # of if microseconds has more than 6 digits,
-        # it will be truncated to 6 digits
-        if len(str(parts["microsecond"])) > 6:
-            parts["microsecond"] = int(str(parts["microsecond"])[:6])
+        parts["microsecond"] = 0
 
     ts_date_time = TSDatetime(
         datetime_=pendulum_datetime(**parts),

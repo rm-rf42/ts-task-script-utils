@@ -26,10 +26,8 @@ class TSDatetime:
 
     @property
     def datetime(self):
-        if self._subseconds is None:
-            return self._datetime
-
-        microseconds = int(self._subseconds[:6])
+        microseconds = self._subseconds[:6]
+        microseconds = datetime.strptime(microseconds,"%f").microsecond
         new_datetime = self._datetime.replace(microsecond=microseconds)
         return new_datetime
 
