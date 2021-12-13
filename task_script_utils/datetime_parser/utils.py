@@ -1,16 +1,16 @@
+import re
 import datetime as dt
 from typing import Sequence
 from itertools import product
 
 from pydash.arrays import flatten
 from pendulum import now
-from pendulum.formatting import Formatter
 from pendulum import datetime as pendulum_datetime
 
 from task_script_utils.datetime_parser.ts_datetime import TSDatetime
+from .fractional_seconds_formatter import FractionalSecondsFormatter
 
-
-_formatter = Formatter()
+_formatter = FractionalSecondsFormatter()
 
 TIME_PARTS = [
     ["h", "hh", "H", "HH"],
@@ -32,7 +32,7 @@ def get_time_formats_for_long_date(fractional_seconds):
         for tokens in product(*TIME_PARTS)
     ]
     if fractional_seconds:
-        token = "S" * len(fractional_seconds)
+        token = "SSSSSS"
         time_formats = map(lambda x: [x, f"{x}.{token}"], time_formats)
 
     time_formats = flatten(time_formats)
@@ -104,7 +104,7 @@ def replace_zz_with_Z(formats: Sequence[str]):
 
 
 def from_pendulum_format(
-    string,
+    datetime_string,
     fmt,
     tz=None,
     locale=None,
@@ -113,19 +113,24 @@ def from_pendulum_format(
     Creates a DateTime instance from a specific format.
     """
     subseconds = None
-    parts = _formatter.parse(string, fmt, now(), locale=locale)
+    parts = _formatter.parse(datetime_string, fmt, now(), locale=locale)
     if parts["tz"] is None:
         parts["tz"] = tz
 
-    if "microsecond" in parts:
+    if "S" in fmt:
         subseconds = parts["microsecond"]
-        if str(subseconds) not in string:
-            subseconds = int(str(subseconds).rstrip("0"))
-        if len(str(parts["microsecond"])) > 6:
-            parts["microsecond"] = int(str(parts["microsecond"])[:6])
+        parts["microsecond"] = 0
 
     ts_date_time = TSDatetime(
         datetime_=pendulum_datetime(**parts),
         subseconds=subseconds
     )
     return ts_date_time
+
+
+def replace_z_with_offset(datetime_str: str) -> str:
+    """
+    12-12-12T14:53:00Z -> 12-12-12T14:53:00+00:00
+    12-12-12T14:53:00 Z -> 12-12-12T14:53:00 +00:00
+    """
+    return re.sub(r'(?<=\d|\s)Z(?=\s|$)', '+00:00', datetime_str)

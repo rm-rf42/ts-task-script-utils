@@ -121,6 +121,7 @@ def test_parse_with_formats(input, expected):
             datetime_config,
         )
     except Exception as e:
+        print(str(e))
         parsed_datetime = None
 
     if parsed_datetime is None:
@@ -158,7 +159,7 @@ def test_parse(input, expected):
     datetime_config = DatetimeConfig(**datetime_config_dict)
     try:
         parsed_datetime = parse(
-            datetime_str=input,
+            datetime_raw_str=input,
             config=datetime_config,
         )
         parsed_datetime = parsed_datetime.isoformat()

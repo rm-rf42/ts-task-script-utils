@@ -12,7 +12,7 @@ class TSDatetime:
     def __init__(
         self,
         datetime_: datetime,
-        subseconds: Optional[int] = None
+        subseconds: Optional[str] = None
     ):
         if not isinstance(datetime_, datetime):
             raise TypeError("datetime_ must be a datetime object")
@@ -26,10 +26,8 @@ class TSDatetime:
 
     @property
     def datetime(self):
-        if self._subseconds is None:
-            return self._datetime
-
-        microseconds = int(str(self._subseconds)[:6])
+        microseconds = self._subseconds[:6]
+        microseconds = datetime.strptime(microseconds,"%f").microsecond
         new_datetime = self._datetime.replace(microsecond=microseconds)
         return new_datetime
 
@@ -40,8 +38,7 @@ class TSDatetime:
 
         if self.tzinfo is not None:
             utc = pendulum.tz.UTC
-            utc_date = self._datetime
-            utc_date = utc.convert(utc_date)
+            utc_date = utc.convert(self._datetime)
             iso_8601 = utc_date.format(minimal_format)
             if self._subseconds is not None:
                 iso_8601 = f"{iso_8601}.{self._subseconds}"
