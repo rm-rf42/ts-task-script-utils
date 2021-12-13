@@ -133,16 +133,4 @@ def replace_z_with_offset(datetime_str: str) -> str:
     12-12-12T14:53:00Z -> 12-12-12T14:53:00+00:00
     12-12-12T14:53:00 Z -> 12-12-12T14:53:00 +00:00
     """
-    char_list = list(datetime_str + " ")
-    for idx in range(1, len(char_list)-1):
-        prev_char = char_list[idx - 1]
-        current_char = char_list[idx]
-        next_char = char_list[idx + 1]
-        if (
-            (prev_char.isdigit() or prev_char.isspace())
-            and current_char == "Z"
-            and next_char.isspace()
-
-        ):
-            char_list[idx] = "+00:00"
-    return "".join(char_list[:-1])
+    return re.sub(r'(?<=\d|\s)Z(?=\s|$)', '+00:00', datetime_str)
