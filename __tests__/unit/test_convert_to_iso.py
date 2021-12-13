@@ -47,7 +47,7 @@ fractional_seconds_test_cases = {
     ("2021-11-07T04:30:00.1234567 America/New_York", '2021-11-07T09:30:00.1234567Z'),
 }
 
-datetime_parts_padding_tests = {
+datetime_with_config_tests = {
     # input, year_first, day_first, expected(TS datetime format)
     ("01/02/03T04:30:00 America/New_York", False, True, "2003-02-01T09:30:00Z"),
     ("01/02/3T04:30:00 America/New_York", False, True, "2003-02-01T09:30:00Z"),
@@ -132,7 +132,7 @@ def test_convert_to_iso_with_fractional_seconds(input_, expected):
 
 @pytest.mark.parametrize(
     "input_, year_first, day_first, expected",
-    datetime_parts_padding_tests
+    datetime_with_config_tests
 )
 def test_convert_to_ts_format_for_padding(input_, year_first, day_first, expected):
     config = DatetimeConfig(
