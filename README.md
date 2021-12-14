@@ -11,6 +11,7 @@ Utility functions for Tetra Task Scripts
   - [DatetimeConfig](#datetimeconfig)
   - [Datetime format resolution matrix](#datetime-format-resolution-matrix)
   - [Format Tokens](#format-tokens)
+  - [Limitations](#limitations)
 - [Test](#test)
 
 ## Installation
@@ -136,6 +137,11 @@ The following tokens are currently supported:
 | **Milliseconds timestamp** | x      | 1234567890123                     |
 
 **Note: If `zz` token is used in format string, passing `tz_dict` is a must.**
+
+### Limitations
+
+1. It is not possible to parse just dates or just times alone.
+   eg.`parse('2021-12-08')` or `parse('2021-12-08')` will raise `InvalidDateError`
 
 ## Test
 
