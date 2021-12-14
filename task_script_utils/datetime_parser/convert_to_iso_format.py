@@ -20,7 +20,7 @@ def convert_to_ts_iso8601(
         These datetime formats must be built using `pendulum` datetime tokens.
         Defaults to [].
         config (DatetimeConfig, optional): Datetime Configuration.
-        Defaults to DatetimeCoonfig().
+        Defaults to DatetimeConfig().
 
     Returns:
         str: IS08691 datetime string

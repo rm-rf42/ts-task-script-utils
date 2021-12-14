@@ -19,12 +19,13 @@ from .utils import get_time_formats_for_long_date
 
 
 class DateTimeInfo:
-    """This class performs two function:
-    1. If the datetime string passed is a short datetime string, it tries to parse
+    """This class performs two functions:
+    1. If the datetime string passed is short, it tries to parse
     it using regex and `DatetimeConfig`. If parsing failed or it can not detect date and
-    time with confidence, an Exception will be raise otherwise `datetime` property will
-    return the parsed `datetime` object
-    2. If the datetime string passed is a long date time format, It will detect the formatting
+    time with confidence, an Exception will be raised. The parsed `datetime` object can be
+    accessed via `DatetimeInfo.datetime
+
+    2. If the datetime string passed is a long, It will detect the formatting
     tokens and their relative position in order to build a list datetime format that can be used
     to parse the datetime string. eg for "Sunday, May 26th 2013 12:12:12 AM IST Asia/Kolkata",
     `_parse_long_date_formats()` will detect token used are `DDDD`, `MMM` and `Do` and also that
@@ -59,12 +60,6 @@ class DateTimeInfo:
     def __str__(self):
         return json.dumps(self.__dict__, indent=2)
 
-    def parse_time(self):
-        matchers = {
-            "time_str": self._match_time,
-        }
-        self._parse(matchers)
-
     def _parse(self, matchers):
         tokens = self.date_time_raw.split()
         for token in tokens:
@@ -94,7 +89,7 @@ class DateTimeInfo:
         self._validate_meridiem()
 
     def _get_matchers_map(self, long_date_formats=False):
-        """It creates a `dict` that maps parsing functions to instance
+        """It returns a `dict` that maps parsing functions to instance
         variable that should store the result.
         """
         if not long_date_formats:
@@ -466,7 +461,7 @@ class DateTimeInfo:
     def dt_format(self):
         """Build datetime format using pendulum tokens.
         This property along with `dtstamp` property can be used
-        to parse date using `pendulum.from_format`
+        to parse date using `pendulum.from_format`.
 
         Returns:
             str: A datetime format build using pendulum formatting
@@ -604,8 +599,6 @@ class DateTimeInfo:
         return day, month, year
 
     def _process_two_digit_date_pattern(self, date_parts):
-
-
         if self.config.year_first is True:
             if self.config.day_first is True:
                 # Input = YY-DD-MM

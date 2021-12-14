@@ -1,11 +1,11 @@
 from pendulum.formatting import Formatter
 
 class FractionalSecondsFormatter(Formatter):
-    """We override microseconds token in _PARSE_TOKENS in this class.
-    So that, Formatter.parse() will match and return dict with microsecond
-    as string. This allow us to catch fractional seconds of any number of digits
-    such as '000123000' with leading and trailing zeros intact as the value of
-    microsecond key.
+    """`FractionalSecondsFormatter` override microseconds token in _PARSE_TOKENS
+    `pendulum.formatting.Formatter`So that, Formatter.parse() will match and
+    return dict with microsecond as string. This allow us to catch fractional
+    seconds of any number of digits such as '000123000' with leading and trailing
+    zeros intact as microseconds.
 
     """
     _PARSE_TOKENS = {

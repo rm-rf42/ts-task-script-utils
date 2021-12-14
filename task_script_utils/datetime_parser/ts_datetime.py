@@ -26,13 +26,17 @@ class TSDatetime:
 
     @property
     def datetime(self):
+        """Return a new `datetime` object after replacing `microseconds`
+        with `self._subseconds` in `self._datetime`.
+        `subseconds` needs to be truncated to 6 digits
+        """
         microseconds = self._subseconds[:6]
         microseconds = datetime.strptime(microseconds,"%f").microsecond
         new_datetime = self._datetime.replace(microsecond=microseconds)
         return new_datetime
 
     def tsformat(self):
-        """Returns datetime string in Tetrascience DateTime
+        """Returns datetime string in Tetrascience's ISO8601 DateTime
         format"""
         minimal_format = "YYYY-MM-DDTHH:mm:ss"
 
