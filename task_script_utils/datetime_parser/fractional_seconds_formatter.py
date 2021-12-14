@@ -6,7 +6,6 @@ class FractionalSecondsFormatter(Formatter):
     return dict with microsecond as string. This allow us to catch fractional
     seconds of any number of digits such as '000123000' with leading and trailing
     zeros intact as microseconds.
-
     """
     _PARSE_TOKENS = {
         "YYYY": lambda year: int(year),

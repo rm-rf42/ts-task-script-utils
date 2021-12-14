@@ -14,8 +14,8 @@ formats_list = [
     "dddd, MMMM Do YYYY hh:mm:ss A zz",
     "dddd, MMMM DD YYYY hh:mm:ss A z",
     "dddd, MMMM Do, YYYY hh:mm:ss A z",
-    "dddd, MMMM DD YYYY hh:mm:ss.SSSSSS A z",
-    "dddd, MMMM Do, YYYY hh:mm:ss.SSSSSS A z",
+    "dddd, MMMM DD YYYY hh:mm:ss.S A z",
+    "dddd, MMMM Do, YYYY hh:mm:ss.S A z",
 
 ]
 
