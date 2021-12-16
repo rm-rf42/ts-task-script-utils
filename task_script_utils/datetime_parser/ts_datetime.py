@@ -30,6 +30,9 @@ class TSDatetime:
         with `self._subseconds` in `self._datetime`.
         `subseconds` needs to be truncated to 6 digits
         """
+        if self._subseconds is None:
+            return self._datetime
+
         microseconds = self._subseconds[:6]
         microseconds = datetime.strptime(microseconds,"%f").microsecond
         new_datetime = self._datetime.replace(microsecond=microseconds)
