@@ -182,11 +182,11 @@ class DateTimeInfo:
             )
         if not (0 <= int(minutes) <= 60):
             time_errors.append(
-                f"Invalid time : {minutes}. Minutes value must be between 0 and 24"
+                f"Invalid time : {minutes}. Minutes value must be between 0 and 60"
             )
         if not (0 <= int(seconds) <= 60):
             time_errors.append(
-                f"Invalid time : {seconds}. Seconds value must be between 0 and 24"
+                f"Invalid time : {seconds}. Seconds value must be between 0 and 60"
             )
 
         if time_errors:
