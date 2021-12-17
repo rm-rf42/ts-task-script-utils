@@ -8,11 +8,7 @@ VERSION = "1.0.1"
 with open("README.md", "r") as readme_file:
     readme = readme_file.read()
 
-requirements = [
-    "numpy>=1.20.1",
-    "arrow>=1.0.2",
-    "dateparser>=1.0.0"
-]
+requirements = ["numpy>=1.20.1", "arrow>=1.0.2", "dateparser>=1.0.0"]
 
 setup(
     name=NAME,
@@ -30,8 +26,8 @@ setup(
     include_package_data=True,
     long_description=readme,
     long_description_content_type="text/markdown",
-    python_requires='>=3.7',
-    license='Apache License 2.0',
+    python_requires=">=3.7",
+    license="Apache License 2.0",
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: Apache Software License",

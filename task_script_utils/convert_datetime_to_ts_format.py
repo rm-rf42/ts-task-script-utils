@@ -5,20 +5,20 @@ from dateutil import tz
 def convert_datetime_to_ts_format(
     datetime, datetime_format: str = "", timezone: str = ""
 ):
-    """ Convert datetime to TetraScience standard: ISO-8601 in milliseconds in UTC if timezone is available
-    
-        Inputs:
-            datetime - raw datetime
-            datetime_format - raw datetime format (must follow https://arrow.readthedocs.io/en/stable/#format)
-            timezone - user-defined timezone. If the user specify an timezone, it will overwrite the timezone extracted from the raw datetime. It can be either string (i.e. "GMT-5") or a timezone type recognized by the arrow.get function.
-            
+    """Convert datetime to TetraScience standard: ISO-8601 in milliseconds in UTC if timezone is available
 
-        Output:
-            Datetime string in ISO-8601 with millisecond precision. If timezone is defined, it will be in UTC indicated by 'Z'.
-                
-            Examples:
-            If timezone is defined: "2019-07-17T14:21:00.000Z"
-            If timezone is not defined: "2019-07-17T11:21:00.000"
+    Inputs:
+        datetime - raw datetime
+        datetime_format - raw datetime format (must follow https://arrow.readthedocs.io/en/stable/#format)
+        timezone - user-defined timezone. If the user specify an timezone, it will overwrite the timezone extracted from the raw datetime. It can be either string (i.e. "GMT-5") or a timezone type recognized by the arrow.get function.
+
+
+    Output:
+        Datetime string in ISO-8601 with millisecond precision. If timezone is defined, it will be in UTC indicated by 'Z'.
+
+        Examples:
+        If timezone is defined: "2019-07-17T14:21:00.000Z"
+        If timezone is not defined: "2019-07-17T11:21:00.000"
     """
 
     if datetime_format:
