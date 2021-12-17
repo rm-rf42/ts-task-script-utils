@@ -580,7 +580,13 @@ class DateTimeInfo:
         elif self.config.day_first is False:
             month, day = others
         else:
-            day, month = self._process_day_and_month(others)
+            # if day_first is None
+            if year_first:
+                month, day = others[0], others[1]
+                if int(month) > 12:
+                    month, day = day, month
+            else:
+                day, month = self._process_day_and_month(others)
 
         # Validate day, year, month
         try:
