@@ -12,7 +12,7 @@ def check_file_type(filename: str, expected_type: typing.Union[str, list]):
     """
     # get the extension from filename
 
-    extension = filename.rstrip().split('.')[-1].lower()
+    extension = filename.rstrip().split(".")[-1].lower()
     try:
         if type(expected_type) == str:
             # lower case both the extension and expected_type, do a string match
@@ -20,6 +20,8 @@ def check_file_type(filename: str, expected_type: typing.Union[str, list]):
         elif type(expected_type) == list:
             assert extension in [file_type.lower() for file_type in expected_type]
         else:
-            raise ValueError(f'expected string or list but received {expected_type}')
+            raise ValueError(f"expected string or list but received {expected_type}")
     except AssertionError:
-        sys.exit(f"The pipeline is expecting the file type to be {expected_type}, but the provided file has a file type of {extension}.")
+        sys.exit(
+            f"The pipeline is expecting the file type to be {expected_type}, but the provided file has a file type of {extension}."
+        )
