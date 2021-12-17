@@ -15,4 +15,5 @@ jobs:
     - name: Black
       run: |
         python -m pip install black
+        black --version
         black --check .
