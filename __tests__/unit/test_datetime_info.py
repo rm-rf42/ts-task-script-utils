@@ -33,7 +33,7 @@ two_digit_date_with_config_test_cases = [
     ("2021.11.07", None, False,'2021-11-07'),
     ("2021/11/07", None, True,'2021-07-11'),
     ("11\\12\\2021", None, True, "2021-12-11"),
-    ("2021/11/07", None, None, None),
+    ("2021/11/07", None, None, "2021-11-07"),
     ("2021/32/07", None, True, None),
     ("2021/11/14", None, True, None),
     ("2021.11.7", None, False,'2021-11-07')
