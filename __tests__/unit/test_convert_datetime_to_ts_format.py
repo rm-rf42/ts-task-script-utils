@@ -1,6 +1,8 @@
 import sys
 from dateutil import tz
-from task_script_utils.convert_datetime_to_ts_format import convert_datetime_to_ts_format
+from task_script_utils.convert_datetime_to_ts_format import (
+    convert_datetime_to_ts_format,
+)
 
 
 def test_no_timezone():
@@ -80,4 +82,3 @@ def test_bad_timezone():
     except:
         exc_info = sys.exc_info()
         assert exc_info[0] == TypeError
-
