@@ -79,11 +79,21 @@ A `DatetimeConfig` object has following attributes:
 
 ### Datetime format resolution matrix
 
+#### Two digit date parts
+
 | day_first(down)/ year_first | True     | False                  | None                                 |
 | --------------------------- | -------- | ---------------------- | ------------------------------------ |
 | **True**                    | YY-DD-MM | DD-MM-YY               | DD-MM-YY                             |
 | **False**                   | YY-MM-DD | MM-DD-YY               | YY-MM-DD <br> MM-DD-YY               |
 | **None**                    | YY-MM-DD | MM-DD-YY <br> DD-MM-YY | MM-DD-YY <br> DD-MM-YY <br> YY-MM-DD |
+
+#### When year has four digits
+
+| day_first(down)/ year_first | True     | False                      |
+| --------------------------- | -------- | -------------------------- |
+| **True**                    | YY-DD-MM | DD-MM-YY                   |
+| **False**                   | YY-MM-DD | MM-DD-YY                   |
+| **None**                    | YY-MM-DD | MM-DD-YYYY <br> DD-MM-YYYY |
 
 ### Format Tokens
 
@@ -122,12 +132,7 @@ The following tokens are currently supported:
 |                            | m      | 0, 1, 2 ... 58, 59                |
 | **Second**                 | ss     | 00, 01, 02 ... 58, 59             |
 |                            | s      | 0, 1, 2 ... 58, 59                |
-| **Fractional Second**      | S      | 0 1 ... 8 9                       |
-|                            | SS     | 00, 01, 02 ... 98, 99             |
-|                            | SSS    | 000 001 ... 998 999               |
-|                            | SSSS   | 0000 0001 ... 9998 9999           |
-|                            | SSSSS  | 00000 00001 ... 99998 99999       |
-|                            | SSSSSS | 000000 000001 ... 999998 999999   |
+| **Fractional Second**      | SSSSSS | All fractional digits             |
 | **AM / PM**                | A      | AM, PM                            |
 | **Timezone**               | Z      | -07:00, -06:00 ... +06:00, +07:00 |
 |                            | ZZ     | -0700, -0600 ... +0600, +0700     |

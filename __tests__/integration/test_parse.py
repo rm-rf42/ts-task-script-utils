@@ -42,10 +42,10 @@ two_digits_date_cases_with_year_first = [
     ("12-12-13T12:12:12Z", True, None, "2012-12-13T12:12:12+00:00"),
     ("21-11-12T12:12:12Z", True, None, "2021-11-12T12:12:12+00:00"),
     ("21-11-12T12:12:12Z", False, None, "2012-11-21T12:12:12+00:00"),
+    ("12-13-12T12:12:12Z", True, None, "2012-12-13T12:12:12+00:00"),
 
     # Ambiguous Case
     ("12-11-12T12:12:12Z", False, None, None),
-    ("12-13-12T12:12:12Z", True, None, None),
 ]
 
 two_digits_date_cases_with_day_first = [

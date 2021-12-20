@@ -609,9 +609,15 @@ class DateTimeInfo:
             if self.config.day_first is True:
                 # Input = YY-DD-MM
                 year, day, month = date_parts
+            elif self.config.day_first is False:
+                # Input = YY-MM-DD
+                year, month, day = date_parts
             else:
                 # Input = YY-MM-DD
                 year, month, day = date_parts
+                if int(month)>12:
+                    month, day = day, month
+
         elif self.config.year_first is False:
             if self.config.day_first is True:
                 # Input = DD-MM-YY
