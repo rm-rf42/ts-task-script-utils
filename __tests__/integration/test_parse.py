@@ -29,7 +29,7 @@ four_digit_year_with_day_first_test_cases = [
 
     # Ambiguous / Error Cases
     ("2021-12-13T12:12:12 America/Chicago", None, True, None),
-    ("2021-13-13T12:12:12 America/Chicago", None, False, None),
+    ("2021-13-12T12:12:12 America/Chicago", None, False, None),
     ("2021-12-32T12:12:12 America/Chicago", None, False, None),
     ("13-12-2002T12:12:12 America/Chicago", None, False, None),
     ("12-32-2002T12:12:12 America/Chicago", None, False, None),

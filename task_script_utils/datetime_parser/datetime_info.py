@@ -617,6 +617,9 @@ class DateTimeInfo:
                 year, month, day = date_parts
                 if int(month)>12:
                     month, day = day, month
+                # At this point both month and day
+                # could have improper values, eg day=42 and month=16
+                # This is validate later below in this function.
 
         elif self.config.year_first is False:
             if self.config.day_first is True:
