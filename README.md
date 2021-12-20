@@ -79,21 +79,24 @@ A `DatetimeConfig` object has following attributes:
 
 ### Datetime format resolution matrix
 
-#### Two digit date parts
+***Two digit date parts***
 
-| day_first(down)/ year_first | True     | False                  | None                                 |
-| --------------------------- | -------- | ---------------------- | ------------------------------------ |
-| **True**                    | YY-DD-MM | DD-MM-YY               | DD-MM-YY                             |
-| **False**                   | YY-MM-DD | MM-DD-YY               | YY-MM-DD <br> MM-DD-YY               |
-| **None**                    | YY-MM-DD | MM-DD-YY <br> DD-MM-YY | MM-DD-YY <br> DD-MM-YY <br> YY-MM-DD |
+| day_first(down)/ year_first | True                   | False                  | None                                 |
+| --------------------------- | ---------------------- | ---------------------- | ------------------------------------ |
+| **True**                    | YY-DD-MM               | DD-MM-YY               | DD-MM-YY                             |
+| **False**                   | YY-MM-DD               | MM-DD-YY               | YY-MM-DD <br> MM-DD-YY               |
+| **None**                    | YY-MM-DD <br> YY-DD-MM | MM-DD-YY <br> DD-MM-YY | MM-DD-YY <br> DD-MM-YY <br> YY-MM-DD |
 
-#### When year has four digits
+***Year has four digits***
 
-| day_first(down)/ year_first | True     | False                      |
-| --------------------------- | -------- | -------------------------- |
-| **True**                    | YY-DD-MM | DD-MM-YY                   |
-| **False**                   | YY-MM-DD | MM-DD-YY                   |
-| **None**                    | YY-MM-DD | MM-DD-YYYY <br> DD-MM-YYYY |
+When the year has four digits, then whether `year_first` is `true` or `false`, is decided by regex parsing done by `DatetimeInfo`.
+In this case the value of `DatetimeConfig.year_first` is ignored. Only `DatetimeInfo.day_first` is taken into account.
+
+| day_first(down)/ year_first | True                       | False                      |
+| --------------------------- | -------------------------- | -------------------------- |
+| **True**                    | YYYY-DD-MM                 | DD-MM-YYYY                 |
+| **False**                   | YYYY-MM-DD                 | MM-DD-YYYY                 |
+| **None**                    | YYYY-MM-DD <br> YYYY-DD-MM | MM-DD-YYYY <br> DD-MM-YYYY |
 
 ### Format Tokens
 
