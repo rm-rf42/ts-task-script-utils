@@ -39,15 +39,20 @@ convert_to_ts_iso8601("2004-12-23T12:30 AM +05:30", <format_list>, <datetime_con
 
 ### DatetimeConfig
 
+DatetimeConfig is used to provide complementary information that helps
+to parse datetime
+
 ```python
 from task_script_utils.datetime_parser import DatetimeConfig
 ```
 
 A `DatetimeConfig` object has following attributes:
 
-- `day_first`: `True/False/None`
-- `year_first`: `True/False/None`
-- `tz_dict`: a `dict` mapping abbreviated_tz to offset value
+- `day_first: Optional[bool]`: `True/False`. Defaults to `None`
+  - Whether to interpret the first value in an ambiguous 3-integer date (e.g. 01/05/09) as the day (True) or month (False).
+- `year_first: Optional[bool]`: `True/False`. Defaults to `None`
+  - Whether to interpret the first value in an ambiguous 3-integer date (e.g. 01/05/09) as the year.
+- `tz_dict: Optional[dict]`: a `dict` mapping abbreviated_tz to offset value. Defaults to `empty dict`.
 
 ```python
   sample_tz_dict = {
@@ -71,7 +76,7 @@ A `DatetimeConfig` object has following attributes:
   }
 ```
 
-- `fold`: `0`, `1` or `None`.
+- `fold: Optional[int]`: `0`, `1`. Defaults to `None`.
   - It is required during the 2 hour window when clocks are set back in a timezone which keeps track of daylight savings (such as IANA timezones like `Europe/London`).
   - The allowed values for the fold attribute will be 0 and 1 with 0 corresponding to the earlier and 1 to the later of the two possible readings of an ambiguous local time.
   - If fold is `None`, Parser will check if `fold` is needed or not to parse the time with no ambiguity.
