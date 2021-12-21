@@ -130,6 +130,7 @@ task_script_utils.datetime_parser.parser_exceptions.OffsetNotKnownError: Offset 
 # Similar to example above, an exception will be raised if DatetimeConfig.tz_dict doesn't contain the abbreviated tz.
 
 ```
+
 ## Ambiguous Dates
 
 If `formats_list` doesn't contain a match or is not passed, `parse` will use regex to parse the raw datetime string.
@@ -169,30 +170,22 @@ Following resolution matrix specifies the possible datetime formats depending on
 Consider the examples below:
 | `datetime_raw_str` | `year_first` | `day_first` | `result (year-month-day)`|
 | ------------------ | -------------| ----------- |---------|
-| 01/2/3 04:03:00 | None | None | Couldn't parse |
-| 13/02/03 04:03:00 | None | None | Couldn't parse |
 | 2021/11/07 04:03:00 | None | None | 2021-11-07T09:03:00Z |
-| 2021/32/07 04:03:00 | None | True | Couldn't parse |
-| 2021/11/14 04:03:00 | None | True | Couldn't parse |
 | 2021/11/07 04:03:00 | None | True | 2021-07-11T08:03:00Z |
 | 11\12\2021 04:03:00 | None | True | 2021-12-11T09:03:00Z |
-| 01/15/11 04:03:00 | None | True | Couldn't parse |
 | 13/02/03 04:03:00 | None | True | 2003-02-13T09:03:00Z |
 | 01/02/03 04:03:00 | None | True | 2003-02-01T09:03:00Z |
-| 01/02/03 04:03:00 | None | False | Couldn't parse |
 | 12/13/03 04:03:00 | None | False | 2003-12-13T09:03:00Z |
 | 13-02-03 04:03:00 | None | False | 2013-02-03T09:03:00Z |
 | 2021.11.7 04:03:00 | None | False | 2021-11-07T09:03:00Z |
 | 2021.11.07 04:03:00.00045000 | None | False | 2021-11-07T09:03:00.00045000Z |
 | 01/02/03 04:03:00.0 | True | None | 2001-02-03T09:03:00.0Z |
 | 13/02/03 04:03:00 | True | None | 2013-02-03T09:03:00Z |
-| 01/02/03 04:03:00 | False | None | Couldn't parse |
 | 13/2/03 04:03:00 | False | None | 2003-02-13T09:03:00Z |
 | 01/02/03 04:03:00 | True | True | 2001-03-02T09:03:00Z |
 | 13/02/03 04:03:00 | True | True | 2013-03-02T09:03:00Z |
 | 1/02/03 04:03:00 | True | False | 2001-02-03T09:03:00Z |
 | 13/02/03 04:03:00 +05:30 | True | False | 2013-02-02T22:33:00Z |
-| 01/15/11 04:03:00 | True | False | Couldn't parse |
 | 01/02/03T04:30:00 | False | True | 2003-02-01T09:30:00Z |
 | 01/02/3T04:30:00 | False | True | 2003-02-01T09:30:00Z |
 | 1/2/3T4:30:00 | False | True | 2003-02-01T09:30:00Z |
@@ -201,4 +194,16 @@ Consider the examples below:
 | 01/02/03 04:03:00 | False | True | 2003-02-01T09:03:00Z |
 | 13/2/03 04:03:00.43500 | False | True | 2003-02-13T09:03:00.43500Z |
 | 01/02/03 04:03:00 | False | False | 2003-01-02T09:03:00Z |
-| 13/02/3 04:03:00 | False | False | Couldn't parse |
+
+<br/>
+
+Defining `year_first` and `day_first` in `DatetimeConfig`, doesn't always guarantee a valid parse. Consider the examples below.
+
+| `datetime_raw_str`  | `year_first` | `day_first` | `possible formats` | `error`                                                                                     |
+| ------------------- | ------------ | ----------- | ------------------ | ------------------------------------------------------------------------------------------- |
+| 13/02/3 04:03:00    | False        | False       | MDY                | **InvalidDateError**: month must be in 1..12                                                |
+| 2021/32/07 04:03:00 | None         | True        | DMY                | **InvalidDateError**: day is out of range for month, date=('2021', '32', '07')              |
+| 2021/11/14 04:03:00 | None         | True        | DMY                | **InvalidDateError**: month must be in 1..12,                                               |
+| 01/02/03 04:03:00   | None         | False       | YMD/MDY            | **AmbiguousDateError**: Ambiguous date:01-02-03, possible formats: ('MM-DD-YY', 'YY-MM-DD') |
+| 01/02/03 04:03:00   | False        | None        | MDY/DMY            | **AmbiguousDateError**: Can't decide day and month between: ('01', '02')                    |
+| 01/15/11 04:03:00   | True         | False       | YMD                | **InvalidDateError**: month must be in 1..12                                                |
