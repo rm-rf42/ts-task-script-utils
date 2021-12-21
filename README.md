@@ -82,26 +82,22 @@ A `DatetimeConfig` object has following attributes:
   - If fold is `None`, Parser will check if `fold` is needed or not to parse the time with no ambiguity.
   - `AmbiguousFoldError` will be raised if `fold` is needed.
 
-### Datetime format resolution matrix
+### Datetime format resolution
 
-***Two digit date parts***
-
-| day_first(down)/ year_first | True                   | False                  | None                                 |
-| --------------------------- | ---------------------- | ---------------------- | ------------------------------------ |
-| **True**                    | YY-DD-MM               | DD-MM-YY               | DD-MM-YY                             |
-| **False**                   | YY-MM-DD               | MM-DD-YY               | YY-MM-DD <br> MM-DD-YY               |
-| **None**                    | YY-MM-DD <br> YY-DD-MM | MM-DD-YY <br> DD-MM-YY | MM-DD-YY <br> DD-MM-YY <br> YY-MM-DD |
-
-***Year has four digits***
+| year_first | day_first | possible formats                                       |
+| ---------- | --------- | ------------------------------------------------------ |
+| True       | True      | year-day-month                                         |
+| True       | False     | year-month-day                                         |
+| True       | None      | year-month-day <br> year-day-month                     |
+| False      | False     | month-day-year                                         |
+| False      | True      | day-month-year                                         |
+| False      | None      | month-day-year <br> day-month-year                     |
+| None       | True      | day-month-year                                         |
+| None       | False     | year-month-day <br> month-day-year                     |
+| None       | None      | month-day-year <br> day-month-year <br> year-month-day |
 
 When the year has four digits, then whether `year_first` is `true` or `false`, is decided by regex parsing done by `DatetimeInfo`.
 In this case the value of `DatetimeConfig.year_first` is ignored. Only `DatetimeInfo.day_first` is taken into account.
-
-| day_first(down)/ year_first | True                       | False                      |
-| --------------------------- | -------------------------- | -------------------------- |
-| **True**                    | YYYY-DD-MM                 | DD-MM-YYYY                 |
-| **False**                   | YYYY-MM-DD                 | MM-DD-YYYY                 |
-| **None**                    | YYYY-MM-DD <br> YYYY-DD-MM | MM-DD-YYYY <br> DD-MM-YYYY |
 
 ### Format Tokens
 
