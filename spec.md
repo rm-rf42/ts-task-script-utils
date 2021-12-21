@@ -1,13 +1,14 @@
 ## Datetime Parser
 
-`taskscript_utils.datetime_parser` exposes `parse()` methods for parsing string datetimes.
-The `parse()` accepts following arguements:
+`taskscript_utils.datetime_parser` exposes `parse()` and `convert_to_ts_iso8601()` methods for parsing string datetimes.
+
+The `parse()` returns a `TSDatetime` object and accepts following arguements:
 
 - `datetime_raw_str: str`: raw datetime string to be parsed.
 - `formats_list (Sequence[str], optional)`: You can optionally pass a list of formats to try to parse datetime string. If `datetime_raw_str` doesn't matches with any format, the datetime parser will still try to parse `datetime_raw_str` with other methods such as using regex and trying long datetime format
 - `config (DatetimeConfig, optional)`: You also have an options to pass `DatetimeConfig`. It provides complementary information on how to mark parsed digits as day, month or year and also provide an options to handle abbreviated time zones and fold for parsing ambiguous timestamps during daylight saving transitions. Ideally, DatetimeConfig should be constructed from pipeline configuration passed to task scripts
 
-`pares()` returns a `TSDatetime` object.
+The `convert_to_ts_iso8601()` uses `parse()` internally to return parsed datetime in Tetrascience's ISO8601 format. It also accepts same arguments as that of `parse()`
 
 ## Limitations
 
@@ -107,6 +108,14 @@ The only way to parse timestamps(if parse-able) is by passing `DatetimeConfig` o
 '2021-12-25T00:00:00+05:30'
 >>> result.tsformat()
 '2021-12-24T18:30:00Z'
+
+# An exception will be raised if DatetimeConfig.tz_dict doesn't contain the abbreviated tz
+result = parse("2021-12-12 14:15:16 BRST", config=dt_config)
+'''
+Traceback (most recent call last):
+...
+task_script_utils.datetime_parser.parser_exceptions.OffsetNotKnownError: Offset value not known for 'BRST'
+'''
 ```
 
 `"Z"` can be used as token for capturing abbreviated timezones when using datetime_formats to prase the raw datetime string. Even in this case, for successful parsing, `DatetimeConfig.tz_dict` is required
@@ -118,12 +127,9 @@ The only way to parse timestamps(if parse-able) is by passing `DatetimeConfig` o
 >>> result = parse("2021-12-12 14:15:16 CST", formats_list=dt_formats_list, config=dt_config)
 >>> result.isoformat()
 '2021-12-12T14:15:16-06:00'
+# Similar to example above, an exception will be raised if DatetimeConfig.tz_dict doesn't contain the abbreviated tz.
 
 ```
-## Regex Parsing
-
-WIP
-
 ## Ambiguous Dates
 
 If `formats_list` doesn't contain a match or is not passed, `parse` will use regex to parse the raw datetime string.
@@ -163,30 +169,30 @@ Following resolution matrix specifies the possible datetime formats depending on
 Consider the examples below:
 | `datetime_raw_str` | `year_first` | `day_first` | `result (year-month-day)`|
 | ------------------ | -------------| ----------- |---------|
-| 01/2/3 04:03:00 | None | None | None |
-| 13/02/03 04:03:00 | None | None | None |
+| 01/2/3 04:03:00 | None | None | Couldn't parse |
+| 13/02/03 04:03:00 | None | None | Couldn't parse |
 | 2021/11/07 04:03:00 | None | None | 2021-11-07T09:03:00Z |
-| 2021/32/07 04:03:00 | None | True | None |
-| 2021/11/14 04:03:00 | None | True | None |
+| 2021/32/07 04:03:00 | None | True | Couldn't parse |
+| 2021/11/14 04:03:00 | None | True | Couldn't parse |
 | 2021/11/07 04:03:00 | None | True | 2021-07-11T08:03:00Z |
 | 11\12\2021 04:03:00 | None | True | 2021-12-11T09:03:00Z |
-| 01/15/11 04:03:00 | None | True | None |
+| 01/15/11 04:03:00 | None | True | Couldn't parse |
 | 13/02/03 04:03:00 | None | True | 2003-02-13T09:03:00Z |
 | 01/02/03 04:03:00 | None | True | 2003-02-01T09:03:00Z |
-| 01/02/03 04:03:00 | None | False | None |
+| 01/02/03 04:03:00 | None | False | Couldn't parse |
 | 12/13/03 04:03:00 | None | False | 2003-12-13T09:03:00Z |
 | 13-02-03 04:03:00 | None | False | 2013-02-03T09:03:00Z |
 | 2021.11.7 04:03:00 | None | False | 2021-11-07T09:03:00Z |
 | 2021.11.07 04:03:00.00045000 | None | False | 2021-11-07T09:03:00.00045000Z |
 | 01/02/03 04:03:00.0 | True | None | 2001-02-03T09:03:00.0Z |
 | 13/02/03 04:03:00 | True | None | 2013-02-03T09:03:00Z |
-| 01/02/03 04:03:00 | False | None | None |
+| 01/02/03 04:03:00 | False | None | Couldn't parse |
 | 13/2/03 04:03:00 | False | None | 2003-02-13T09:03:00Z |
 | 01/02/03 04:03:00 | True | True | 2001-03-02T09:03:00Z |
 | 13/02/03 04:03:00 | True | True | 2013-03-02T09:03:00Z |
 | 1/02/03 04:03:00 | True | False | 2001-02-03T09:03:00Z |
 | 13/02/03 04:03:00 +05:30 | True | False | 2013-02-02T22:33:00Z |
-| 01/15/11 04:03:00 | True | False | None |
+| 01/15/11 04:03:00 | True | False | Couldn't parse |
 | 01/02/03T04:30:00 | False | True | 2003-02-01T09:30:00Z |
 | 01/02/3T04:30:00 | False | True | 2003-02-01T09:30:00Z |
 | 1/2/3T4:30:00 | False | True | 2003-02-01T09:30:00Z |
@@ -195,4 +201,4 @@ Consider the examples below:
 | 01/02/03 04:03:00 | False | True | 2003-02-01T09:03:00Z |
 | 13/2/03 04:03:00.43500 | False | True | 2003-02-13T09:03:00.43500Z |
 | 01/02/03 04:03:00 | False | False | 2003-01-02T09:03:00Z |
-| 13/02/3 04:03:00 | False | False | None |
+| 13/02/3 04:03:00 | False | False | Couldn't parse |
