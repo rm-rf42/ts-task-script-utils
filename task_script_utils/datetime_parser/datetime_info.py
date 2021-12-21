@@ -16,6 +16,7 @@ from pendulum.locales.en import locale
 from .parser_exceptions import *
 from .datetime_config import DatetimeConfig
 from .utils import get_time_formats_for_long_date
+from .tz_list import _all_abbreviated_tz_list
 
 
 class DateTimeInfo:
@@ -336,11 +337,8 @@ class DateTimeInfo:
             Union[str, None]: string like CST/EST etc if a
             match is found else None
         """
-        if not self.config.tz_dict_seconds:
-            return None
-        for tz in self.config.tz_dict_seconds.keys():
-            if tz == token.upper():
-                return tz
+        if token.upper() in _all_abbreviated_tz_list:
+            return token.upper()
         return None
 
     def _match_day_of_week_token(self, token: str):
@@ -416,6 +414,8 @@ class DateTimeInfo:
             return self.offset_
 
         if self.abbreviated_tz:
+            if self.abbreviated_tz not in self.config.tz_dict:
+                raise OffsetNotKnownError(f"Offset value not known for '{self.abbreviated_tz}'")
             return self.config.tz_dict[self.abbreviated_tz]
 
         return None
