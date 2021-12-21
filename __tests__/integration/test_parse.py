@@ -10,10 +10,11 @@ four_digit_year_with_no_config_test_cases = [
     ("27-12-2002T12:12:12 America/Chicago", None, None, "2002-12-27T12:12:12-06:00"),
     ("27-12-2002T12:12:12Z", None, None, "2002-12-27T12:12:12+00:00"),
     ("2021-13-12T12:12:12Z", None, None, "2021-12-13T12:12:12+00:00"),
+    ("12-12-2002T12:12:12 America/Chicago", None, None, "2002-12-12T12:12:12-06:00"),
 
 
     # Ambiguous / Error Cases
-    ("12-12-2002T12:12:12 America/Chicago", None, None, None),
+    ("32-32-2002T12:12:12 America/Chicago", None, None, None),
     ("32-31-2002T12:12:12 America/Chicago", None, None, None),
     ("2021-23-13T12:12:12 America/Chicago", None, None, None),
 ]

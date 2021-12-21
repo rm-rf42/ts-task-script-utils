@@ -697,6 +697,11 @@ class DateTimeInfo:
 
         first_token_is_month = int(tokens[0]) <= 12
         second_token_is_month = int(tokens[1]) <= 12
+        if (
+            (first_token_is_month and second_token_is_month)
+            and (tokens[0] == tokens[1])
+        ):
+            return tokens[0], tokens[1]
 
         if first_token_is_month and second_token_is_month:
             raise AmbiguousDateError(
@@ -704,7 +709,6 @@ class DateTimeInfo:
             )
 
         if not first_token_is_month and not second_token_is_month:
-            # Both tokens could be month
             raise AmbiguousDateError(
                 f"Can't decide day and month between: {tokens}"
             )
