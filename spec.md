@@ -1,4 +1,4 @@
-## `datetime_parser.parse()`
+## Datetime Parser
 
 `taskscript_utils.datetime_parser` exposes `parse()` methods for parsing string datetimes.
 The `parse()` accepts following arguements:
@@ -40,24 +40,86 @@ datetime_formats_list = [
 '2020-12-21T18:30:20Z'
 
 # Case 3: when raw datetime string doesn't match with one of the format in datetime_formats_list and is ambiguous
+# This is just an example and there could be multiple cases that may lead to ambiguity or invalid datetime.
+# These are discussed in later sections of this documents
 >>> result = parse("21-12-20 12:30:20 PM America/Chicago", formats_list=datetime_formats_list)
 '''
 Traceback (most recent call last):
  ...
 task_script_utils.datetime_parser.parser_exceptions.AmbiguousDateError: Ambiguous date:21-12-20, possible formats: ('MM-DD-YY', 'YY-MM-DD', 'DD-MM-YY')
 '''
-# Case 3 is just an example and there could be multiple cases that may lead to ambiguity or invalid datetime.
-# These are discussed in later sections of this documents
 ```
 
 ## Parsing Fractional Seconds
 
-WIP
+You can use `SSSSSS` as token to parse any number on digits as fractional seconds.
+`TSDatetime` object returned by `parse()` helps maintaining the precision of fractional seconds.
+
+For example, in the examples below `result.isoformat()` and `result.tsformat()` maintains the number of digits in fractional seconds.
+This is different from python's `datetime` object, which only allows 6 digits for microseconds.
+This is visible as the result of `result.datetime.isoformat()`, where `result.datetime` property return pythonic `datetime` object
+
+```python
+>>> from task_script_utils.datetime_parser import parse
+>>> datetime_formats_list = [
+    "DD-MM-YY HH:mm:ss.SSSSSS z",
+]
+
+# Example 1
+>>> result = parse("2021-12-13T13:00:12.19368293274 Asia/Kolkata")
+>>> result.tsformat()
+'2021-12-13T07:30:12.19368293274Z'
+>>> result.isoformat()
+'2021-12-13T13:00:12.19368293274+05:30'
+>>> result.datetime.isoformat()
+'2021-12-13T13:00:12.193682+05:30'
+
+# Example 2
+>>> result = parse("2021-12-13T13:00:12.1 Asia/Kolkata")
+>>> result.isoformat()
+'2021-12-13T13:00:12.1+05:30'
+>>> result.tsformat()
+'2021-12-13T07:30:12.1Z'
+>>> result.datetime.isoformat()
+'2021-12-13T13:00:12.100000+05:30'
+```
 
 ## Parsing Abbreviated Timezones
 
-WIP
+The only way to parse timestamps(if parse-able) is by passing `DatetimeConfig` object with `tz_dict`.
+`DatetimeConfig.tz_dict` is a `dict` mapping abbreviated_tz to offset value. Defaults to `empty dict`.
 
+```python
+>>> from task_script_utils.datetime_parser import (
+  parse,
+  DatetimeConfig
+)
+>>> sample_tz_dict = {
+...     "IST": "+05:30",
+...     "EST": "-05:00",
+...     "CST": "-06:00",
+... }
+>>> dt_config = DatetimeConfig(
+...     tz_dict=sample_tz_dict
+... )
+>>> result = parse("2021-12-25T00:00:00 IST", config=dt_config)
+>>> result.isoformat()
+'2021-12-25T00:00:00+05:30'
+>>> result.tsformat()
+'2021-12-24T18:30:00Z'
+```
+
+`"Z"` can be used as token for capturing abbreviated timezones when using datetime_formats to prase the raw datetime string. Even in this case, for successful parsing, `DatetimeConfig.tz_dict` is required
+
+```python
+>>> dt_formats_list = [
+...     "YYYY-MM-DD HH:mm:ss Z"
+... ]
+>>> result = parse("2021-12-12 14:15:16 CST", formats_list=dt_formats_list, config=dt_config)
+>>> result.isoformat()
+'2021-12-12T14:15:16-06:00'
+
+```
 ## Regex Parsing
 
 WIP
