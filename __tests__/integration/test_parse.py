@@ -28,6 +28,10 @@ four_digit_year_with_day_first_test_cases = [
     ("11-12-2002T12:12:12 America/Chicago", None, False, "2002-11-12T12:12:12-06:00"),
     ("2021-12-23T12:12:12Z", None, False, "2021-12-23T12:12:12+00:00"),
 
+    # Note: For short dates with 4 digits year, DatetimeConfig.year_first is ignored
+    ("2021/02/3 04:03:00", False, True, "2021-03-02T04:03:00"),
+    ("3/02/2021 04:03:00", True, True, "2021-02-03T04:03:00"),
+
     # Ambiguous / Error Cases
     ("2021-12-13T12:12:12 America/Chicago", None, True, None),
     ("2021-13-12T12:12:12 America/Chicago", None, False, None),
