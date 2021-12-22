@@ -197,7 +197,8 @@ Consider the examples below:
 
 <br/>
 
-Defining `year_first` and `day_first` in `DatetimeConfig`, doesn't always guarantee a valid parse. Consider the examples below.
+Defining `year_first` and `day_first` in `DatetimeConfig`, doesn't always guarantee a valid parse.
+Consider the examples below:
 
 | `datetime_raw_str`  | `year_first` | `day_first` | `possible formats` | `error`                                                                                     |
 | ------------------- | ------------ | ----------- | ------------------ | ------------------------------------------------------------------------------------------- |
