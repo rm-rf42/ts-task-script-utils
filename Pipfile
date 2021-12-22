@@ -7,15 +7,13 @@ verify_ssl = true
 snapshottest = "*"
 pytest = "*"
 pytest-cov = "*"
+black = "==21.12b0"
 
 [packages]
 numpy = "*"
 python-dateutil = "*"
 dateparser = "*"
 arrow = "*"
-
-[requires]
-python_version = "3.7"
 
 [pipenv]
 allow_prereleases = true
