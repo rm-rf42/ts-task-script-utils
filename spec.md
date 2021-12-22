@@ -131,7 +131,32 @@ task_script_utils.datetime_parser.parser_exceptions.OffsetNotKnownError: Offset 
 
 ```
 
+## Unambiguous Datetime
+
+| Raw Datetime                                        | `isoformat` result               |
+| --------------------------------------------------- | -------------------------------- |
+| 2021-12-13T12:12:12 America/Chicago                 | 2021-12-13T12:12:12-06:00        |
+| 2021-13-12T12:12:12 America/Chicago                 | 2021-12-13T12:12:12-06:00        |
+| 27-12-2002 11:12:12 PM America/Chicago              | 2002-12-27T23:12:12-06:00        |
+| 12:12:12Z 27-12-2002                                | 2002-12-27T12:12:12+00:00        |
+| 2021-13-12T12:12:12Z                                | 2021-12-13T12:12:12+00:00        |
+| 12-12-2002T12:12:12.435324 America/Chicago          | 2002-12-12T12:12:12.435324-06:00 |
+| Sunday, May 26th 2013 13:12:12                      | '2013-05-26T13:12:12'            |
+| Sunday, May 26th 2013 12:12:12 AM Asia/Kolkata      | 2013-05-26T00:12:12+05:30        |
+| Sunday, May 26th, 2013 12:12:12 AM Asia/Kolkata     | 2013-05-26T00:12:12+05:30        |
+| Sunday, May 26 2013 12:12:12 AM Asia/Kolkata        | 2013-05-26T00:12:12+05:30        |
+| Sunday, May 26 2013 12:12:12.5677 AM Asia/Kolkata   | 2013-05-26T00:12:12.5677+05:30   |
+| Sunday, May 26th 2013 12:12:12.5677 AM Asia/Kolkata | 2013-05-26T00:12:12.5677+05:30   |
+
 ## Ambiguous Dates
+
+| Cases                                    | Reason for ambiguity                                              |
+| ---------------------------------------- | ----------------------------------------------------------------- |
+| 21-12-2T13:14:16                         | possible formats: ('MM-DD-YY', 'YY-MM-DD', 'DD-MM-YY')            |
+| 21-23-2020T12:13:14                      | Year = 2020, but Can't decide day and month between: ('21', '23') |
+| 2021-23-13T01:23:43                      | Year = 2021, but Can't decide day and month between: ('23', '13') |
+| 27-12-2002 12:12:12 CDT                  | **OffsetNotKnownError**: Offset value not known for 'CDT'         |
+| "27-12-2002 13:12:12 AM America/Chicago" | **InvalidTimeError**: Hour is 13 but meridiem is AM               |
 
 If `formats_list` doesn't contain a match or is not passed, `parse` will use regex to parse the raw datetime string.
 The regex parsing allows to capture digits of short formatted dates. The captured digits can all be two digits or one of them could be 4 digits long representing year.
@@ -174,26 +199,33 @@ Consider the examples below:
 | 2021/11/07 04:03:00 | None | True | 2021-07-11T08:03:00Z |
 | 11\12\2021 04:03:00 | None | True | 2021-12-11T09:03:00Z |
 | 13/02/03 04:03:00 | None | True | 2003-02-13T09:03:00Z |
-| 01/02/03 04:03:00 | None | True | 2003-02-01T09:03:00Z |
-| 12/13/03 04:03:00 | None | False | 2003-12-13T09:03:00Z |
-| 13-02-03 04:03:00 | None | False | 2013-02-03T09:03:00Z |
-| 2021.11.7 04:03:00 | None | False | 2021-11-07T09:03:00Z |
-| 2021.11.07 04:03:00.00045000 | None | False | 2021-11-07T09:03:00.00045000Z |
-| 01/02/03 04:03:00.0 | True | None | 2001-02-03T09:03:00.0Z |
-| 13/02/03 04:03:00 | True | None | 2013-02-03T09:03:00Z |
-| 13/2/03 04:03:00 | False | None | 2003-02-13T09:03:00Z |
-| 01/02/03 04:03:00 | True | True | 2001-03-02T09:03:00Z |
-| 13/02/03 04:03:00 | True | True | 2013-03-02T09:03:00Z |
-| 1/02/03 04:03:00 | True | False | 2001-02-03T09:03:00Z |
-| 13/02/03 04:03:00 +05:30 | True | False | 2013-02-02T22:33:00Z |
-| 01/02/03T04:30:00 | False | True | 2003-02-01T09:30:00Z |
-| 01/02/3T04:30:00 | False | True | 2003-02-01T09:30:00Z |
-| 1/2/3T4:30:00 | False | True | 2003-02-01T09:30:00Z |
-| 1/2/3T4:3:00 | False | True | 2003-02-01T09:03:00Z |
-| 01/02/13T04:03:00 | False | True | 2013-02-01T09:03:00Z |
-| 01/02/03 04:03:00 | False | True | 2003-02-01T09:03:00Z |
-| 13/2/03 04:03:00.43500 | False | True | 2003-02-13T09:03:00.43500Z |
-| 01/02/03 04:03:00 | False | False | 2003-01-02T09:03:00Z |
+
+| `datetime_raw_str`           | `year_first` | `day_first` | `result (year-month-day)`     |
+| ---------------------------- | ------------ | ----------- | ----------------------------- |
+| 2021/11/07 04:03:00          | None         | None        | 2021-11-07T09:03:00Z          |
+| 2021/11/07 04:03:00          | None         | True        | 2021-07-11T08:03:00Z          |
+| 11\12\2021 04:03:00          | None         | True        | 2021-12-11T09:03:00Z          |
+| 13/02/03 04:03:00            | None         | True        | 2003-02-13T09:03:00Z          |
+| 01/02/03 04:03:00            | None         | True        | 2003-02-01T09:03:00Z          |
+| 12/13/03 04:03:00            | None         | False       | 2003-12-13T09:03:00Z          |
+| 13-02-03 04:03:00            | None         | False       | 2013-02-03T09:03:00Z          |
+| 2021.11.7 04:03:00           | None         | False       | 2021-11-07T09:03:00Z          |
+| 2021.11.07 04:03:00.00045000 | None         | False       | 2021-11-07T09:03:00.00045000Z |
+| 01/02/03 04:03:00.0          | True         | None        | 2001-02-03T09:03:00.0Z        |
+| 13/02/03 04:03:00            | True         | None        | 2013-02-03T09:03:00Z          |
+| 13/2/03 04:03:00             | False        | None        | 2003-02-13T09:03:00Z          |
+| 01/02/03 04:03:00            | True         | True        | 2001-03-02T09:03:00Z          |
+| 13/02/03 04:03:00            | True         | True        | 2013-03-02T09:03:00Z          |
+| 1/02/03 04:03:00             | True         | False       | 2001-02-03T09:03:00Z          |
+| 13/02/03 04:03:00 +05:30     | True         | False       | 2013-02-02T22:33:00Z          |
+| 01/02/03T04:30:00            | False        | True        | 2003-02-01T09:30:00Z          |
+| 01/02/3T04:30:00             | False        | True        | 2003-02-01T09:30:00Z          |
+| 1/2/3T4:30:00                | False        | True        | 2003-02-01T09:30:00Z          |
+| 1/2/3T4:3:00                 | False        | True        | 2003-02-01T09:03:00Z          |
+| 01/02/13T04:03:00            | False        | True        | 2013-02-01T09:03:00Z          |
+| 01/02/03 04:03:00            | False        | True        | 2003-02-01T09:03:00Z          |
+| 13/2/03 04:03:00.43500       | False        | True        | 2003-02-13T09:03:00.43500Z    |
+| 01/02/03 04:03:00            | False        | False       | 2003-01-02T09:03:00Z          |
 
 <br/>
 
