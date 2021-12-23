@@ -18,8 +18,8 @@
 The `parse()` returns a `TSDatetime` object and accepts following arguements:
 
 - `datetime_raw_str: str`: raw datetime string to be parsed.
-- `formats_list (Sequence[str], optional)`: You can optionally pass a list of formats to try to parse datetime string. If `datetime_raw_str` doesn't matches with any format, the datetime parser will still try to parse `datetime_raw_str` with other methods such as using regex and trying long datetime format
-- `config (DatetimeConfig, optional)`: You also have an options to pass `DatetimeConfig`. It provides complementary information on how to mark parsed digits as day, month or year and also provide an options to handle abbreviated time zones and fold for parsing ambiguous timestamps during daylight saving transitions. Ideally, DatetimeConfig should be constructed from pipeline configuration passed to task scripts
+- `formats_list: Sequence[str] (optional)`: You can optionally pass a list of formats to try to parse datetime string. If `datetime_raw_str` doesn't matches with any format, the datetime parser will still try to parse `datetime_raw_str` with other methods such as using regex and trying long datetime format
+- `config: DatetimeConfig (optional)`: You also have an options to pass `DatetimeConfig`. It provides complementary information on how to mark parsed digits as day, month or year and also provide an options to handle abbreviated time zones and fold for parsing ambiguous timestamps during daylight saving transitions. Ideally, DatetimeConfig should be constructed from pipeline configuration passed to task scripts
 
 ![Parse Flow Diagram](./task_script_utils/datetime_parser/parse-white.png)
 
@@ -38,9 +38,11 @@ datetime_formats_list = [
 >>> result.isoformat()
 '2020-12-21T12:30:20+05:30'
 
-# Case 2: when raw datetime string doesn't match with one of the format in datetime_formats_list but can be parsed without any ambiguity
-# In this case, it can be inferred that year is 2020, day is 21 and hence month is 12
-# This is just an example and there could be multiple cases that may lead to ambiguity or invalid datetime.
+# Case 2: when raw datetime string doesn't match with one of the format
+# in datetime_formats_list but can be parsed without any ambiguity
+# In this case, it can be inferred that year is 2020, day is 21 and hence
+# month is 12 This is just an example and there could be multiple cases
+# that may lead to ambiguity or invalid datetime.
 # These are discussed in later sections of this documents
 >>> result = parse("21-12-2020 12:30:20 PM America/Chicago", formats_list=datetime_formats_list)
 >>> result.isoformat()
@@ -48,8 +50,10 @@ datetime_formats_list = [
 >>> result.tsformat()
 '2020-12-21T18:30:20Z'
 
-# Case 3: when raw datetime string doesn't match with one of the format in datetime_formats_list and is ambiguous
-# This is just an example and there could be multiple cases that may lead to ambiguity or invalid datetime.
+# Case 3: when raw datetime string doesn't match with one of the format
+# in datetime_formats_list and is ambiguous.
+# This is just an example and there could be multiple cases that may
+# lead to ambiguity or invalid datetime.
 # These are discussed in later sections of this documents
 >>> result = parse("21-12-20 12:30:20 PM America/Chicago", formats_list=datetime_formats_list)
 '''
@@ -104,7 +108,7 @@ The following tokens are currently supported:
 
 ## Parsing Fractional Seconds
 
-You can use `SSSSSS` as token to parse any number on digits as fractional seconds.
+You can use `SSSSSS` as a token to parse any number on digits as fractional seconds.
 `TSDatetime` object returned by `parse()` helps maintaining the precision of fractional seconds.
 
 For example, in the examples below `result.isoformat()` and `result.tsformat()` maintains the number of digits in fractional seconds.
@@ -138,7 +142,7 @@ This is visible as the result of `result.datetime.isoformat()`, where `result.da
 
 ## Parsing Abbreviated Timezones
 
-The only way to parse timestamps(if parse-able) is by passing `DatetimeConfig` object with `tz_dict`.
+The only way to parse timestamps (if parse-able) is by passing `DatetimeConfig` object with `tz_dict`.
 `DatetimeConfig.tz_dict` is a `dict` mapping abbreviated_tz to offset value. Defaults to `empty dict`.
 
 ```python
@@ -169,7 +173,7 @@ task_script_utils.datetime_parser.parser_exceptions.OffsetNotKnownError: Offset 
 '''
 ```
 
-`"Z"` can be used as token for capturing abbreviated timezones when using datetime_formats to prase the raw datetime string. Even in this case, for successful parsing, `DatetimeConfig.tz_dict` is required
+`"Z"` can be used as token for capturing abbreviated timezones when using datetime_formats to parse the raw datetime string. Even in this case, for successful parsing, `DatetimeConfig.tz_dict` is required
 
 ```python
 >>> dt_formats_list = [
@@ -178,7 +182,8 @@ task_script_utils.datetime_parser.parser_exceptions.OffsetNotKnownError: Offset 
 >>> result = parse("2021-12-12 14:15:16 CST", formats_list=dt_formats_list, config=dt_config)
 >>> result.isoformat()
 '2021-12-12T14:15:16-06:00'
-# Similar to example above, an exception will be raised if DatetimeConfig.tz_dict doesn't contain the abbreviated tz.
+# Similar to example above, an exception will be raised if
+# DatetimeConfig.tz_dict doesn't contain the abbreviated tz.
 
 ```
 
@@ -186,22 +191,22 @@ task_script_utils.datetime_parser.parser_exceptions.OffsetNotKnownError: Offset 
 
 You can just pass the `datetime_raw_str` to `parse()` and it will parse it if there is no ambiguity.
 Examples:
-| Raw Datetime                                        | `isoformat` result               | Note                                                  |
+| Raw Datetime | `isoformat` result | Note |
 | --------------------------------------------------- | -------------------------------- | ----------------------------------------------------- |
-| 2021-12-13T12:12:12 America/Chicago                 | 2021-12-13T12:12:12-06:00        | Parsed as YYYY-MM-DD                                  |
-| 2021-13-12T12:12:12 America/Chicago                 | 2021-12-13T12:12:12-06:00        | Parsed as YYYY-DD-MM as date doesn't match YYYY-MM-DD |
-| 27-12-2002 11:12:12 PM America/Chicago              | 2002-12-27T23:12:12-06:00        |                                                       |
-| 12:12:12Z 27-12-2002                                | 2002-12-27T12:12:12+00:00        |                                                       |
-| 2021-13-12T12:12:12Z                                | 2021-12-13T12:12:12+00:00        |                                                       |
-| 12-12-2002T12:12:12.435324 America/Chicago          | 2002-12-12T12:12:12.435324-06:00 |                                                       |
-| 41-12-21 04:03:00                                   | 2041-12-21T04:03:00              | We can clearly tell year=41, day=21 and month=12      |
-| May 26th 2013 12:12:12.5677 AM Asia/Kolkata         | 2013-05-26T00:12:12.0001+05:30   |                                                       |
-| Sunday, May 26th 2013 13:12:12                      | 2013-05-26T13:12:12              |                                                       |
-| Sunday, May 26th 2013 12:12:12 AM Asia/Kolkata      | 2013-05-26T00:12:12+05:30        |                                                       |
-| Sunday, May 26th, 2013 12:12:12 AM Asia/Kolkata     | 2013-05-26T00:12:12+05:30        |                                                       |
-| Sunday, May 26 2013 12:12:12 AM Asia/Kolkata        | 2013-05-26T00:12:12+05:30        |                                                       |
-| Sunday, May 26 2013 12:12:12.5677 AM Asia/Kolkata   | 2013-05-26T00:12:12.5677+05:30   |                                                       |
-| Sunday, May 26th 2013 12:12:12.5677 AM Asia/Kolkata | 2013-05-26T00:12:12.5677+05:30   |                                                       |
+| 2021-12-13T12:12:12 America/Chicago | 2021-12-13T12:12:12-06:00 | Parsed as YYYY-MM-DD |
+| 2021-13-12T12:12:12 America/Chicago | 2021-12-13T12:12:12-06:00 | Parsed as YYYY-DD-MM as date doesn't match YYYY-MM-DD |
+| 27-12-2002 11:12:12 PM America/Chicago | 2002-12-27T23:12:12-06:00 | |
+| 12:12:12Z 27-12-2002 | 2002-12-27T12:12:12+00:00 | |
+| 2021-13-12T12:12:12Z | 2021-12-13T12:12:12+00:00 | |
+| 12-12-2002T12:12:12.435324 America/Chicago | 2002-12-12T12:12:12.435324-06:00 | |
+| 41-12-21 04:03:00 | 2041-12-21T04:03:00 | We can clearly tell year=41, day=21 and month=12 |
+| May 26th 2013 12:12:12.0001 AM Asia/Kolkata | 2013-05-26T00:12:12.0001+05:30 | |
+| Sunday, May 26th 2013 13:12:12 | 2013-05-26T13:12:12 | |
+| Sunday, May 26th 2013 12:12:12 AM Asia/Kolkata | 2013-05-26T00:12:12+05:30 | |
+| Sunday, May 26th, 2013 12:12:12 AM Asia/Kolkata | 2013-05-26T00:12:12+05:30 | |
+| Sunday, May 26 2013 12:12:12 AM Asia/Kolkata | 2013-05-26T00:12:12+05:30 | |
+| Sunday, May 26 2013 12:12:12.5677 AM Asia/Kolkata | 2013-05-26T00:12:12.5677+05:30 | |
+| Sunday, May 26th 2013 12:12:12.5677 AM Asia/Kolkata | 2013-05-26T00:12:12.5677+05:30 | |
 
 ## Ambiguous Dates
 
@@ -214,8 +219,8 @@ Following are some examples of ambiguous cases
 | Cases                                      | Reason for ambiguity                                                                              | Note                                           |
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
 | 21-12-2T13:14:16                           | **Ambiguity**: fits in more than one of the format: ('MM-DD-YY', 'YY-MM-DD', 'DD-MM-YY')          |
-| 21-23-2020T12:13:14                        | Year = 2020, but Can't decide day and month between: ('21', '23')                                 |
-| 2021-23-13T01:23:43                        | Year = 2021, but Can't decide day and month between: ('23', '13')                                 |
+| 21-23-2020T12:13:14                        | Year = 2020, but can't decide day and month between: ('21', '23')                                 |
+| 2021-23-13T01:23:43                        | Year = 2021, but can't decide day and month between: ('23', '13')                                 |
 | 27-12-2002 12:12:12 CDT                    | **OffsetNotKnownError**: Offset value not known for 'CDT'                                         | Can be fixed by passing DatetimeConfig.tz_dict |
 | 27-12-2002 13:12:12 AM America/Chicago     | **InvalidTimeError**: Hour is 13 but meridiem is AM                                               |
 | 2021-10-31T02:45:00 Europe/Rome            | **AmbiguousFoldError**: DatetimeConfig.fold must not be None to parse datetime without ambiguity. | Can be fixed by passing DatetimeConfig.fold    |
@@ -266,36 +271,36 @@ For example:
 | 21-11-12T00:00:00   | True         | None        | 2021-11-12T00:00:00       |
 | 2021-11-12T00:00:00 | None         | True        | 2021-02-03T04:03:00       |
 
-For every other cell in the possible formats table with multiple formats, only one of the format must satisfy the raw datetime string. If None or more that one format satisfies the datetime string, it is still an ambiguous case.
+For every other cell in the possible formats table with multiple formats, only one of the formats must satisfy the raw datetime string. If None or more that one format satisfies the datetime string, it is still an ambiguous case.
 
 Consider following examples on how `year_first` and `day_first` impacts the parsing result:
 
-| `datetime_raw_str`           | `year_first` | `day_first` | `result (year-month-day)`     |
-| ---------------------------- | ------------ | ----------- | ----------------------------- |
-| 2021/11/07 04:03:00          | None         | None        | 2021-11-07T09:03:00Z          |
-| 2021/11/07 04:03:00          | None         | True        | 2021-07-11T08:03:00Z          |
-| 11\12\2021 04:03:00          | None         | True        | 2021-12-11T09:03:00Z          |
-| 13/02/03 04:03:00            | None         | True        | 2003-02-13T09:03:00Z          |
-| 01/02/03 04:03:00            | None         | True        | 2003-02-01T09:03:00Z          |
-| 12/13/03 04:03:00            | None         | False       | 2003-12-13T09:03:00Z          |
-| 13-02-03 04:03:00            | None         | False       | 2013-02-03T09:03:00Z          |
-| 2021.11.7 04:03:00           | None         | False       | 2021-11-07T09:03:00Z          |
-| 2021.11.07 04:03:00.00045000 | None         | False       | 2021-11-07T09:03:00.00045000Z |
-| 01/02/03 04:03:00.0          | True         | None        | 2001-02-03T09:03:00.0Z        |
-| 13/02/03 04:03:00            | True         | None        | 2013-02-03T09:03:00Z          |
-| 13/2/03 04:03:00             | False        | None        | 2003-02-13T09:03:00Z          |
-| 01/02/03 04:03:00            | True         | True        | 2001-03-02T09:03:00Z          |
-| 13/02/03 04:03:00            | True         | True        | 2013-03-02T09:03:00Z          |
-| 1/02/03 04:03:00             | True         | False       | 2001-02-03T09:03:00Z          |
-| 13/02/03 04:03:00 +05:30     | True         | False       | 2013-02-02T22:33:00Z          |
-| 01/02/03T04:30:00            | False        | True        | 2003-02-01T09:30:00Z          |
-| 01/02/3T04:30:00             | False        | True        | 2003-02-01T09:30:00Z          |
-| 1/2/3T4:30:00                | False        | True        | 2003-02-01T09:30:00Z          |
-| 1/2/3T4:3:00                 | False        | True        | 2003-02-01T09:03:00Z          |
-| 01/02/13T04:03:00            | False        | True        | 2013-02-01T09:03:00Z          |
-| 01/02/03 04:03:00            | False        | True        | 2003-02-01T09:03:00Z          |
-| 13/2/03 04:03:00.43500       | False        | True        | 2003-02-13T09:03:00.43500Z    |
-| 01/02/03 04:03:00            | False        | False       | 2003-01-02T09:03:00Z          |
+| `datetime_raw_str`           | `year_first` | `day_first` | `result (year-month-day)`    |
+| ---------------------------- | ------------ | ----------- | ---------------------------- |
+| 2021/11/07 04:03:00          | None         | None        | 2021-11-07T04:03:00          |
+| 2021/11/07 04:03:00          | None         | True        | 2021-07-11T04:03:00          |
+| 11\12\2021 04:03:00          | None         | True        | 2021-12-11T04:03:00          |
+| 13/02/03 04:03:00            | None         | True        | 2003-02-13T04:03:00          |
+| 01/02/03 04:03:00            | None         | True        | 2003-02-01T04:03:00          |
+| 12/13/03 04:03:00            | None         | False       | 2003-12-13T04:03:00          |
+| 13-02-03 04:03:00            | None         | False       | 2013-02-03T04:03:00          |
+| 2021.11.7 04:03:00           | None         | False       | 2021-11-07T04:03:00          |
+| 2021.11.07 04:03:00.00045000 | None         | False       | 2021-11-07T04:03:00.00045000 |
+| 01/02/03 04:03:00.0          | True         | None        | 2001-02-03T04:03:00.0        |
+| 13/02/03 04:03:00            | True         | None        | 2013-02-03T04:03:00          |
+| 13/2/03 04:03:00             | False        | None        | 2003-02-13T04:03:00          |
+| 01/02/03 04:03:00            | True         | True        | 2001-03-02T04:03:00          |
+| 13/02/03 04:03:00            | True         | True        | 2013-03-02T04:03:00          |
+| 1/02/03 04:03:00             | True         | False       | 2001-02-03T04:03:00          |
+| 13/02/03 04:03:00 +05:30     | True         | False       | 2013-02-03T04:03:00+05:30    |
+| 01/02/03T04:30:00            | False        | True        | 2003-02-01T04:30:00          |
+| 01/02/3T04:30:00             | False        | True        | 2003-02-01T04:30:00          |
+| 1/2/3T4:30:00                | False        | True        | 2003-02-01T04:30:00          |
+| 1/2/3T4:3:00                 | False        | True        | 2003-02-01T04:03:00          |
+| 01/02/13T04:03:00            | False        | True        | 2013-02-01T04:03:00          |
+| 01/02/03 04:03:00            | False        | True        | 2003-02-01T04:03:00          |
+| 13/2/03 04:03:00.43500       | False        | True        | 2003-02-13T04:03:00.43500    |
+| 01/02/03 04:03:00            | False        | False       | 2003-01-02T04:03:00          |
 
 <br/>
 
