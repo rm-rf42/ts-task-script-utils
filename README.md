@@ -51,7 +51,7 @@ A `DatetimeConfig` object has following attributes:
 - `day_first: Optional[bool]`: `True/False`. Defaults to `None`
   - Whether to interpret the first value in an ambiguous 3-integer date (e.g. 01/05/09) as the day (True) or month (False).
 - `year_first: Optional[bool]`: `True/False`. Defaults to `None`
-  - Whether to interpret the first value in an ambiguous 3-integer date (e.g. 01/05/09) as the year.
+  - Whether to interpret the first value in an ambiguous 3-integer date (e.g. 01/05/09) as the year.  When the year is specified in four digits, this configuration is ignored.
 - `tz_dict: Optional[dict]`: a `dict` mapping abbreviated_tz to offset value. Defaults to `empty dict`.
 
 ```python
