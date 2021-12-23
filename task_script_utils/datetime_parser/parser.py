@@ -49,10 +49,6 @@ def parse(
             formats=formats_list
         )
 
-    # Parse Using dateutil.parser.parse
-    #if not parsed_datetime:
-    #    parsed_datetime = _parse_using_dateutils(datetime_str, config)
-
     # Otherwise use DateInfo Parser to parse short dates
     if not parsed_datetime:
         datetime_info = DateTimeInfo(datetime_str, config)
