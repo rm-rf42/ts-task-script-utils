@@ -8,7 +8,7 @@
 - [Ambiguous Datetime](#ambiguous-datetime)
 - [Resolving Ambiguous Dates with DatetimeConfig](#resolving-ambiguous-dates-with-datetimeconfig)
 - [Working with TSDatetime](#working-with-tsdatetime)
-- [DatetimeConfig][#datetimeconfig]
+- [DatetimeConfig](#datetimeconfig)
 - [Limitations](#limitations)
 
 ## Datetime Parser
@@ -184,6 +184,8 @@ task_script_utils.datetime_parser.parser_exceptions.OffsetNotKnownError: Offset 
 
 ## Unambiguous Datetime
 
+You can just pass the `datetime_raw_str` to `parse()` and it will parse it if there is no ambiguity.
+Examples:
 | Raw Datetime                                        | `isoformat` result               | Note                                                  |
 | --------------------------------------------------- | -------------------------------- | ----------------------------------------------------- |
 | 2021-12-13T12:12:12 America/Chicago                 | 2021-12-13T12:12:12-06:00        | Parsed as YYYY-MM-DD                                  |
