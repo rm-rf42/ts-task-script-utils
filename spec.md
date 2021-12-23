@@ -243,8 +243,8 @@ Following table specifies the possible datetime formats depending on the values 
 | True       | True      | year-day-month                                         |
 | True       | False     | year-month-day                                         |
 | True       | None      | year-month-day <br> year-day-month                     |
-| False      | False     | month-day-year                                         |
 | False      | True      | day-month-year                                         |
+| False      | False     | month-day-year                                         |
 | False      | None      | month-day-year <br> day-month-year                     |
 | None       | True      | day-month-year                                         |
 | None       | False     | year-month-day <br> month-day-year                     |
