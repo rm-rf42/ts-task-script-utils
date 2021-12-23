@@ -59,7 +59,8 @@ datetime_formats_list = [
 '''
 Traceback (most recent call last):
  ...
-task_script_utils.datetime_parser.parser_exceptions.AmbiguousDateError: Ambiguous date:21-12-20, possible formats: ('MM-DD-YY', 'YY-MM-DD', 'DD-MM-YY')
+task_script_utils.datetime_parser.parser_exceptions.AmbiguousDateError:
+Ambiguous date:21-12-20, possible formats: ('MM-DD-YY', 'YY-MM-DD', 'DD-MM-YY')
 '''
 ```
 
