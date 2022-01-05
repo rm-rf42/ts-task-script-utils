@@ -13,16 +13,23 @@ four_digit_year_with_no_config_test_cases = [
     ("12-12-2002T12:12:12 America/Chicago", None, None, "2002-12-12T12:12:12-06:00"),
 
 
-    # Ambiguous / Error Cases
+    # Invalid Cases
     ("32-32-2002T12:12:12 America/Chicago", None, None, None),
     ("32-31-2002T12:12:12 America/Chicago", None, None, None),
+    ("27-12-2002 13:12:12 AM America/Chicago", None, None, None),
+    ("2021-10-31T02:45:00 Europe/Rome", None, None, None),
+
+    # Ambiguous Case
     ("2021-23-13T12:12:12 America/Chicago", None, None, None),
+    ("11-12-2022T12:12:12 America/Chicago", None, None, None),
+    ("11-12-22T12:12:12", None, None, None)
 ]
 
 four_digit_year_with_day_first_test_cases = [
     # input_, year_first, day_first, expected
-    # Unambiguous Cases
+    # Ambiguous cases resolved with datetime config
     ("2021-23-12T12:12:12 America/Chicago", None, True, "2021-12-23T12:12:12-06:00"),
+    ("11-12-2002T12:12:12 America/Chicago", None, True, "2002-12-11T12:12:12-06:00"),
     ("2021-12-23T12:12:12 America/Chicago", None, False, "2021-12-23T12:12:12-06:00"),
     ("27-12-2002T12:12:12 America/Chicago", None, True, "2002-12-27T12:12:12-06:00"),
     ("11-12-2002T12:12:12 America/Chicago", None, False, "2002-11-12T12:12:12-06:00"),
@@ -32,7 +39,7 @@ four_digit_year_with_day_first_test_cases = [
     ("2021/02/3 04:03:00", False, True, "2021-03-02T04:03:00"),
     ("3/02/2021 04:03:00", True, True, "2021-02-03T04:03:00"),
 
-    # Ambiguous / Error Cases
+    # Error Cases
     ("2021-12-13T12:12:12 America/Chicago", None, True, None),
     ("2021-13-12T12:12:12 America/Chicago", None, False, None),
     ("2021-12-32T12:12:12 America/Chicago", None, False, None),
@@ -40,10 +47,9 @@ four_digit_year_with_day_first_test_cases = [
     ("12-32-2002T12:12:12 America/Chicago", None, False, None),
 ]
 
-# Note: For short dates with 4 digits year, DatetimeConfig.year_first is ignored
 
 two_digits_date_cases_with_year_first = [
-    # Unambiguous Cases
+    # Ambiguous cases resolved with datetime config
     ("12-12-13T12:12:12Z", True, None, "2012-12-13T12:12:12+00:00"),
     ("21-11-12T12:12:12Z", True, None, "2021-11-12T12:12:12+00:00"),
     ("21-11-12T12:12:12Z", False, None, "2012-11-21T12:12:12+00:00"),
