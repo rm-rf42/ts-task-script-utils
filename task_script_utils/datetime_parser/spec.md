@@ -32,7 +32,7 @@ Output:
 You can just pass the `datetime_raw_str` to `parse()` and it will parse it if there is no ambiguity.
 Examples:
 | Raw Datetime | `isoformat` result | Note |
-| --------------------------------------------------- | -------------------------------- | ----------------------------------------------------- |
+| - | - | - |
 | 2021-12-13T12:12:12 America/Chicago | 2021-12-13T12:12:12-06:00 | Parsed as YYYY-MM-DD |
 | 2021-13-12T12:12:12 America/Chicago | 2021-12-13T12:12:12-06:00 | Parsed as YYYY-DD-MM as date doesn't match YYYY-MM-DD |
 | 27-12-2002 11:12:12 PM America/Chicago | 2002-12-27T23:12:12-06:00 | |
@@ -57,14 +57,14 @@ Sometimes, it is hard to infer day, month and year from the parsed digits and th
 Following are some examples of ambiguous cases
 
 | Cases | Reason for ambiguity| Note |
-| ------ | ---------------------- | ----- |
+| - | - | - |
 | 21-12-2T13:14:16 | **Ambiguity**: fits in more than one of the format: ('MM-DD-YY', 'YY-MM-DD', 'DD-MM-YY') |
 | 21-23-2020T12:13:14 | Year = 2020, but can't decide day and month between: ('21', '23') |
 | 2021-23-13T01:23:43 | Year = 2021, but can't decide day and month between: ('23', '13') |
 | 27-12-2002 12:12:12 CDT | **OffsetNotKnownError**: Offset value not known for 'CDT' | Can be fixed by passing DatetimeConfig.tz_dict |
 | 27-12-2002 13:12:12 AM America/Chicago | **InvalidTimeError**: Hour is 13 but meridiem is AM |
-| 2021-10-31T02:45:00 Europe/Rome | **AmbiguousFoldError**: DatetimeConfig.fold must not be None to parse datetime without ambiguity. | Can be fixed by passing DatetimeConfig.fold    |
-| Oct 31st 2021 02:45:00.5677 AM Europe/Rome | **AmbiguousFoldError**: DatetimeConfig.fold must not be None to parse datetime without ambiguity. | Can be fixed by passing DatetimeConfig.fold    |
+| 2021-10-31T02:45:00 Europe/Rome | **AmbiguousFoldError**: DatetimeConfig.fold must not be None to parse datetime without ambiguity. | Can be fixed by passing DatetimeConfig.fold |
+| Oct 31st 2021 02:45:00.5677 AM Europe/Rome | **AmbiguousFoldError**: DatetimeConfig.fold must not be None to parse datetime without ambiguity. | Can be fixed by passing DatetimeConfig.fold |
 
 ## Working with formats_list
 
@@ -80,8 +80,8 @@ Case 1: When raw datetime string matches with one of the format in datetime_form
 
 ```python
 result = parse("21-12-20 12:30:20 Asia/Kolkata", formats_list=datetime_formats_list)
-result.tsformat()   #'2020-12-21T07:00:20Z'
-result.isoformat()  #'2020-12-21T12:30:20+05:30'
+result.tsformat()   # 2020-12-21T07:00:20Z
+result.isoformat()  # 2020-12-21T12:30:20+05:30
 ```
 
 Case 2: When raw datetime string doesn't match with one of the format in datetime_formats_list but can be parsed without any ambiguity.
@@ -92,8 +92,8 @@ These are discussed in later sections of this documents
 
 ```python
 result = parse("21-12-2020 12:30:20 PM America/Chicago", formats_list=datetime_formats_list)
-result.isoformat()  #'2020-12-21T12:30:20-06:00'
-result.tsformat()   #'2020-12-21T18:30:20Z'
+result.isoformat()  # 2020-12-21T12:30:20-06:00
+result.tsformat()   # 2020-12-21T18:30:20Z
 ```
 
 Case 3: When raw datetime string doesn't match with one of the format in datetime_formats_list and is ambiguous.
@@ -171,9 +171,9 @@ datetime_formats_list = [
 
 # Example 1
 result = parse("2021-12-13T13:00:12.19368293274 Asia/Kolkata")
-result.tsformat()   # 2021-12-13T07:30:12.19368293274Z'
-result.isoformat()  # 2021-12-13T13:00:12.19368293274+05:30'
-result.datetime.isoformat() #'2021-12-13T13:00:12.193682+05:30'
+result.tsformat()   # 2021-12-13T07:30:12.19368293274Z
+result.isoformat()  # 2021-12-13T13:00:12.19368293274+05:30
+result.datetime.isoformat() # 2021-12-13T13:00:12.193682+05:30
 
 # Example 2
 result = parse("2021-12-13T13:00:12.1 Asia/Kolkata")
@@ -202,8 +202,8 @@ dt_config = DatetimeConfig(
   tz_dict=sample_tz_dict
 )
 result = parse("2021-12-25T00:00:00 IST", config=dt_config)
-result.isoformat()  # '2021-12-25T00:00:00+05:30'
-result.tsformat()   # '2021-12-24T18:30:00Z'
+result.isoformat()  # 2021-12-25T00:00:00+05:30
+result.tsformat()   # 2021-12-24T18:30:00Z
 ```
 
 An exception will be raised if DatetimeConfig.tz_dict doesn't contain the abbreviated tz
@@ -224,11 +224,10 @@ dt_formats_list = [
   "YYYY-MM-DD HH:mm:ss Z"
 ]
 result = parse("2021-12-12 14:15:16 CST", formats_list=dt_formats_list, config=dt_config)
-result.isoformat() #'2021-12-12T14:15:16-06:00'
+result.isoformat() # 2021-12-12T14:15:16-06:00
 ```
 
 An exception will be raised if DatetimeConfig.tz_dict doesn't contain the abbreviated tz.
-
 
 ## Resolving ambiguous dates with `DatetimeConfig`
 

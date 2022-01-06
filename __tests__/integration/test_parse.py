@@ -12,17 +12,17 @@ four_digit_year_with_no_config_test_cases = [
     ("2021-13-12T12:12:12Z", None, None, "2021-12-13T12:12:12+00:00"),
     ("12-12-2002T12:12:12 America/Chicago", None, None, "2002-12-12T12:12:12-06:00"),
 
-
     # Invalid Cases
     ("32-32-2002T12:12:12 America/Chicago", None, None, None),
     ("32-31-2002T12:12:12 America/Chicago", None, None, None),
     ("27-12-2002 13:12:12 AM America/Chicago", None, None, None),
     ("2021-10-31T02:45:00 Europe/Rome", None, None, None),
+    ("2021-23-13T12:12:12 America/Chicago", None, None, None),
 
     # Ambiguous Case
-    ("2021-23-13T12:12:12 America/Chicago", None, None, None),
     ("11-12-2022T12:12:12 America/Chicago", None, None, None),
-    ("11-12-22T12:12:12", None, None, None)
+    ("11-12-22T12:12:12", None, None, None),
+    ("2021-12-13T12:12:12 CST", None, None, None)
 ]
 
 four_digit_year_with_day_first_test_cases = [
@@ -50,26 +50,29 @@ four_digit_year_with_day_first_test_cases = [
 
 two_digits_date_cases_with_year_first = [
     # Ambiguous cases resolved with datetime config
+    # input_, year_first, day_first, expected
     ("12-12-13T12:12:12Z", True, None, "2012-12-13T12:12:12+00:00"),
     ("21-11-12T12:12:12Z", True, None, "2021-11-12T12:12:12+00:00"),
     ("21-11-12T12:12:12Z", False, None, "2012-11-21T12:12:12+00:00"),
     ("12-13-12T12:12:12Z", True, None, "2012-12-13T12:12:12+00:00"),
 
-    # Ambiguous Case
+    # Still Ambiguous Case
     ("12-11-12T12:12:12Z", False, None, None),
 ]
 
 two_digits_date_cases_with_day_first = [
-    # Unambiguous Cases
+    # Ambiguous cases resolved with datetime config
+    # input_, year_first, day_first, expected
     ("22-12-13T12:12:12Z", None, True, "2013-12-22T12:12:12+00:00"),
     ("22-12-13T12:12:12Z", None, False, "2022-12-13T12:12:12+00:00"),
 
-    # Ambiguous Cases
+    # Still Ambiguous Cases
     ("11-11-13T12:12:12Z", None, False, None)
 ]
 
 two_digits_date_cases_with_day_first_and_year_first = [
-    # Unambiguous Cases
+    # Ambiguous cases resolved with datetime config
+    # input_, year_first, day_first, expected
     ("22-12-13T12:12:12Z", True, True, "2013-12-22T12:12:12+00:00"), #YY-MM-DD
     ("12-12-13T12:12:12Z", False, False, "2013-12-12:12:12+00:00"), #MM-DD-YY
     ("22-12-13T12:12:12Z", True, False, "2022-12-13T12:12:12+00:00"), #YY-MM-DD
