@@ -39,12 +39,14 @@ four_digit_year_with_day_first_test_cases = [
     ("2021/02/3 04:03:00", False, True, "2021-03-02T04:03:00"),
     ("3/02/2021 04:03:00", True, True, "2021-02-03T04:03:00"),
 
-    # Error Cases
+    # Still Ambiguous Cases
     ("2021-12-13T12:12:12 America/Chicago", None, True, None),
     ("2021-13-12T12:12:12 America/Chicago", None, False, None),
-    ("2021-12-32T12:12:12 America/Chicago", None, False, None),
     ("13-12-2002T12:12:12 America/Chicago", None, False, None),
+
+    # Invalid Date Cases
     ("12-32-2002T12:12:12 America/Chicago", None, False, None),
+    ("2021-12-32T12:12:12 America/Chicago", None, False, None),
 ]
 
 
