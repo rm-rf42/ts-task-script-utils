@@ -380,4 +380,4 @@ A `DatetimeConfig` object has following attributes:
 ## Limitations
 
 1. It is not possible to parse just dates or just times alone.
-   e.g.`parse('2021-12-08')` or `parse('12:00:00')` will raise `InvalidDateError`
+   e.g. `parse('2021-12-08')` or `parse('12:00:00')` will raise `InvalidDateError`
