@@ -630,8 +630,14 @@ class DateTimeInfo:
                 month, day, year = date_parts
             else:
                 # Input = XX-XX-YY
-                year, other_tokens = date_parts[-1], date_parts[:-1]
-                day, month = self._process_day_and_month(other_tokens)
+                date_str = '-'.join([
+                    f"{int(token):02d}"
+                    for token in date_parts
+                ])
+                day, month, year = self._try_formats(
+                                    date_str,
+                                    ("MM-DD-YY", "DD-MM-YY")
+                                )
         else:
             if self.config.day_first is True:
                 # Input = DD-MM-YY
