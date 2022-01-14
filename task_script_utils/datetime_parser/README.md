@@ -329,7 +329,7 @@ It has following methods and properties:
 - `datetime`: return python `datetime` object.
 - `change_fold()`: change the fold value
 
-`TSDatetime` allows us to maintain the precision of fractional seconds. Using `TSDatetime.datetime` return the python's `datetime` object but we might loose the subseconds precision.
+`TSDatetime` allows us to maintain the precision of fractional seconds. Using `TSDatetime.datetime` return the python's `datetime` object but we might loose the sub-seconds precision.
 
 ## DatetimeConfig
 
@@ -346,6 +346,7 @@ A `DatetimeConfig` object has following attributes:
   - Whether to interpret the first value in an ambiguous 3-integer date (e.g. 01/05/09) as the day (True) or month (False).
 - `year_first: Optional[bool]`: `True/False`. Defaults to `None`
   - Whether to interpret the first value in an ambiguous 3-integer date (e.g. 01/05/09) as the year.
+  - When the year has four digits, then whether `year_first` is `true` or `false`, is decided by regex parsing done by `DatetimeInfo` class.
 - `tz_dict: Optional[dict]`: a `dict` mapping abbreviated_tz to offset value. Defaults to `empty dict`.
 
 ```python
