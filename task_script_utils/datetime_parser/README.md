@@ -26,6 +26,7 @@ Output:
 - A `TSDatetime` object.
 
 ![Parse Flow Diagram](./parse-white.png)
+![Short date format Resolution for two digit date parts](./short-date-format-resolution.png)
 
 ## Unambiguous Datetime
 
