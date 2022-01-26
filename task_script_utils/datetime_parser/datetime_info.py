@@ -784,9 +784,9 @@ class DateTimeInfo:
         except Exception as e:
             return None
 
-    def _try_formats(self, date_str: str, formats: Tuple[str]):
+    def _try_formats(self, date_str: str, formats: Tuple[str, ...]):
         """Given a date string and a list for formats, make sure
-        sure only one of the format successfully parses the date.
+        only one of the format successfully parses the date.
         If multiple or no format parses the date, raise AmbiguousDateError
         Args:
             date_str (str): date string
