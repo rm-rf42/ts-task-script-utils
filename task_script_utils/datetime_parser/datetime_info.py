@@ -16,6 +16,7 @@ from pendulum.locales.en import locale
 from .parser_exceptions import *
 from .datetime_config import DatetimeConfig
 from .utils import get_time_formats_for_long_date
+from .tz_list import _all_abbreviated_tz_list
 
 
 class DateTimeInfo:
@@ -37,23 +38,23 @@ class DateTimeInfo:
     def __init__(self, date_time_raw: str, config: DatetimeConfig):
         self.date_time_raw = date_time_raw
 
-        self.am_or_pm = None
-        self.iana_tz = None
-        self.offset_ = None
-        self.abbreviated_tz = None
-        self.day = None
-        self.month = None
-        self.year = None
-        self.hour = None
-        self.minutes = None
-        self.seconds = None
-        self.fractional_seconds = None
+        self.am_or_pm: str = None
+        self.iana_tz: str = None
+        self.offset_: str = None
+        self.abbreviated_tz: str = None
+        self.day: str = None
+        self.month: str = None
+        self.year: str = None
+        self.hour: str = None
+        self.minutes: str = None
+        self.seconds: str = None
+        self.fractional_seconds: str = None
 
-        self.token_day_of_week = None
-        self.token_day = None
-        self.token_month = None
+        self.token_day_of_week: str = None
+        self.token_day: str = None
+        self.token_month: str = None
 
-        self.config = config
+        self.config: DatetimeConfig = config
         self._pre_process_datetime_string()
         self._parse_short_date_formats()
 
@@ -182,11 +183,11 @@ class DateTimeInfo:
             )
         if not (0 <= int(minutes) <= 60):
             time_errors.append(
-                f"Invalid time : {minutes}. Minutes value must be between 0 and 24"
+                f"Invalid time : {minutes}. Minutes value must be between 0 and 60"
             )
         if not (0 <= int(seconds) <= 60):
             time_errors.append(
-                f"Invalid time : {seconds}. Seconds value must be between 0 and 24"
+                f"Invalid time : {seconds}. Seconds value must be between 0 and 60"
             )
 
         if time_errors:
@@ -336,11 +337,8 @@ class DateTimeInfo:
             Union[str, None]: string like CST/EST etc if a
             match is found else None
         """
-        if not self.config.tz_dict_seconds:
-            return None
-        for tz in self.config.tz_dict_seconds.keys():
-            if tz == token.upper():
-                return tz
+        if token.upper() in _all_abbreviated_tz_list:
+            return token.upper()
         return None
 
     def _match_day_of_week_token(self, token: str):
@@ -416,6 +414,8 @@ class DateTimeInfo:
             return self.offset_
 
         if self.abbreviated_tz:
+            if self.abbreviated_tz not in self.config.tz_dict:
+                raise OffsetNotKnownError(f"Offset value not known for '{self.abbreviated_tz}'")
             return self.config.tz_dict[self.abbreviated_tz]
 
         return None
@@ -580,7 +580,13 @@ class DateTimeInfo:
         elif self.config.day_first is False:
             month, day = others
         else:
-            day, month = self._process_day_and_month(others)
+            # if day_first is None
+            if year_first:
+                month, day = others[0], others[1]
+                if int(month) > 12:
+                    month, day = day, month
+            else:
+                day, month = self._process_day_and_month(others)
 
         # Validate day, year, month
         try:
@@ -603,9 +609,18 @@ class DateTimeInfo:
             if self.config.day_first is True:
                 # Input = YY-DD-MM
                 year, day, month = date_parts
+            elif self.config.day_first is False:
+                # Input = YY-MM-DD
+                year, month, day = date_parts
             else:
                 # Input = YY-MM-DD
                 year, month, day = date_parts
+                if int(month)>12:
+                    month, day = day, month
+                # At this point both month and day
+                # could have improper values, eg day=42 and month=16
+                # This is validate later below in this function.
+
         elif self.config.year_first is False:
             if self.config.day_first is True:
                 # Input = DD-MM-YY
@@ -615,8 +630,14 @@ class DateTimeInfo:
                 month, day, year = date_parts
             else:
                 # Input = XX-XX-YY
-                year, other_tokens = date_parts[-1], date_parts[:-1]
-                day, month = self._process_day_and_month(other_tokens)
+                date_str = '-'.join([
+                    f"{int(token):02d}"
+                    for token in date_parts
+                ])
+                day, month, year = self._try_formats(
+                                    date_str,
+                                    ("MM-DD-YY", "DD-MM-YY")
+                                )
         else:
             if self.config.day_first is True:
                 # Input = DD-MM-YY
@@ -682,6 +703,11 @@ class DateTimeInfo:
 
         first_token_is_month = int(tokens[0]) <= 12
         second_token_is_month = int(tokens[1]) <= 12
+        if (
+            (first_token_is_month and second_token_is_month)
+            and (tokens[0] == tokens[1])
+        ):
+            return tokens[0], tokens[1]
 
         if first_token_is_month and second_token_is_month:
             raise AmbiguousDateError(
@@ -689,7 +715,6 @@ class DateTimeInfo:
             )
 
         if not first_token_is_month and not second_token_is_month:
-            # Both tokens could be month
             raise AmbiguousDateError(
                 f"Can't decide day and month between: {tokens}"
             )

@@ -44,3 +44,6 @@ class TimestampBuildError(DatetimeParserError):
 
 class AmbiguousFoldError(DatetimeParserError):
     pass
+
+class OffsetNotKnownError(DatetimeParserError):
+    pass

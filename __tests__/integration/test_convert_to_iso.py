@@ -82,7 +82,7 @@ datetime_with_config_tests = {
     ("2021/11/07 04:03:00 America/New_York", None, True, "2021-07-11T08:03:00Z"),
 
     ("11\\12\\2021 04:03:00 America/New_York", None, True, "2021-12-11T09:03:00Z"),
-    ("2021/11/07 04:03:00 America/New_York", None, None, None),
+    ("2021/11/07 04:03:00 America/New_York", None, None, "2021-11-07T09:03:00Z"),
     ("2021/32/07 04:03:00 America/New_York", None, True, None),
     ("2021/11/14 04:03:00 America/New_York", None, True, None),
     ("2021.11.7 04:03:00 America/New_York", None, False, "2021-11-07T09:03:00Z")

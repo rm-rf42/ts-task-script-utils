@@ -2,7 +2,6 @@ import pytest
 from task_script_utils.datetime_parser.parser import (
     parse,
     _parse_with_formats,
-    _parse_using_dateutils,
 )
 from task_script_utils.datetime_parser.datetime_config import DatetimeConfig
 from task_script_utils.datetime_parser.parser_exceptions import DatetimeParserError
@@ -82,26 +81,6 @@ dateutil_parser_test_cases = {
     ("11:12:00 13-05-10", True, None): None,
     ("11:12:00 13-05-10", None, None): None
 }
-
-
-@pytest.mark.parametrize(
-    "input_, expected",
-    dateutil_parser_test_cases.items()
-)
-def test_date_util_parse(input_, expected):
-    datetime_str, year_first, day_first = input_
-    config = DatetimeConfig(
-        year_first=year_first,
-        day_first=day_first
-    )
-
-    try:
-        result = _parse_using_dateutils(datetime_str, config)
-        result = result.isoformat()
-    except Exception as e:
-        result = None
-
-    assert result == expected
 
 
 @pytest.mark.parametrize(
