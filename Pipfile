@@ -8,7 +8,7 @@ snapshottest = "*"
 pytest = "*"
 pytest-cov = "*"
 ipykernel= "*"
-autopep8 = "*"
+black = ">=21.12b0"
 
 [packages]
 numpy = "*"
@@ -17,9 +17,6 @@ dateparser = "*"
 arrow = "*"
 pendulum = "2.1.2"
 pydash = "*"
-
-[requires]
-python_version = "3.7"
 
 [pipenv]
 allow_prereleases = true
