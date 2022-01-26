@@ -21,16 +21,9 @@ TIME_PARTS = [
 
 def get_time_formats_for_long_date(fractional_seconds):
     def map_am_pm(time_format):
-        return (
-            time_format
-            if time_format.startswith("H")
-            else time_format + " A"
-        )
+        return time_format if time_format.startswith("H") else time_format + " A"
 
-    time_formats = [
-        ":".join(tokens)
-        for tokens in product(*TIME_PARTS)
-    ]
+    time_formats = [":".join(tokens) for tokens in product(*TIME_PARTS)]
     if fractional_seconds:
         token = "SSSSSS"
         time_formats = map(lambda x: [x, f"{x}.{token}"], time_formats)
@@ -38,14 +31,8 @@ def get_time_formats_for_long_date(fractional_seconds):
     time_formats = flatten(time_formats)
     time_formats = map(lambda x: map_am_pm(x), time_formats)
     time_formats = map(
-        lambda x: [
-            x,
-            x + " Z",
-            x + " z",
-            x + " ZZ",
-            x + " Z z",
-            x + " ZZ z"],
-        time_formats
+        lambda x: [x, x + " Z", x + " z", x + " ZZ", x + " Z z", x + " ZZ z"],
+        time_formats,
     )
     time_formats = flatten(time_formats)
     return tuple(time_formats)
@@ -60,10 +47,7 @@ def convert_offset_to_seconds(offset_value):
     sign, offset = offset_value[0], offset_value[1:]
     sign = -1 if sign == "-" else 1
     hrs, mins = offset.split(":")
-    total_seconds = dt.timedelta(
-        hours=int(hrs),
-        minutes=int(mins)
-    ).total_seconds()
+    total_seconds = dt.timedelta(hours=int(hrs), minutes=int(mins)).total_seconds()
     return sign * total_seconds
 
 
@@ -75,8 +59,7 @@ def map_offset_to_seconds(tz_dict):
     """
     return {
         tz.upper(): convert_offset_to_seconds(utc_offset)
-        for tz, utc_offset
-        in tz_dict.items()
+        for tz, utc_offset in tz_dict.items()
     }
 
 
@@ -122,8 +105,7 @@ def from_pendulum_format(
         parts["microsecond"] = 0
 
     ts_date_time = TSDatetime(
-        datetime_=pendulum_datetime(**parts),
-        subseconds=subseconds
+        datetime_=pendulum_datetime(**parts), subseconds=subseconds
     )
     return ts_date_time
 
@@ -133,4 +115,4 @@ def replace_z_with_offset(datetime_str: str) -> str:
     12-12-12T14:53:00Z -> 12-12-12T14:53:00+00:00
     12-12-12T14:53:00 Z -> 12-12-12T14:53:00 +00:00
     """
-    return re.sub(r'(?<=\d|\s)Z(?=\s|$)', '+00:00', datetime_str)
+    return re.sub(r"(?<=\d|\s)Z(?=\s|$)", "+00:00", datetime_str)

@@ -1,5 +1,6 @@
 from pendulum.formatting import Formatter
 
+
 class FractionalSecondsFormatter(Formatter):
     """`FractionalSecondsFormatter` override microseconds token in _PARSE_TOKENS
     `pendulum.formatting.Formatter`So that, Formatter.parse() will match and
@@ -7,6 +8,7 @@ class FractionalSecondsFormatter(Formatter):
     seconds of any number of digits such as '000123000' with leading and trailing
     zeros intact as microseconds.
     """
+
     _PARSE_TOKENS = {
         "YYYY": lambda year: int(year),
         "YY": lambda year: int(year),

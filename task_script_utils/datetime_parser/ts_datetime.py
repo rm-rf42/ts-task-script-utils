@@ -7,13 +7,8 @@ import pendulum
 from .parser_exceptions import AmbiguousFoldError
 
 
-
 class TSDatetime:
-    def __init__(
-        self,
-        datetime_: datetime,
-        subseconds: Optional[str] = None
-    ):
+    def __init__(self, datetime_: datetime, subseconds: Optional[str] = None):
         if not isinstance(datetime_, datetime):
             raise TypeError("datetime_ must be a datetime object")
 
@@ -34,7 +29,7 @@ class TSDatetime:
             return self._datetime
 
         microseconds = self._subseconds[:6]
-        microseconds = datetime.strptime(microseconds,"%f").microsecond
+        microseconds = datetime.strptime(microseconds, "%f").microsecond
         new_datetime = self._datetime.replace(microsecond=microseconds)
         return new_datetime
 
@@ -70,17 +65,12 @@ class TSDatetime:
         return iso_str
 
     def change_fold(self, new_fold: int):
-        if (
-            new_fold is None
-            and self._is_fold_required
-        ):
+        if new_fold is None and self._is_fold_required:
             raise AmbiguousFoldError(
-                "DatetimeConfig.fold must not be None to parse datetime without ambiguity.")
+                "DatetimeConfig.fold must not be None to parse datetime without ambiguity."
+            )
 
-        if (
-            self._datetime.tzinfo is None
-            or new_fold == self._datetime.fold
-        ):
+        if self._datetime.tzinfo is None or new_fold == self._datetime.fold:
             return
 
         self._datetime = self._datetime.replace(fold=new_fold)

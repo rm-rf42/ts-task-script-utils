@@ -2,13 +2,7 @@ import re
 import json
 from datetime import datetime as dt, time
 from itertools import product
-from typing import (
-    Dict,
-    List,
-    Optional,
-    Tuple,
-    Union
-)
+from typing import Dict, List, Optional, Tuple, Union
 
 import pendulum
 from pendulum.locales.en import locale
@@ -100,7 +94,7 @@ class DateTimeInfo:
                 "_date_str": self._match_short_date,
                 "am_or_pm": self._match_am_or_pm,
                 "offset_": self._match_offset,
-                "abbreviated_tz": self._match_tz_abbreviation
+                "abbreviated_tz": self._match_tz_abbreviation,
             }
         else:
             methods_dict = {
@@ -151,8 +145,7 @@ class DateTimeInfo:
                 return None
 
         if len(matches) > 1:
-            raise MultipleTimesFoundError(
-                f"Multiple Time values found: {matches}")
+            raise MultipleTimesFoundError(f"Multiple Time values found: {matches}")
 
         time_ = matches[0].strip()
         if "+" in time_:
@@ -199,7 +192,7 @@ class DateTimeInfo:
             "hour": f"{int(hour):02d}",
             "minutes": f"{int(minutes):02d}",
             "seconds": f"{int(seconds):02d}",
-            "fractional_seconds": fractional_seconds
+            "fractional_seconds": fractional_seconds,
         }
 
     def _match_short_date(self, token: str) -> Optional[Dict[str, str]]:
@@ -226,44 +219,27 @@ class DateTimeInfo:
         year_first_matches = re.match(year_first_pattern, token)
         if year_first_matches:
             day, month, year = self._process_year_first_or_last_matches(
-                year_first_matches.groups(),
-                True
+                year_first_matches.groups(), True
             )
 
-            return {
-                "year": year,
-                "month": month,
-                "day": day
-            }
+            return {"year": year, "month": month, "day": day}
 
         # XX-XX-YYYY
         year_last_matches = re.match(year_last_pattern, token)
         if year_last_matches:
             day, month, year = self._process_year_first_or_last_matches(
-                year_last_matches.groups(),
-                False
+                year_last_matches.groups(), False
             )
-            return {
-                "year": year,
-                "month": month,
-                "day": day
-            }
+            return {"year": year, "month": month, "day": day}
 
         # Cases = [XX-XX-XX, XX-X-X, X-X-XX, X-X-X]
-        two_digit_date_pattern_matches = re.match(
-            two_digit_date_pattern,
-            token
-        )
+        two_digit_date_pattern_matches = re.match(two_digit_date_pattern, token)
         if two_digit_date_pattern_matches:
             day, month, year = self._process_two_digit_date_pattern(
                 two_digit_date_pattern_matches.groups()
             )
 
-            return {
-                "year": year,
-                "month": month,
-                "day": day
-            }
+            return {"year": year, "month": month, "day": day}
 
         return None
 
@@ -303,8 +279,7 @@ class DateTimeInfo:
             matches = re.findall(pattern, token)
             if matches:
                 if len(matches) != 1:
-                    raise MultipleOffsetsError(
-                        f"Multiple offsets found: {matches}")
+                    raise MultipleOffsetsError(f"Multiple offsets found: {matches}")
                 match = matches[0].strip()
                 if match.lower().startswith("utc"):
                     match = match[3:]
@@ -326,7 +301,7 @@ class DateTimeInfo:
         return matches[0].upper()
 
     def _match_tz_abbreviation(self, token: str) -> Union[str, None]:
-        """ Check if the input token is an abbreviated timezone
+        """Check if the input token is an abbreviated timezone
         present in Datetime Config's tz_dict
 
         Args:
@@ -346,7 +321,7 @@ class DateTimeInfo:
         token_map = {
             "dddd": days["wide"].values(),
             "ddd": days["abbreviated"].values(),
-            "dd": days["short"].values()
+            "dd": days["short"].values(),
         }
         return self._get_token(token, token_map)
 
@@ -359,7 +334,7 @@ class DateTimeInfo:
         return self._get_token(date_time_token, token_map)
 
     def _match_day_token(self, date_time_token: str):
-        ordinals = ['st', 'nd', 'rd', 'th']
+        ordinals = ["st", "nd", "rd", "th"]
         for val in ordinals:
             if date_time_token.endswith(val):
                 return "Do"
@@ -379,24 +354,16 @@ class DateTimeInfo:
     @property
     def _date_str(self):
         """Returns year-month-day"""
-        if (
-            self.day
-            and self.month
-            and self.year
-        ):
+        if self.day and self.month and self.year:
             return f"{self.year}-{self.month}-{self.day}"
 
     @property
     def _time_str(self):
         """Returns:
-            - Hours:Minutes:seconds
-            - Hours:Minutes:seconds.Fraction
+        - Hours:Minutes:seconds
+        - Hours:Minutes:seconds.Fraction
         """
-        if not (
-            self.hour
-            and self.minutes
-            and self.seconds
-        ):
+        if not (self.hour and self.minutes and self.seconds):
             return None
 
         result = f"{self.year}-{self.month}-{self.day}"
@@ -415,7 +382,9 @@ class DateTimeInfo:
 
         if self.abbreviated_tz:
             if self.abbreviated_tz not in self.config.tz_dict:
-                raise OffsetNotKnownError(f"Offset value not known for '{self.abbreviated_tz}'")
+                raise OffsetNotKnownError(
+                    f"Offset value not known for '{self.abbreviated_tz}'"
+                )
             return self.config.tz_dict[self.abbreviated_tz]
 
         return None
@@ -498,11 +467,7 @@ class DateTimeInfo:
     def datetime(self):
         if not self.dt_format or not self.dtstamp:
             return None
-        return pendulum.from_format(
-            self.dtstamp,
-            self.dt_format,
-            tz=None
-        )
+        return pendulum.from_format(self.dtstamp, self.dt_format, tz=None)
 
     @property
     def long_date_format(self) -> str:
@@ -520,10 +485,7 @@ class DateTimeInfo:
         """
         self._parse_long_date_formats()
 
-        if not (
-                self.token_month
-                and self.token_day
-        ):
+        if not (self.token_month and self.token_day):
             raise InvalidDateError(f"{self.date_time_raw}")
 
         if self.token_day_of_week:
@@ -534,11 +496,7 @@ class DateTimeInfo:
                 f"YYYY"
             )
         else:
-            date_fmt = (
-                f"{self.token_month} "
-                f"{self.token_day} "
-                f"YYYY"
-            )
+            date_fmt = f"{self.token_month} " f"{self.token_day} " f"YYYY"
         return date_fmt
 
     @property
@@ -548,12 +506,9 @@ class DateTimeInfo:
         """
         parts = [
             [self.long_date_format],
-            get_time_formats_for_long_date(self.fractional_seconds)
+            get_time_formats_for_long_date(self.fractional_seconds),
         ]
-        formats = (
-            " ".join(values)
-            for values in product(*parts)
-        )
+        formats = (" ".join(values) for values in product(*parts))
         return formats
 
     def _pre_process_datetime_string(self):
@@ -570,7 +525,7 @@ class DateTimeInfo:
         if year_first:
             year, others = date_parts[0], date_parts[1:]
         else:
-            others, year = date_parts[: -1], date_parts[-1]
+            others, year = date_parts[:-1], date_parts[-1]
 
         if len(year) == 3:
             raise InvalidYearError(f"{date_parts} has invalid year.")
@@ -590,11 +545,7 @@ class DateTimeInfo:
 
         # Validate day, year, month
         try:
-            dt_date = dt(
-                day=int(day),
-                month=int(month),
-                year=int(year)
-            )
+            dt_date = dt(day=int(day), month=int(month), year=int(year))
         except Exception as e:
             msg = f"{str(e)}, date={date_parts}, config={self.config}"
             raise InvalidDateError(msg)
@@ -615,7 +566,7 @@ class DateTimeInfo:
             else:
                 # Input = YY-MM-DD
                 year, month, day = date_parts
-                if int(month)>12:
+                if int(month) > 12:
                     month, day = day, month
                 # At this point both month and day
                 # could have improper values, eg day=42 and month=16
@@ -630,37 +581,21 @@ class DateTimeInfo:
                 month, day, year = date_parts
             else:
                 # Input = XX-XX-YY
-                date_str = '-'.join([
-                    f"{int(token):02d}"
-                    for token in date_parts
-                ])
-                day, month, year = self._try_formats(
-                                    date_str,
-                                    ("MM-DD-YY", "DD-MM-YY")
-                                )
+                date_str = "-".join([f"{int(token):02d}" for token in date_parts])
+                day, month, year = self._try_formats(date_str, ("MM-DD-YY", "DD-MM-YY"))
         else:
             if self.config.day_first is True:
                 # Input = DD-MM-YY
                 day, month, year = date_parts
             elif self.config.day_first is False:
                 # Could Be MM-DD-YY or YY-MM-DD
-                date_str = '-'.join([
-                    f"{int(token):02d}"
-                    for token in date_parts
-                ])
-                day, month, year = self._try_formats(
-                    date_str,
-                    ("MM-DD-YY", "YY-MM-DD")
-                )
+                date_str = "-".join([f"{int(token):02d}" for token in date_parts])
+                day, month, year = self._try_formats(date_str, ("MM-DD-YY", "YY-MM-DD"))
             else:
                 # Could Be MM-DD-YY or YY-MM-DD or DD-MM-YY
-                date_str = '-'.join([
-                    f"{int(token):02d}"
-                    for token in date_parts
-                ])
+                date_str = "-".join([f"{int(token):02d}" for token in date_parts])
                 day, month, year = self._try_formats(
-                    date_str,
-                    ("MM-DD-YY", "YY-MM-DD", "DD-MM-YY")
+                    date_str, ("MM-DD-YY", "YY-MM-DD", "DD-MM-YY")
                 )
 
         if len(year) == 1:
@@ -673,11 +608,7 @@ class DateTimeInfo:
 
         # Validate day, year, month
         try:
-            dt_date = dt(
-                day=int(day),
-                month=int(month),
-                year=int(year)
-            )
+            dt_date = dt(day=int(day), month=int(month), year=int(year))
         except Exception as e:
             msg = f"{str(e)}, date={'-'.join(date_parts)}, {self.config}"
             raise InvalidDateError(msg)
@@ -703,26 +634,19 @@ class DateTimeInfo:
 
         first_token_is_month = int(tokens[0]) <= 12
         second_token_is_month = int(tokens[1]) <= 12
-        if (
-            (first_token_is_month and second_token_is_month)
-            and (tokens[0] == tokens[1])
+        if (first_token_is_month and second_token_is_month) and (
+            tokens[0] == tokens[1]
         ):
             return tokens[0], tokens[1]
 
         if first_token_is_month and second_token_is_month:
-            raise AmbiguousDateError(
-                f"Can't decide day and month between: {tokens}"
-            )
+            raise AmbiguousDateError(f"Can't decide day and month between: {tokens}")
 
         if not first_token_is_month and not second_token_is_month:
-            raise AmbiguousDateError(
-                f"Can't decide day and month between: {tokens}"
-            )
+            raise AmbiguousDateError(f"Can't decide day and month between: {tokens}")
 
         day, month = (
-            (tokens[0], tokens[1])
-            if second_token_is_month
-            else (tokens[1], tokens[0])
+            (tokens[0], tokens[1]) if second_token_is_month else (tokens[1], tokens[0])
         )
         return day, month
 
@@ -757,9 +681,9 @@ class DateTimeInfo:
         char_list = list(string)
         for i, current_char in enumerate(char_list[1:-1]):
             if (
-                char_list[i-1].isdigit()
+                char_list[i - 1].isdigit()
                 and char_list[i].isalpha()
-                and char_list[i+1].isdigit()
+                and char_list[i + 1].isdigit()
             ):
                 char_list[i] = " "
 
@@ -801,10 +725,7 @@ class DateTimeInfo:
         Returns:
             tuple[str]: (day, month, year)
         """
-        parsed_results = [
-            self._is_format(date_str, format_)
-            for format_ in formats
-        ]
+        parsed_results = [self._is_format(date_str, format_) for format_ in formats]
 
         parsed_results = list(filter(lambda x: x is not None, parsed_results))
         if len(parsed_results) != 1:
@@ -812,21 +733,15 @@ class DateTimeInfo:
                 f"Ambiguous date:{date_str}, possible formats: {formats}"
             )
         result = parsed_results[0]
-        return (
-            str(result.day),
-            str(result.month),
-            str(result.year)
-        )
+        return (str(result.day), str(result.month), str(result.year))
 
     def _validate_meridiem(self):
-        if (
-            self.hour is None
-            or self.am_or_pm is None
-        ):
+        if self.hour is None or self.am_or_pm is None:
             # Nothing to check.
             return
 
         if self.am_or_pm.upper() == "AM":
             if int(self.hour) > 12:
                 raise InvalidTimeError(
-                    f"Hour is {self.hour} but meridiem is {self.am_or_pm}")
+                    f"Hour is {self.hour} but meridiem is {self.am_or_pm}"
+                )

@@ -194,5 +194,5 @@ _all_abbreviated_tz_list = [
     "MAWT",
     "PHST",
     "NZST",
-    "EEST"
+    "EEST",
 ]

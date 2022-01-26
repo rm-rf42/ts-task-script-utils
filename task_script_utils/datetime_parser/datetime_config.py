@@ -8,7 +8,7 @@ class DatetimeConfig:
         day_first: Optional[bool] = None,
         year_first: Optional[bool] = None,
         tz_dict: dict = {},
-        fold: Optional[int] = None
+        fold: Optional[int] = None,
     ):
         """DatetimeConfig provides complementary information on how to mark
         parsed digits as day, month or year.
