@@ -8,7 +8,7 @@ snapshottest = "*"
 pytest = "*"
 pytest-cov = "*"
 ipykernel= "*"
-black = "*"
+black = ">=21.12b0"
 
 [packages]
 numpy = "*"
@@ -20,3 +20,6 @@ pydash = "*"
 
 [pipenv]
 allow_prereleases = true
+
+[requires]
+python_version = "3.7"
