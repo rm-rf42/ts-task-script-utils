@@ -12,10 +12,10 @@ class DatetimeConfig:
     ):
         """DatetimeConfig provides complementary information on how to mark
         parsed digits as day, month or year.
-        It also provide an options to handle abbreviated time zones and
+        It also provide an option to handle abbreviated time zones and
         fold for parsing ambiguous timestamps during daylight saving transitions.
         Ideally, DatetimeConfig should be constructed from pipeline configuration
-        passed to task scripts
+        passed to task script
 
         Args:
             day_first (Optional[bool], optional): Whether to interpret the first
@@ -26,7 +26,8 @@ class DatetimeConfig:
             value in an ambiguous 3-integer date (e.g. 01/05/09) as the year.
             Defaults to None. When the year has four digits, then whether
             `year_first` is `true` or `false`,is decided by regex parsing done
-            by `DatetimeInfo` class.
+            by `DatetimeInfo` class. If both `year_first` and `day_first` are true,
+            then `year_first` will take priority and resulting date format will be as YDM.
 
             tz_dict (dict, optional): A python dict that maps abbreviated timezone
             names to their corresponding offset. Defaults to {}.
