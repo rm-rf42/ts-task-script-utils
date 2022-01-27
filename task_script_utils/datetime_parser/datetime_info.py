@@ -496,7 +496,7 @@ class DateTimeInfo:
                 f"YYYY"
             )
         else:
-            date_fmt = f"{self.token_month} " f"{self.token_day} " f"YYYY"
+            date_fmt = date_fmt = f"{self.token_month} {self.token_day} YYYY"
         return date_fmt
 
     @property
@@ -570,7 +570,7 @@ class DateTimeInfo:
                     month, day = day, month
                 # At this point both month and day
                 # could have improper values, eg day=42 and month=16
-                # This is validate later below in this function.
+                # This is validated later below in this function.
 
         elif self.config.year_first is False:
             if self.config.day_first is True:
