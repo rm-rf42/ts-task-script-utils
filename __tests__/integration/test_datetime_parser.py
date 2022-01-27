@@ -86,8 +86,7 @@ def test_parse_with_formats(input, expected):
             formats_list,
             datetime_config,
         )
-    except Exception as e:
-        print(str(e))
+    except DatetimeParserError as e:
         parsed_datetime = None
 
     if parsed_datetime is None:

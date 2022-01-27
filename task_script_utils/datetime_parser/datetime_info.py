@@ -496,7 +496,7 @@ class DateTimeInfo:
                 f"YYYY"
             )
         else:
-            date_fmt = date_fmt = f"{self.token_month} {self.token_day} YYYY"
+            date_fmt = f"{self.token_month} {self.token_day} YYYY"
         return date_fmt
 
     @property

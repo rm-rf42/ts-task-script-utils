@@ -7,11 +7,6 @@ Utility functions for Tetra Task Scripts
 - [Installation](#installation)
 - [Usage](#usage)
 - [Datetime Parser](#datetime-parser)
-  - [Usage](#usage-1)
-  - [DatetimeConfig](#datetimeconfig)
-  - [Datetime format resolution matrix](#datetime-format-resolution-matrix)
-  - [Format Tokens](#format-tokens)
-  - [Limitations](#limitations)
 - [Test](#test)
 
 ## Installation
