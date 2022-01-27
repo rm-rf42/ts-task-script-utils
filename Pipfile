@@ -8,7 +8,7 @@ snapshottest = "*"
 pytest = "*"
 pytest-cov = "*"
 ipykernel= "*"
-black = ">=21.12b0"
+black = "*"
 
 [packages]
 numpy = "*"
