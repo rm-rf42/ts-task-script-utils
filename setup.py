@@ -8,7 +8,11 @@ VERSION = "1.2.0"
 with open("README.md", "r") as readme_file:
     readme = readme_file.read()
 
-requirements = ["numpy>=1.20.1", "arrow>=1.0.2", "dateparser>=1.0.0"]
+# Read Requirements
+with open("./requirements.txt", "r") as req_file:
+    requirements = req_file.read()
+    requirements = requirements.splitlines()
+    requirements = [req for req in requirements if req and req[0].isalpha()]
 
 setup(
     name=NAME,
