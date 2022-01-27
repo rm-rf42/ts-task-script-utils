@@ -33,13 +33,11 @@ parse("2004-12-23T12:30 AM +05:30")
 parse("2004-12-23T12:30 AM +05:30", <datetime_config>)
 parse("2004-12-23T12:30 AM +05:30", <format_list>)
 parse("2004-12-23T12:30 AM +05:30", <format_list>, <datetime_config>)
-
-# Parse() returns a TSDatetime Object.
-# You can use TSDatetime.tsformat() and
-# TSDatetime.isoformat() to get datetime string.
-# You can also use TSDatetime.datetime to access
-# python datetime object.
 ```
+
+Parse() returns a TSDatetime Object. You can use TSDatetime.tsformat() and
+TSDatetime.isoformat() to get datetime string. You can also use
+TSDatetime.datetime to access python datetime object.
 
 You can read more about the datetime parser [here](task_script_utils/datetime_parser/README.md).
 
