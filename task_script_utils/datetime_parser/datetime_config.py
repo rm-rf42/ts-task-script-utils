@@ -12,10 +12,10 @@ class DatetimeConfig:
     ):
         """DatetimeConfig provides complementary information on how to mark
         parsed digits as day, month or year.
-        It also provide an option to handle abbreviated time zones and
+        It also provides an option to handle abbreviated time zones and
         fold for parsing ambiguous timestamps during daylight saving transitions.
         Ideally, DatetimeConfig should be constructed from pipeline configuration
-        passed to task script
+        passed to task scripts.
 
         Args:
             day_first (Optional[bool], optional): Whether to interpret the first
