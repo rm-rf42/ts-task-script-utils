@@ -6,7 +6,7 @@
 - [Working with formats_list](#working-with-formats_list)
   - [Working with fractional seconds](#working-with-fractional-seconds)
   - [Working with abbreviated timezones](#working-with-abbreviated-timezones)
-- [Resolving ambiguous dates with DatetimeConfig](#resolving-ambiguous-dates-with-datetimeconfig)
+- [Working with DatetimeConfig](#working-with-datetimeconfig)
 - [Working with TSDatetime](#working-with-tsdatetime)
 - [DatetimeConfig](#datetimeconfig)
 - [Limitations](#limitations)
@@ -230,9 +230,9 @@ result.isoformat() # 2021-12-12T14:15:16-06:00
 
 An exception will be raised if DatetimeConfig.tz_dict doesn't contain the abbreviated tz.
 
-## Resolving ambiguous dates with `DatetimeConfig`
+## Working with `DatetimeConfig`
 
-After parser has extracted date parts using regex, `DatetimeConfig` can be used to handle ambiguous cases by specifying flags like `year_first: Optional[bool]` and `day_first: Optional[bool]`.
+After parser has extracted date parts using regex, `DatetimeConfig` if passed, will be used to parse short date with the help of flags like `year_first: Optional[bool]` and `day_first: Optional[bool]`.
 
 - `day_first: Optional[bool]`: `True/False`. Defaults to `None`
   - Whether to interpret the first value in an ambiguous 3-integer date (e.g. 01/05/09) as the day (True) or month (False).
