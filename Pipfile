@@ -7,6 +7,7 @@ verify_ssl = true
 snapshottest = "*"
 pytest = "*"
 pytest-cov = "*"
+ipykernel= "*"
 black = ">=21.12b0"
 
 [packages]
@@ -14,6 +15,11 @@ numpy = "*"
 python-dateutil = "*"
 dateparser = "*"
 arrow = "*"
+pendulum = "2.1.2"
+pydash = "*"
 
 [pipenv]
 allow_prereleases = true
+
+[requires]
+python_version = "3.7"
