@@ -8,6 +8,8 @@ Utility functions for Tetra Task Scripts
 - [Usage](#usage)
 - [Datetime Parser](#datetime-parser)
 - [Test](#test)
+- [Changelog](#changelog)
+  - [v1.1.0](#v110)
 
 ## Installation
 
@@ -41,3 +43,9 @@ You can read more about the datetime parser [here](task_script_utils/datetime_pa
 `pipenv install --dev`
 then
 `pipenv run python -m pytest`
+
+## Changelog
+
+### v1.1.0
+
+- Add `datetime_parser` package
