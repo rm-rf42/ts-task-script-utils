@@ -2,7 +2,7 @@ import pytest
 from task_script_utils.datetime_parser.parser import (
     parse,
     _parse_with_formats,
-    DatetimeConfig
+    DatetimeConfig,
 )
 
 from task_script_utils.datetime_parser.parser_exceptions import DatetimeParserError
@@ -194,6 +194,7 @@ def test_parse_with_formats(input, expected):
     else:
         assert parsed_datetime.isoformat() == expected
 
+
 @pytest.mark.parametrize(
     "input, expected", format_list_with_no_tz_dict_test_cases.items()
 )
@@ -204,6 +205,7 @@ def test_parse_with_formats_with_no_tz_dict(input, expected):
         assert parsed_datetime == expected
     else:
         assert parsed_datetime.isoformat() == expected
+
 
 @pytest.mark.parametrize(
     "input, expected", parse_with_no_datetime_formats_list_test_cases.items()
@@ -223,6 +225,7 @@ def test_parse(input, expected):
 
     assert parsed_datetime == expected
 
+
 @pytest.mark.parametrize("input_, fold, expected", config_with_fold_test_cases)
 def test_convert_to_iso_with_fold(input_, fold, expected):
     config = DatetimeConfig(fold=fold, day_first=False)
@@ -232,6 +235,7 @@ def test_convert_to_iso_with_fold(input_, fold, expected):
     except DatetimeParserError as e:
         result = None
     assert result == expected
+
 
 @pytest.mark.parametrize("input_, expected", fractional_seconds_test_cases)
 def test_convert_to_iso_with_fractional_seconds(input_, expected):
@@ -244,6 +248,7 @@ def test_convert_to_iso_with_fractional_seconds(input_, expected):
         result = None
     assert result == expected
 
+
 @pytest.mark.parametrize(
     "input_, year_first, day_first, expected", datetime_with_config_tests
 )
@@ -255,6 +260,7 @@ def test_convert_to_ts_format_for_padding(input_, year_first, day_first, expecte
     except DatetimeParserError as e:
         result = None
     assert result == expected
+
 
 @pytest.mark.parametrize(
     "input_, dt_formats, expected", datetime_strings_with_and_without_Z
