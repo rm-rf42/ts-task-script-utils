@@ -10,6 +10,7 @@ Utility functions for Tetra Task Scripts
 - [Test](#test)
 - [Changelog](#changelog)
   - [v1.1.0](#v110)
+  - [v1.1.1](#v111)
 
 ## Installation
 
@@ -45,6 +46,10 @@ then
 `pipenv run python -m pytest`
 
 ## Changelog
+
+### v1.1.1
+
+- Remove `convert_to_ts_iso8601()` method
 
 ### v1.1.0
 
