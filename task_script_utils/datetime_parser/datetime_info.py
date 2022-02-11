@@ -366,27 +366,6 @@ class DateTimeInfo:
         return None
 
     @property
-    def _date_str(self):
-        """Returns year-month-day"""
-        if self.day and self.month and self.year:
-            return f"{self.year}-{self.month}-{self.day}"
-
-    @property
-    def _time_str(self):
-        """Returns:
-        - Hours:Minutes:seconds
-        - Hours:Minutes:seconds.Fraction
-        """
-        if not (self.hour and self.minutes and self.seconds):
-            return None
-
-        result = f"{self.year}-{self.month}-{self.day}"
-        if self.fractional_seconds:
-            result = f"{result}.{self.fractional_seconds}"
-
-        return result
-
-    @property
     def offset(self):
         """
         Return UTC offset that was found during parsing
