@@ -100,6 +100,7 @@ def test_regex_parsing(input, expected):
 
     assert parsed_datetime == expected
 
+
 def _build_date_str_from_datetime_info(dt_info: DateTimeInfo) -> str:
     """Returns year-month-day"""
     if dt_info.day and dt_info.month and dt_info.year:
