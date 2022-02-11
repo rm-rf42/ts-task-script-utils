@@ -1,8 +1,10 @@
+from functools import reduce
 import re
 import json
 from datetime import datetime as dt, time
 from itertools import product
 from typing import Dict, List, Optional, Tuple, Union
+from numpy import vstack
 
 import pendulum
 from pendulum.locales.en import locale
@@ -56,10 +58,18 @@ class DateTimeInfo:
         return json.dumps(self.__dict__, indent=2)
 
     def _parse(self, matchers):
+        _matchers = list(matchers)
         tokens = self.date_time_raw.split()
         for token in tokens:
-            for func in matchers:
+            for func in _matchers:
                 result = func(token)
+                values = set(result.values())
+                if values != {None}:
+                    # It means result of func(token)
+                    # has matched something and we don't
+                    # need that matcher anymore. Hence
+                    # remove it from the _matcher list
+                    _matchers.remove(func)
                 for key, value in result.items():
                     if self.__dict__.get(key) is None:
                         self.__dict__[key] = value
