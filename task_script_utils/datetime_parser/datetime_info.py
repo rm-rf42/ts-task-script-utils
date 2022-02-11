@@ -58,51 +58,46 @@ class DateTimeInfo:
     def _parse(self, matchers):
         tokens = self.date_time_raw.split()
         for token in tokens:
-            for var_name, func in matchers.items():
-                if getattr(self, var_name) is None:
-                    result = func(token)
-                    if result and isinstance(result, dict):
-                        # if the result is a dict, then resultant
-                        # keys are the attributes that are
-                        # needed to be set.
-                        for key, value in result.items():
-                            setattr(self, key, value)
-                    elif result is not None:
-                        setattr(self, var_name, result)
+            for func in matchers:
+                result = func(token)
+                for key, value in result.items():
+                    if self.__dict__.get(key) is None:
+                        self.__dict__[key] = value
+
 
     def _parse_long_date_formats(self):
-        long_date_matchers = self._get_matchers_map(long_date_formats=True)
+        long_date_matchers = self._get_matchers_list(long_date_formats=True)
         self._parse(long_date_matchers)
         if self.token_day is None:
             self.token_day = "DD"
 
     def _parse_short_date_formats(self):
-        short_date_matcher = self._get_matchers_map()
+        short_date_matcher = self._get_matchers_list()
         self._parse(short_date_matcher)
 
         # Add Validators here
         self._validate_meridiem()
 
-    def _get_matchers_map(self, long_date_formats=False):
+    def _get_matchers_list(self, long_date_formats=False):
         """It returns a `dict` that maps parsing functions to instance
         variable that should store the result.
         """
         if not long_date_formats:
-            methods_dict = {
-                "iana_tz": self._match_iana_tz,
-                "_time_str": self._match_time,
-                "_date_str": self._match_short_date,
-                "am_or_pm": self._match_am_or_pm,
-                "offset_": self._match_offset,
-                "abbreviated_tz": self._match_tz_abbreviation,
-            }
+            matchers = [
+                self._match_iana_tz,
+                self._match_time,
+                self._match_short_date,
+                self._match_am_or_pm,
+                self._match_offset,
+                self._match_tz_abbreviation,
+            ]
         else:
-            methods_dict = {
-                "token_day_of_week": self._match_day_of_week_token,
-                "token_month": self._match_month_token,
-                "token_day": self._match_day_token,
-            }
-        return methods_dict
+            matchers = [
+                self._match_day_of_week_token,
+                self._match_month_token,
+                self._match_day_token,
+            ]
+        return matchers
 
     def _match_iana_tz(self, token: str) -> str:
         """Match and store IANA timezone
@@ -114,8 +109,12 @@ class DateTimeInfo:
         Returns:
             str : An IANA timezone string
         """
+        iana_tz = None
         if token in pendulum.timezones:
-            return token
+            iana_tz = token
+        return {
+            "iana_tz": iana_tz
+        }
 
     def _match_time(self, token: str) -> Optional[dict]:
         """Use Regex to find any time string present in
@@ -142,7 +141,12 @@ class DateTimeInfo:
         if not matches:
             matches = re.findall(hh_mm_pattern, token)
             if not matches:
-                return None
+                return {
+                    "hour": None,
+                    "minutes": None,
+                    "seconds": None,
+                    "fractional_seconds": None,
+                }
 
         if len(matches) > 1:
             raise MultipleTimesFoundError(f"Multiple Time values found: {matches}")
@@ -241,7 +245,7 @@ class DateTimeInfo:
 
             return {"year": year, "month": month, "day": day}
 
-        return None
+        return {"year": None, "month": None, "day": None}
 
     def _match_offset(self, token: str) -> Union[str, None]:
         """Use Regex to find if any utc offset value
@@ -270,10 +274,10 @@ class DateTimeInfo:
         try:
             short_date = self._match_short_date(token)
         except Exception as e:
-            short_date = None
+            short_date = {"day": None, "month": None, "year": None}
 
-        if short_date:
-            return None
+        if not set(short_date.values()) == {None}:
+            return {"offset": None}
 
         for pattern in patterns:
             matches = re.findall(pattern, token)
@@ -286,8 +290,10 @@ class DateTimeInfo:
                 sign, offset = match[0], match[1:]
                 offset = self._pad_and_validate_offset_value(offset)
                 if offset:
-                    return f"{sign}{offset}"
-        return None
+                    return {
+                        "offset_": f"{sign}{offset}"
+                    }
+        return {"offset":None}
 
     def _match_am_or_pm(self, token: str):
         """
@@ -297,8 +303,10 @@ class DateTimeInfo:
         pattern = r"[ap][m]$"
         matches = re.findall(pattern, token, flags=re.IGNORECASE)
         if not matches or len(matches) != 1:
-            return None
-        return matches[0].upper()
+            return {"am_or_pm":None}
+        return {
+            "am_or_pm": matches[0].upper()
+        }
 
     def _match_tz_abbreviation(self, token: str) -> Union[str, None]:
         """Check if the input token is an abbreviated timezone
@@ -313,8 +321,10 @@ class DateTimeInfo:
             match is found else None
         """
         if token.upper() in _all_abbreviated_tz_list:
-            return token.upper()
-        return None
+            return {
+                "abbreviated_tz": token.upper()
+            }
+        return {"abbreviated_tz": None}
 
     def _match_day_of_week_token(self, token: str):
         days = locale.locale["translations"]["days"]
@@ -323,7 +333,10 @@ class DateTimeInfo:
             "ddd": days["abbreviated"].values(),
             "dd": days["short"].values(),
         }
-        return self._get_token(token, token_map)
+        token = self._get_token(token, token_map)
+        return {
+            "token_day_of_week": token
+        }
 
     def _match_month_token(self, date_time_token: str):
         months = locale.locale["translations"]["months"]
@@ -331,17 +344,23 @@ class DateTimeInfo:
             "MMMM": months["wide"].values(),
             "MMM": months["abbreviated"].values(),
         }
-        return self._get_token(date_time_token, token_map)
+        token = self._get_token(date_time_token, token_map)
+        return {
+            "token_month": token
+        }
 
     def _match_day_token(self, date_time_token: str):
         ordinals = ["st", "nd", "rd", "th"]
+        token = None
         for val in ordinals:
             if date_time_token.endswith(val):
-                return "Do"
+                token = "Do"
             elif date_time_token.endswith(f"{val},"):
-                return "Do,"
+                token = "Do,"
 
-        return None
+        return {
+            "token_day": token
+        }
 
     def _get_token(self, token, token_map: dict):
         for key_, values in token_map.items():
