@@ -64,7 +64,6 @@ class DateTimeInfo:
                     if self.__dict__.get(key) is None:
                         self.__dict__[key] = value
 
-
     def _parse_long_date_formats(self):
         long_date_matchers = self._get_matchers_list(long_date_formats=True)
         self._parse(long_date_matchers)
@@ -112,9 +111,7 @@ class DateTimeInfo:
         iana_tz = None
         if token in pendulum.timezones:
             iana_tz = token
-        return {
-            "iana_tz": iana_tz
-        }
+        return {"iana_tz": iana_tz}
 
     def _match_time(self, token: str) -> Optional[dict]:
         """Use Regex to find any time string present in
@@ -290,10 +287,8 @@ class DateTimeInfo:
                 sign, offset = match[0], match[1:]
                 offset = self._pad_and_validate_offset_value(offset)
                 if offset:
-                    return {
-                        "offset_": f"{sign}{offset}"
-                    }
-        return {"offset":None}
+                    return {"offset_": f"{sign}{offset}"}
+        return {"offset": None}
 
     def _match_am_or_pm(self, token: str):
         """
@@ -303,10 +298,8 @@ class DateTimeInfo:
         pattern = r"[ap][m]$"
         matches = re.findall(pattern, token, flags=re.IGNORECASE)
         if not matches or len(matches) != 1:
-            return {"am_or_pm":None}
-        return {
-            "am_or_pm": matches[0].upper()
-        }
+            return {"am_or_pm": None}
+        return {"am_or_pm": matches[0].upper()}
 
     def _match_tz_abbreviation(self, token: str) -> Union[str, None]:
         """Check if the input token is an abbreviated timezone
@@ -321,9 +314,7 @@ class DateTimeInfo:
             match is found else None
         """
         if token.upper() in _all_abbreviated_tz_list:
-            return {
-                "abbreviated_tz": token.upper()
-            }
+            return {"abbreviated_tz": token.upper()}
         return {"abbreviated_tz": None}
 
     def _match_day_of_week_token(self, token: str):
@@ -334,9 +325,7 @@ class DateTimeInfo:
             "dd": days["short"].values(),
         }
         token = self._get_token(token, token_map)
-        return {
-            "token_day_of_week": token
-        }
+        return {"token_day_of_week": token}
 
     def _match_month_token(self, date_time_token: str):
         months = locale.locale["translations"]["months"]
@@ -345,9 +334,7 @@ class DateTimeInfo:
             "MMM": months["abbreviated"].values(),
         }
         token = self._get_token(date_time_token, token_map)
-        return {
-            "token_month": token
-        }
+        return {"token_month": token}
 
     def _match_day_token(self, date_time_token: str):
         ordinals = ["st", "nd", "rd", "th"]
@@ -358,9 +345,7 @@ class DateTimeInfo:
             elif date_time_token.endswith(f"{val},"):
                 token = "Do,"
 
-        return {
-            "token_day": token
-        }
+        return {"token_day": token}
 
     def _get_token(self, token, token_map: dict):
         for key_, values in token_map.items():
