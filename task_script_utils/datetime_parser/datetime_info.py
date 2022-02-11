@@ -1,10 +1,8 @@
-from functools import reduce
 import re
 import json
 from datetime import datetime as dt, time
 from itertools import product
 from typing import Dict, List, Optional, Tuple, Union
-from numpy import vstack
 
 import pendulum
 from pendulum.locales.en import locale
@@ -108,7 +106,7 @@ class DateTimeInfo:
             ]
         return matchers
 
-    def _match_iana_tz(self, token: str) -> str:
+    def _match_iana_tz(self, token: str) -> dict:
         """Match and store IANA timezone
 
         Args:
@@ -116,14 +114,14 @@ class DateTimeInfo:
             when splitted by whitespace
 
         Returns:
-            str : An IANA timezone string
+            dict : a dict containing iana_tz
         """
         iana_tz = None
         if token in pendulum.timezones:
             iana_tz = token
         return {"iana_tz": iana_tz}
 
-    def _match_time(self, token: str) -> Optional[dict]:
+    def _match_time(self, token: str) -> Dict[str, str]:
         """Use Regex to find any time string present in
         input token
 
@@ -138,8 +136,8 @@ class DateTimeInfo:
             numeric value of hrs, minutes and seconds are out of bound.
 
         Returns:
-            Optional[dict]: return a dict with `hour`, `minutes`, `seconds`
-            and `milliseconds`, if any time string is found else return None
+            Dict[str, str]: return a dict with string values for `hour`,
+            `minutes`, `seconds` and `milliseconds`
         """
         hh_mm_ss_pattern = r"\d{1,2}:\d{1,2}:\d{1,2}\.\d+|^\d{1,2}:\d{1,2}:\d{1,2}$|^\d{1,2}:\d{1,2}:\d{1,2}[+-]{1,1}"
         hh_mm_pattern = r"^(?![+-])\d{1,2}:\d{1,2}$|^(?![+-])\d{1,2}:\d{1,2}[+-]{1,1}"
@@ -206,7 +204,7 @@ class DateTimeInfo:
             "fractional_seconds": fractional_seconds,
         }
 
-    def _match_short_date(self, token: str) -> Optional[Dict[str, str]]:
+    def _match_short_date(self, token: str) -> Dict[str, str]:
         """Use Regex to find any short date string present in
         input token
 
@@ -218,7 +216,7 @@ class DateTimeInfo:
             when splitted by whitespace
 
         Returns:
-            Optional[Dict[str,str]]: returns a dict containing `year`,
+            Dict[str, str]: returns a dict containing values for `year`,
             `month` and `day`
         """
         year_first_pattern = r"(\d{4,4})[-./\\](\d{1,2})[-./\\](\d{1,2})"
@@ -254,7 +252,7 @@ class DateTimeInfo:
 
         return {"year": None, "month": None, "day": None}
 
-    def _match_offset(self, token: str) -> Union[str, None]:
+    def _match_offset(self, token: str) -> Dict[str, str]:
         """Use Regex to find if any utc offset value
         is present in input token
 
@@ -263,8 +261,7 @@ class DateTimeInfo:
             when splitted by whitespace
 
         Returns:
-            Union[str, None]: +hh:mm or -hh:mm if a match is found
-            else None
+            Dict[str, str]: returns a dict with value for key 'offset_'
         """
         # Can't parse 12-23-1223T11:12:23.000-05:30
         # offset with - sign, confuses with date separator
@@ -284,7 +281,7 @@ class DateTimeInfo:
             short_date = {"day": None, "month": None, "year": None}
 
         if not set(short_date.values()) == {None}:
-            return {"offset": None}
+            return {"offset_": None}
 
         for pattern in patterns:
             matches = re.findall(pattern, token)
@@ -298,12 +295,13 @@ class DateTimeInfo:
                 offset = self._pad_and_validate_offset_value(offset)
                 if offset:
                     return {"offset_": f"{sign}{offset}"}
-        return {"offset": None}
+        return {"offset_": None}
 
-    def _match_am_or_pm(self, token: str):
+    def _match_am_or_pm(self, token: str) -> Dict[str, str]:
         """
         Use regex to check if input string contains
-        AM or PM. Return the matched value
+        AM or PM. Return the matched value wrapped in a
+        dict.
         """
         pattern = r"[ap][m]$"
         matches = re.findall(pattern, token, flags=re.IGNORECASE)
@@ -311,7 +309,7 @@ class DateTimeInfo:
             return {"am_or_pm": None}
         return {"am_or_pm": matches[0].upper()}
 
-    def _match_tz_abbreviation(self, token: str) -> Union[str, None]:
+    def _match_tz_abbreviation(self, token: str) -> Dict[str, str]:
         """Check if the input token is an abbreviated timezone
         present in Datetime Config's tz_dict
 
@@ -320,14 +318,14 @@ class DateTimeInfo:
             when splitted by whitespace
 
         Returns:
-            Union[str, None]: string like CST/EST etc if a
-            match is found else None
+            Dict[str, str]: a dict with containing 'abbreviated_tz' key
+            and its matched value
         """
         if token.upper() in _all_abbreviated_tz_list:
             return {"abbreviated_tz": token.upper()}
         return {"abbreviated_tz": None}
 
-    def _match_day_of_week_token(self, token: str):
+    def _match_day_of_week_token(self, token: str) -> Dict[str, str]:
         days = locale.locale["translations"]["days"]
         token_map = {
             "dddd": days["wide"].values(),
@@ -337,7 +335,7 @@ class DateTimeInfo:
         token = self._get_token(token, token_map)
         return {"token_day_of_week": token}
 
-    def _match_month_token(self, date_time_token: str):
+    def _match_month_token(self, date_time_token: str) -> Dict[str, str]:
         months = locale.locale["translations"]["months"]
         token_map = {
             "MMMM": months["wide"].values(),
@@ -346,7 +344,7 @@ class DateTimeInfo:
         token = self._get_token(date_time_token, token_map)
         return {"token_month": token}
 
-    def _match_day_token(self, date_time_token: str):
+    def _match_day_token(self, date_time_token: str) -> Dict[str, str]:
         ordinals = ["st", "nd", "rd", "th"]
         token = None
         for val in ordinals:
