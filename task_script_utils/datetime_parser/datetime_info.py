@@ -315,21 +315,22 @@ class DateTimeInfo:
             return True
         return False
 
-    def _match_tz_abbreviation(self, token: str) -> Dict[str, str]:
+    def _match_tz_abbreviation(self, token: str) -> bool:
         """Check if the input token is an abbreviated timezone
-        present in Datetime Config's tz_dict
+        present in Datetime Config's tz_dict and if it is present,
+        set `self.abbreviated_tz`
 
         Args:
             token (str): A string value from `self.date_time_raw`
             when splitted by whitespace
 
         Returns:
-            Dict[str, str]: a dict with containing 'abbreviated_tz' key
-            and its matched value
+            bool: If abbreviated_tz is matched, return True.
         """
         if token.upper() in _all_abbreviated_tz_list:
-            return {"abbreviated_tz": token.upper()}
-        return {"abbreviated_tz": None}
+            self.abbreviated_tz = token.upper()
+            return True
+        return False
 
     def _match_day_of_week_token(self, token: str) -> Dict[str, str]:
         days = locale.locale["translations"]["days"]
