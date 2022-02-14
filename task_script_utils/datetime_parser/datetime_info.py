@@ -255,16 +255,18 @@ class DateTimeInfo:
         self.day = day
 
 
-    def _match_offset(self, token: str) -> Dict[str, str]:
+    def _match_offset(self, token: str) -> bool:
         """Use Regex to find if any utc offset value
         is present in input token
+        If a match is found, set `self.offset_`
 
         Args:
             token (str): A string value from `self.date_time_raw`
             when splitted by whitespace
 
         Returns:
-            Dict[str, str]: returns a dict with value for key 'offset_'
+            bool: Return `True` if a valid offset value is matched
+            else return False
         """
         # Can't parse 12-23-1223T11:12:23.000-05:30
         # offset with - sign, confuses with date separator
@@ -281,10 +283,10 @@ class DateTimeInfo:
         try:
             short_date = self._match_short_date(token)
         except Exception as e:
-            short_date = {"day": None, "month": None, "year": None}
+            short_date = False
 
-        if not set(short_date.values()) == {None}:
-            return {"offset_": None}
+        if short_date:
+            return False
 
         for pattern in patterns:
             matches = re.findall(pattern, token)
@@ -297,8 +299,9 @@ class DateTimeInfo:
                 sign, offset = match[0], match[1:]
                 offset = self._pad_and_validate_offset_value(offset)
                 if offset:
-                    return {"offset_": f"{sign}{offset}"}
-        return {"offset_": None}
+                    self.offset_ = "{sign}{offset}"
+                    return True
+        return False
 
     def _match_am_or_pm(self, token: str) -> Dict[str, str]:
         """
