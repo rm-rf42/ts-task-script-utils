@@ -1,3 +1,4 @@
+from optparse import Option
 import re
 import json
 from datetime import datetime as dt, time
@@ -30,25 +31,25 @@ class DateTimeInfo:
     """
 
     def __init__(self, date_time_raw: str, config: DatetimeConfig):
-        self.date_time_raw = date_time_raw
+        self.date_time_raw: str = date_time_raw
 
-        self.am_or_pm: str = None
-        self.iana_tz: str = None
-        self.offset_: str = None
-        self.abbreviated_tz: str = None
-        self.day: str = None
-        self.month: str = None
-        self.year: str = None
-        self.hour: str = None
-        self.minutes: str = None
-        self.seconds: str = None
-        self.fractional_seconds: str = None
+        self.am_or_pm: Optional[str] = None
+        self.iana_tz: Optional[str] = None
+        self.offset_: Optional[str] = None
+        self.abbreviated_tz: Optional[str] = None
+        self.day: Optional[str] = None
+        self.month: Optional[str] = None
+        self.year: Optional[str] = None
+        self.hour: Optional[str] = None
+        self.minutes: Optional[str] = None
+        self.seconds: Optional[str] = None
+        self.fractional_seconds: Optional[str] = None
 
-        self.token_day_of_week: str = None
-        self.token_day: str = None
-        self.token_month: str = None
+        self.token_day_of_week: Optional[str] = None
+        self.token_day: Optional[str] = None
+        self.token_month: Optional[str] = None
 
-        self.config: DatetimeConfig = config
+        self.config: Optional[DatetimeConfig] = config
         self._pre_process_datetime_string()
         self._parse_short_date_formats()
 
