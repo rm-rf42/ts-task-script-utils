@@ -199,7 +199,7 @@ class DateTimeInfo:
         return True
 
 
-    def _match_short_date(self, token: str) -> Dict[str, str]:
+    def _match_short_date(self, token: str) -> bool:
         """Use Regex to find any short date string present in
         input token
 
@@ -211,8 +211,7 @@ class DateTimeInfo:
             when splitted by whitespace
 
         Returns:
-            Dict[str, str]: returns a dict containing values for `year`,
-            `month` and `day`
+            bool: Return True, if short date is parsed successfully.
         """
         year_first_pattern = r"(\d{4,4})[-./\\](\d{1,2})[-./\\](\d{1,2})"
         year_last_pattern = r"(\d{1,2})[-./\\](\d{1,2})[-./\\](\d{4,4})"
@@ -226,7 +225,8 @@ class DateTimeInfo:
                 year_first_matches.groups(), True
             )
 
-            return {"year": year, "month": month, "day": day}
+            self._set_short_date(year, month, day)
+            return True
 
         # XX-XX-YYYY
         year_last_matches = re.match(year_last_pattern, token)
@@ -234,7 +234,8 @@ class DateTimeInfo:
             day, month, year = self._process_year_first_or_last_matches(
                 year_last_matches.groups(), False
             )
-            return {"year": year, "month": month, "day": day}
+            self._set_short_date(year, month, day)
+            return True
 
         # Cases = [XX-XX-XX, XX-X-X, X-X-XX, X-X-X]
         two_digit_date_pattern_matches = re.match(two_digit_date_pattern, token)
@@ -243,9 +244,16 @@ class DateTimeInfo:
                 two_digit_date_pattern_matches.groups()
             )
 
-            return {"year": year, "month": month, "day": day}
+            self._set_short_date(year, month, day)
+            return True
 
-        return {"year": None, "month": None, "day": None}
+        return False
+
+    def _set_short_date(self, year, month, day):
+        self.year = year
+        self.month = month
+        self.day = day
+
 
     def _match_offset(self, token: str) -> Dict[str, str]:
         """Use Regex to find if any utc offset value
