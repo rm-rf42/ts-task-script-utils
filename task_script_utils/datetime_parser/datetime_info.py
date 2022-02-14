@@ -1,4 +1,3 @@
-from optparse import Option
 import re
 import json
 from datetime import datetime as dt, time
@@ -191,13 +190,11 @@ class DateTimeInfo:
                 f"Invalid time: {matches[0]}. {', '.join(time_errors)}"
             )
 
-
         self.hour = f"{int(hour):02d}"
         self.minutes = f"{int(minutes):02d}"
         self.seconds = f"{int(seconds):02d}"
         self.fractional_seconds = fractional_seconds
         return True
-
 
     def _match_short_date(self, token: str) -> bool:
         """Use Regex to find any short date string present in
@@ -298,7 +295,7 @@ class DateTimeInfo:
                 sign, offset = match[0], match[1:]
                 offset = self._pad_and_validate_offset_value(offset)
                 if offset:
-                    self.offset_ = "{sign}{offset}"
+                    self.offset_ = f"{sign}{offset}"
                     return True
         return False
 
@@ -311,9 +308,10 @@ class DateTimeInfo:
         pattern = r"[ap][m]$"
         matches = re.findall(pattern, token, flags=re.IGNORECASE)
         if not matches or len(matches) != 1:
-            self.am_or_pm = None
-            return True
-        return False
+            return False
+
+        self.am_or_pm = matches[0].upper()
+        return True
 
     def _match_tz_abbreviation(self, token: str) -> bool:
         """Check if the input token is an abbreviated timezone
@@ -345,7 +343,7 @@ class DateTimeInfo:
             return True
         return False
 
-    def _match_month_token(self, date_time_token: str) -> Dict[str, str]:
+    def _match_month_token(self, date_time_token: str) -> bool:
         months = locale.locale["translations"]["months"]
         token_map = {
             "MMMM": months["wide"].values(),
@@ -357,7 +355,7 @@ class DateTimeInfo:
             return True
         return False
 
-    def _match_day_token(self, date_time_token: str) -> Dict[str, str]:
+    def _match_day_token(self, date_time_token: str) -> bool:
         ordinals = ["st", "nd", "rd", "th"]
         token = None
         for val in ordinals:
