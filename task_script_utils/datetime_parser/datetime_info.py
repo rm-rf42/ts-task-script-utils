@@ -254,7 +254,6 @@ class DateTimeInfo:
         self.month = month
         self.day = day
 
-
     def _match_offset(self, token: str) -> bool:
         """Use Regex to find if any utc offset value
         is present in input token
@@ -303,17 +302,18 @@ class DateTimeInfo:
                     return True
         return False
 
-    def _match_am_or_pm(self, token: str) -> Dict[str, str]:
+    def _match_am_or_pm(self, token: str) -> bool:
         """
         Use regex to check if input string contains
-        AM or PM. Return the matched value wrapped in a
-        dict.
+        AM or PM. Update `self.am_or_pm` and return True
+        if a meridiem value is matched
         """
         pattern = r"[ap][m]$"
         matches = re.findall(pattern, token, flags=re.IGNORECASE)
         if not matches or len(matches) != 1:
-            return {"am_or_pm": None}
-        return {"am_or_pm": matches[0].upper()}
+            self.am_or_pm = None
+            return True
+        return False
 
     def _match_tz_abbreviation(self, token: str) -> Dict[str, str]:
         """Check if the input token is an abbreviated timezone
