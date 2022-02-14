@@ -62,16 +62,12 @@ class DateTimeInfo:
         for token in tokens:
             for func in _matchers:
                 result = func(token)
-                values = set(result.values())
-                if values != {None}:
+                if result:
                     # It means result of func(token)
                     # has matched something and we don't
                     # need that matcher anymore. Hence
                     # remove it from the _matcher list
                     _matchers.remove(func)
-                for key, value in result.items():
-                    if self.__dict__.get(key) is None:
-                        self.__dict__[key] = value
 
     def _parse_long_date_formats(self):
         long_date_matchers = self._get_matchers_list(long_date_formats=True)
@@ -107,24 +103,26 @@ class DateTimeInfo:
             ]
         return matchers
 
-    def _match_iana_tz(self, token: str) -> dict:
-        """Match and store IANA timezone
+    def _match_iana_tz(self, token: str) -> bool:
+        """Match and set IANA timezone
 
         Args:
             token (str): A string value from `self.date_time_raw`
             when splitted by whitespace
 
         Returns:
-            dict : a dict containing iana_tz
+            bool: Return True if iana_tz is matched else return False
         """
-        iana_tz = None
         if token in pendulum.timezones:
-            iana_tz = token
-        return {"iana_tz": iana_tz}
+            self.iana_tz = token
+            return True
+        return False
 
-    def _match_time(self, token: str) -> Dict[str, str]:
+    def _match_time(self, token: str) -> bool:
         """Use Regex to find any time string present in
-        input token
+        input token. If time string is parsed successfully
+        then set `self.hour`, `self.minutes`, `self.seconds`
+        and `self.fractional_seconds`
 
         Args:
             token (str): A string value from `self.date_time_raw`
@@ -137,8 +135,8 @@ class DateTimeInfo:
             numeric value of hrs, minutes and seconds are out of bound.
 
         Returns:
-            Dict[str, str]: return a dict with string values for `hour`,
-            `minutes`, `seconds` and `milliseconds`
+            bool: Returns True if time is parsed successfully, else
+            return False
         """
         hh_mm_ss_pattern = r"\d{1,2}:\d{1,2}:\d{1,2}\.\d+|^\d{1,2}:\d{1,2}:\d{1,2}$|^\d{1,2}:\d{1,2}:\d{1,2}[+-]{1,1}"
         hh_mm_pattern = r"^(?![+-])\d{1,2}:\d{1,2}$|^(?![+-])\d{1,2}:\d{1,2}[+-]{1,1}"
@@ -147,12 +145,7 @@ class DateTimeInfo:
         if not matches:
             matches = re.findall(hh_mm_pattern, token)
             if not matches:
-                return {
-                    "hour": None,
-                    "minutes": None,
-                    "seconds": None,
-                    "fractional_seconds": None,
-                }
+                return False
 
         if len(matches) > 1:
             raise MultipleTimesFoundError(f"Multiple Time values found: {matches}")
@@ -198,12 +191,13 @@ class DateTimeInfo:
                 f"Invalid time: {matches[0]}. {', '.join(time_errors)}"
             )
 
-        return {
-            "hour": f"{int(hour):02d}",
-            "minutes": f"{int(minutes):02d}",
-            "seconds": f"{int(seconds):02d}",
-            "fractional_seconds": fractional_seconds,
-        }
+
+        self.hour = f"{int(hour):02d}"
+        self.minutes = f"{int(minutes):02d}"
+        self.seconds = f"{int(seconds):02d}"
+        self.fractional_seconds = fractional_seconds
+        return True
+
 
     def _match_short_date(self, token: str) -> Dict[str, str]:
         """Use Regex to find any short date string present in
