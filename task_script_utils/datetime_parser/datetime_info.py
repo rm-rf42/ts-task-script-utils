@@ -332,7 +332,7 @@ class DateTimeInfo:
             return True
         return False
 
-    def _match_day_of_week_token(self, token: str) -> Dict[str, str]:
+    def _match_day_of_week_token(self, token: str) -> bool:
         days = locale.locale["translations"]["days"]
         token_map = {
             "dddd": days["wide"].values(),
@@ -340,7 +340,10 @@ class DateTimeInfo:
             "dd": days["short"].values(),
         }
         token = self._get_token(token, token_map)
-        return {"token_day_of_week": token}
+        if token is not None:
+            self.token_day_of_week = token
+            return True
+        return False
 
     def _match_month_token(self, date_time_token: str) -> Dict[str, str]:
         months = locale.locale["translations"]["months"]
@@ -349,7 +352,10 @@ class DateTimeInfo:
             "MMM": months["abbreviated"].values(),
         }
         token = self._get_token(date_time_token, token_map)
-        return {"token_month": token}
+        if token is not None:
+            self.token_month = token
+            return True
+        return False
 
     def _match_day_token(self, date_time_token: str) -> Dict[str, str]:
         ordinals = ["st", "nd", "rd", "th"]
@@ -359,8 +365,10 @@ class DateTimeInfo:
                 token = "Do"
             elif date_time_token.endswith(f"{val},"):
                 token = "Do,"
-
-        return {"token_day": token}
+        if token is not None:
+            self.token_day = token
+            return True
+        return False
 
     def _get_token(self, token, token_map: dict):
         for key_, values in token_map.items():
