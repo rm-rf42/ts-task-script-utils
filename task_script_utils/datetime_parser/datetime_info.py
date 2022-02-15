@@ -210,8 +210,8 @@ class DateTimeInfo:
         Returns:
             bool: Return True, if short date is parsed successfully.
         """
-        year_first_pattern = r"(\d{4,4})[-./\\](\d{1,2})[-./\\](\d{1,2})"
-        year_last_pattern = r"(\d{1,2})[-./\\](\d{1,2})[-./\\](\d{4,4})"
+        year_first_pattern = r"(\d{4})[-./\\](\d{1,2})[-./\\](\d{1,2})"
+        year_last_pattern = r"(\d{1,2})[-./\\](\d{1,2})[-./\\](\d{4})"
         two_digit_date_pattern = r"^(\d{1,2})[-./\\](\d{1,2})[-./\\](\d{1,2})"
         # no_sep_date_pattern = r"\d{6,6}"
 
