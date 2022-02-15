@@ -48,7 +48,7 @@ class DateTimeInfo:
         self.token_day: Optional[str] = None
         self.token_month: Optional[str] = None
 
-        self.config: Optional[DatetimeConfig] = config
+        self.config: DatetimeConfig = config
         self._pre_process_datetime_string()
         self._parse_short_date_formats()
 
