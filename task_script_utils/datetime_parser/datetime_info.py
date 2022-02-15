@@ -512,7 +512,7 @@ class DateTimeInfo:
             [self.long_date_format],
             get_time_formats_for_long_date(self.fractional_seconds),
         ]
-        formats = (" ".join(values) for values in product(*parts))
+        formats = tuple(" ".join(values) for values in product(*parts))
         return formats
 
     def _pre_process_datetime_string(self):
