@@ -222,7 +222,7 @@ class DateTimeInfo:
                 year_first_matches.groups(), True
             )
 
-            self._set_short_date(year, month, day)
+            self._set_date(year, month, day)
             return True
 
         # XX-XX-YYYY
@@ -231,7 +231,7 @@ class DateTimeInfo:
             day, month, year = self._process_year_first_or_last_matches(
                 year_last_matches.groups(), False
             )
-            self._set_short_date(year, month, day)
+            self._set_date(year, month, day)
             return True
 
         # Cases = [XX-XX-XX, XX-X-X, X-X-XX, X-X-X]
@@ -241,12 +241,12 @@ class DateTimeInfo:
                 two_digit_date_pattern_matches.groups()
             )
 
-            self._set_short_date(year, month, day)
+            self._set_date(year, month, day)
             return True
 
         return False
 
-    def _set_short_date(self, year, month, day):
+    def _set_date(self, year, month, day):
         self.year = year
         self.month = month
         self.day = day
