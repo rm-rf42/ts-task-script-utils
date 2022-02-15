@@ -12,15 +12,15 @@ class TSDatetime:
         if not isinstance(datetime_, datetime):
             raise TypeError("datetime_ must be a datetime object")
 
-        self._datetime = datetime_
-        self._subseconds = subseconds
+        self._datetime: datetime = datetime_
+        self._subseconds: Optional[str] = subseconds
 
     @property
-    def tzinfo(self):
+    def tzinfo(self) -> datetime.tzinfo:
         return self._datetime.tzinfo
 
     @property
-    def datetime(self):
+    def datetime(self) -> datetime:
         """Return a new `datetime` object after replacing `microseconds`
         with `self._subseconds` in `self._datetime`.
         `subseconds` needs to be truncated to 6 digits
@@ -33,7 +33,7 @@ class TSDatetime:
         new_datetime = self._datetime.replace(microsecond=microseconds)
         return new_datetime
 
-    def tsformat(self):
+    def tsformat(self) -> str:
         """Returns datetime string in Tetrascience's ISO8601 DateTime
         format"""
         minimal_format = "YYYY-MM-DDTHH:mm:ss"
@@ -52,7 +52,7 @@ class TSDatetime:
 
         return iso_8601
 
-    def isoformat(self):
+    def isoformat(self) -> str:
         """Returns datetime string in ISO format with offset values"""
         iso_str = self._datetime.format("YYYY-MM-DDTHH:mm:ss")
         if self._subseconds:
