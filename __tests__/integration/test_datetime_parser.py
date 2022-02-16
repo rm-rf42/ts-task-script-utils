@@ -187,7 +187,6 @@ def test_parse_with_formats(input, expected):
             datetime_config,
         )
     except DatetimeParserError as e:
-        print(str(e))
         parsed_datetime = None
 
     if parsed_datetime is None:
@@ -271,6 +270,5 @@ def test_datetime_str_with_Z(input_, dt_formats, expected):
         result = parse(input_, formats_list=list(dt_formats))
         result = result.tsformat()
     except DatetimeParserError as e:
-        print(str(e))
         result = None
     assert result == expected
