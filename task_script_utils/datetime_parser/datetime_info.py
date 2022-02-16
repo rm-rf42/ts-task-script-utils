@@ -1,15 +1,14 @@
 import re
 import json
-from datetime import datetime as dt, time
+from datetime import datetime as dt
 from itertools import product
-from typing import Dict, List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 import pendulum
 from pendulum.locales.en import locale
 
 from .parser_exceptions import *
 from .datetime_config import DatetimeConfig
-from .utils import get_time_formats_for_long_date
 from .tz_list import _all_abbreviated_tz_list
 
 
@@ -24,9 +23,7 @@ class DateTimeInfo:
     tokens and their relative position in order to build a list datetime format that can be used
     to parse the datetime string. eg for "Sunday, May 26th 2013 12:12:12 AM IST Asia/Kolkata",
     `_parse_long_date_formats()` will detect token used are `DDDD`, `MMM` and `Do` and also that
-    day of the week comes first or not. Next, with help of `get_time_formats_for_long_date`, it will
-    try to build a list of possible long datetime formats. This list will be used to parse the
-    datetime string. `long_datetime_formats` property returns the list of possible formats.
+    day of the week comes first or not.
     """
 
     def __init__(self, date_time_raw: str, config: DatetimeConfig):
@@ -472,48 +469,6 @@ class DateTimeInfo:
         if not self.dt_format or not self.dtstamp:
             return None
         return pendulum.from_format(self.dtstamp, self.dt_format, tz=None)
-
-    @property
-    def long_date_format(self) -> str:
-        """Parse the long date, return the Date format
-        built using pendulum format tokens.
-
-
-        Raises:
-            InvalidDateError: Raised if parsing fails to
-            detect tokens for month or day
-
-        Returns:
-            str: Return Date format built using pendulum
-            formatting tokens
-        """
-        self._parse_long_date_formats()
-
-        if not (self.token_month and self.token_day):
-            raise InvalidDateError(f"{self.date_time_raw}")
-
-        if self.token_day_of_week:
-            date_fmt = (
-                f"{self.token_day_of_week} "
-                f"{self.token_month} "
-                f"{self.token_day} "
-                f"YYYY"
-            )
-        else:
-            date_fmt = f"{self.token_month} {self.token_day} YYYY"
-        return date_fmt
-
-    @property
-    def long_datetime_formats(self) -> Tuple[str]:
-        """Returns a list of long datetime formats built
-        using pendulum formatting tokens.
-        """
-        parts = [
-            [self.long_date_format],
-            get_time_formats_for_long_date(self.fractional_seconds),
-        ]
-        formats = tuple(" ".join(values) for values in product(*parts))
-        return formats
 
     def _pre_process_datetime_string(self):
         """This method is used to pre-process the input string

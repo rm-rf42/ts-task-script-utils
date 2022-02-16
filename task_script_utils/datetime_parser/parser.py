@@ -13,6 +13,7 @@ from .utils import (
     from_pendulum_format,
     replace_z_with_offset,
 )
+from .long_datetime_utils import build_long_datetime_formats_list
 
 
 def parse(
@@ -58,9 +59,11 @@ def parse(
 
     # Use long date formats
     if not parsed_datetime:
+        datetime_info._parse_long_date_formats()
+        long_datetime_formats = build_long_datetime_formats_list(datetime_info)
         parsed_datetime, matched_format = _parse_with_formats(
             datetime_str=datetime_str,
-            formats=datetime_info.long_datetime_formats,
+            formats=long_datetime_formats,
             datetime_config=config,
         )
 
