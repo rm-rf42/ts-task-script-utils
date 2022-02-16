@@ -725,7 +725,6 @@ class DateTimeInfo:
             AmbiguousDateError: If multiple or no format parses the date,
             raise `AmbiguousDateError`
 
-
         Returns:
             tuple[str]: (day, month, year)
         """

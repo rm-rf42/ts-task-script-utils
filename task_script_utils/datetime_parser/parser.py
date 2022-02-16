@@ -100,6 +100,6 @@ def _parse_with_formats(
                 datetime_str_with_no_abbreviated_tz, format_, tz=None
             )
             return parsed, format_
-        except Exception as e:
+        except ValueError as e:
             continue
     return None, None
