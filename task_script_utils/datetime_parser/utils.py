@@ -119,5 +119,3 @@ def replace_z_with_offset(datetime_str: str) -> str:
     12-12-12T14:53:00 Z -> 12-12-12T14:53:00 +00:00
     """
     return re.sub(r"(?<=\d|\s)Z(?=\s|$)", "+00:00", datetime_str)
-
-

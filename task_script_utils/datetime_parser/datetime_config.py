@@ -1,6 +1,7 @@
 from typing import Optional
 from .utils import map_offset_to_seconds
 
+
 class DatetimeConfig:
     def __init__(
         self,

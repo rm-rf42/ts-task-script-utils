@@ -32,7 +32,7 @@ def get_time_formats_for_long_date(fractional_seconds):
     return tuple(time_formats)
 
 
-def build_long_date_format_from_datetime_info(dt_info:DateTimeInfo):
+def build_long_date_format_from_datetime_info(dt_info: DateTimeInfo):
     """Use DatetimeInfo to build and return date format for
     log datetime string.
 
