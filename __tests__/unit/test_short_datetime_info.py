@@ -1,5 +1,5 @@
 import pytest
-from task_script_utils.datetime_parser.datetime_info import DateTimeInfo
+from task_script_utils.datetime_parser.datetime_info import ShortDateTimeInfo
 from task_script_utils.datetime_parser.datetime_config import DatetimeConfig
 from task_script_utils.datetime_parser import tz_dicts
 from task_script_utils.datetime_parser.parser_exceptions import DatetimeParserError
@@ -80,7 +80,7 @@ regex_test_cases = [
 def test_match_short_date(input, year_first, day_first, expected):
     config = DatetimeConfig(year_first=year_first, day_first=day_first)
     try:
-        date_info = DateTimeInfo(input, config)
+        date_info = ShortDateTimeInfo(input, config)
         result = _build_date_str_from_datetime_info(date_info)
     except DatetimeParserError as e:
         result = None
@@ -101,7 +101,7 @@ def test_regex_parsing(input, expected):
     assert parsed_datetime == expected
 
 
-def _build_date_str_from_datetime_info(dt_info: DateTimeInfo) -> str:
+def _build_date_str_from_datetime_info(dt_info: ShortDateTimeInfo) -> str:
     """Returns year-month-day"""
     if dt_info.day and dt_info.month and dt_info.year:
         return f"{dt_info.year}-{dt_info.month}-{dt_info.day}"
