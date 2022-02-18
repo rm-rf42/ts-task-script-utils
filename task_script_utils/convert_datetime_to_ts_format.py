@@ -1,4 +1,4 @@
-import dateparser, arrow, datetime
+import dateparser, arrow
 from dateutil import tz
 
 
