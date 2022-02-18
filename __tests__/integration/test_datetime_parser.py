@@ -1,7 +1,6 @@
 import pytest
 from task_script_utils.datetime_parser.parser import (
     parse,
-    _parse_with_formats,
     DatetimeConfig,
 )
 
@@ -195,16 +194,7 @@ def test_parse_with_formats(input, expected):
         assert parsed_datetime.isoformat() == expected
 
 
-@pytest.mark.parametrize(
-    "input, expected", format_list_with_no_tz_dict_test_cases.items()
-)
-def test_parse_with_formats_with_no_tz_dict(input, expected):
-    parsed_datetime, _ = _parse_with_formats(input, DatetimeConfig(), formats_list)
 
-    if parsed_datetime is None:
-        assert parsed_datetime == expected
-    else:
-        assert parsed_datetime.isoformat() == expected
 
 
 @pytest.mark.parametrize(
