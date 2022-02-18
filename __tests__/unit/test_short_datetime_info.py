@@ -93,7 +93,7 @@ def test_regex_parsing(input, expected):
     config = {"year_first": True, "tz_dict": tz_dicts.USA}
     year_first = DatetimeConfig(**config)
     try:
-        d = DateTimeInfo(input, year_first)
+        d = ShortDateTimeInfo(input, year_first)
         parsed_datetime = d.dtstamp
     except DatetimeParserError as e:
         parsed_datetime = None
