@@ -2,7 +2,7 @@ import re
 import json
 from datetime import datetime as dt
 from itertools import product
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple
 
 import pendulum
 from pendulum.locales.en import locale
@@ -13,6 +13,7 @@ from .datetime_config import DatetimeConfig
 from .tz_list import _all_abbreviated_tz_list
 from .ts_datetime import TSDatetime
 from .utils import parse_with_formats
+
 
 class DateTimeInfo:
     def __init__(self, date_time_raw: str, config: DatetimeConfig):
@@ -146,7 +147,7 @@ class DateTimeInfo:
         if self.parsed_datetime_format:
             return self.parsed_datetime_format
 
-        if not self.dtstamp:
+        if not self.datetime_stamp:
             return None
 
         day = "D" if len(self.day) == 1 else "DD"
@@ -174,23 +175,28 @@ class DateTimeInfo:
         return fmt
 
     @property
-    def datetime(self):
+    def datetime(self) -> TSDatetime:
         if self.parsed_datetime:
             return self.parsed_datetime
 
         if not self.datetime_format or not self.datetime_stamp:
             return None
 
-        datetime_ = pendulum.from_format(self.dtstamp, self.dt_format, tz=None)
-        ts_datetime = TSDatetime(datetime_=datetime_, subseconds=self.fractional_seconds)
+        datetime_ = pendulum.from_format(
+            self.datetime_stamp, self.datetime_format, tz=None
+        )
+        ts_datetime = TSDatetime(
+            datetime_=datetime_, subseconds=self.fractional_seconds
+        )
         return ts_datetime
 
     @datetime.setter
     def datetime(self, ts_datetime: TSDatetime):
+        """This setter is mainly used by LongDateTimeInfo
+        to populate the instance variables from parsed datetime
+        """
         datetime_ = ts_datetime.datetime
-        attrs = [
-            "day", "month", "year", "hour", "minute", "second"
-        ]
+        attrs = ["day", "month", "year", "hour", "minute", "second"]
         for attr in attrs:
             val = getattr(datetime_, attr)
             setattr(self, attr, str(val))
@@ -203,6 +209,7 @@ class DateTimeInfo:
 
         self.fractional_seconds = ts_datetime._subseconds
         self.parsed_datetime = ts_datetime
+
 
 class LongDateTimeInfo(DateTimeInfo):
     def __init__(self, date_time_raw: str, config: DatetimeConfig):

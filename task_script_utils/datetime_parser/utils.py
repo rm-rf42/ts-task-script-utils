@@ -1,7 +1,7 @@
 import re
 import datetime as dt
 from sqlite3 import Date
-from typing import Sequence, Tuple
+from typing import Sequence
 from itertools import product
 
 from pydash.arrays import flatten
@@ -10,7 +10,6 @@ from pendulum import datetime as pendulum_datetime
 
 from task_script_utils.datetime_parser.ts_datetime import TSDatetime
 from .fractional_seconds_formatter import FractionalSecondsFormatter
-from .parser_exceptions import InvalidDateError
 
 
 _formatter = FractionalSecondsFormatter()
