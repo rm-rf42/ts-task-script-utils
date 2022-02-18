@@ -342,7 +342,18 @@ class LongDateTimeInfo(DateTimeInfo):
         time_formats = flatten(time_formats)
         time_formats = map(lambda x: map_am_pm(x), time_formats)
         time_formats = map(
-            lambda x: [x, x + " Z", x + " z", x + " ZZ", x + " Z z", x + " ZZ z"],
+            lambda x: [
+                x,
+                x + " Z",
+                x + " z",
+                x + " ZZ",
+                x + " Z z",
+                x + " ZZ z",
+                x + " z ZZ",
+                x + " zz",
+                x + " Z zz",
+                x + " ZZ zz",
+            ],
             time_formats,
         )
         time_formats = flatten(time_formats)
