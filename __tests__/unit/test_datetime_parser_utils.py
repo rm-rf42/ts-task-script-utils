@@ -19,6 +19,7 @@ formats_list = [
     "dddd, MMMM Do, YYYY hh:mm:ss.SSSSSS A z",
 ]
 
+
 @pytest.mark.parametrize(
     "input_, expected", format_list_with_no_tz_dict_test_cases.items()
 )

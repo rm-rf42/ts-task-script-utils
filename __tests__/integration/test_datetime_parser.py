@@ -194,9 +194,6 @@ def test_parse_with_formats(input, expected):
         assert parsed_datetime.isoformat() == expected
 
 
-
-
-
 @pytest.mark.parametrize(
     "input, expected", parse_with_no_datetime_formats_list_test_cases.items()
 )

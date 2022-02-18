@@ -6,10 +6,7 @@ from task_script_utils.datetime_parser.parser_exceptions import DatetimeParserEr
 from task_script_utils.datetime_parser.ts_datetime import TSDatetime
 from .datetime_config import DatetimeConfig, DEFAULT_DATETIME_CONFIG
 from .datetime_info import ShortDateTimeInfo, LongDateTimeInfo
-from .utils import (
-    replace_z_with_offset,
-    parse_with_formats
-)
+from .utils import replace_z_with_offset, parse_with_formats
 
 
 def parse(
@@ -63,5 +60,3 @@ def parse(
 
     parsed_datetime.change_fold(config.fold)
     return parsed_datetime
-
-
