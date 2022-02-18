@@ -75,12 +75,12 @@ regex_test_cases = [
 
 
 @pytest.mark.parametrize(
-    "input, year_first, day_first, expected", two_digit_date_with_config_test_cases
+    "input_, year_first, day_first, expected", two_digit_date_with_config_test_cases
 )
-def test_match_short_date(input, year_first, day_first, expected):
+def test_match_short_date(input_, year_first, day_first, expected):
     config = DatetimeConfig(year_first=year_first, day_first=day_first)
     try:
-        date_info = ShortDateTimeInfo(input, config)
+        date_info = ShortDateTimeInfo(input_, config)
         result = _build_date_str_from_datetime_info(date_info)
     except DatetimeParserError as e:
         result = None
@@ -88,12 +88,12 @@ def test_match_short_date(input, year_first, day_first, expected):
     assert result == expected
 
 
-@pytest.mark.parametrize("input, expected", regex_test_cases)
-def test_regex_parsing(input, expected):
+@pytest.mark.parametrize("input_, expected", regex_test_cases)
+def test_regex_parsing(input_, expected):
     config = {"year_first": True, "tz_dict": tz_dicts.USA}
     year_first = DatetimeConfig(**config)
     try:
-        d = ShortDateTimeInfo(input, year_first)
+        d = ShortDateTimeInfo(input_, year_first)
         parsed_datetime = d.datetime_stamp
     except DatetimeParserError as e:
         parsed_datetime = None
