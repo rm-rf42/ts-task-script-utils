@@ -324,7 +324,7 @@ class LongDateTimeInfo(DateTimeInfo):
             date_fmt = f"{self.token_month} {self.token_day} YYYY"
         return date_fmt
 
-    def _build_time_formats(self, fractional_seconds):
+    def _build_time_formats(self):
         TIME_PARTS = [
             ["h", "hh", "H", "HH"],
             ["m", "mm"],
@@ -365,7 +365,7 @@ class LongDateTimeInfo(DateTimeInfo):
         """
         parts = [
             [self._build_long_date_format()],
-            self._build_time_formats(self.fractional_seconds),
+            self._build_time_formats(),
         ]
         formats = tuple(" ".join(values) for values in product(*parts))
         return formats
