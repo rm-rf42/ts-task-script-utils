@@ -93,7 +93,7 @@ class DateTimeInfo:
         return None
 
     @property
-    def dtstamp(self):
+    def datetime_stamp(self):
         """Created Datetime string from parsed raw input string.
         The format is DD-MM-YYYY hh:mm:ss and fractional seconds (upto 6 digit), AM/PM
         and utc offset are appended conditionally
@@ -178,7 +178,7 @@ class DateTimeInfo:
         if self.parsed_datetime:
             return self.parsed_datetime
 
-        if not self.datetime_format or not self.dtstamp:
+        if not self.datetime_format or not self.datetime_stamp:
             return None
 
         datetime_ = pendulum.from_format(self.dtstamp, self.dt_format, tz=None)

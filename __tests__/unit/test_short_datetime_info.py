@@ -94,7 +94,7 @@ def test_regex_parsing(input, expected):
     year_first = DatetimeConfig(**config)
     try:
         d = ShortDateTimeInfo(input, year_first)
-        parsed_datetime = d.dtstamp
+        parsed_datetime = d.datetime_stamp
     except DatetimeParserError as e:
         parsed_datetime = None
 
