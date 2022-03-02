@@ -303,7 +303,7 @@ class LongDateTimeInfo(DateTimeInfo):
 
     def _build_long_date_format(self):
         """Use DatetimeInfo to build and return date format for
-        log datetime string.
+        long datetime string.
 
         Raises:
             InvalidDateError: Raised if parsing fails to
