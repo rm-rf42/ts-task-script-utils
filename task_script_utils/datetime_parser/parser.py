@@ -38,7 +38,7 @@ def parse(
     # Parse Using formats list
     if formats_list:
         parsed_datetime, matched_format = parse_with_formats(
-            datetime_str, datetime_config=config, formats=formats_list
+            datetime_str, config, formats_list
         )
 
     # Otherwise use DateInfo Parser to parse short dates
