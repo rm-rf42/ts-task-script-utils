@@ -56,13 +56,6 @@ parse_with_no_datetime_formats_list_test_cases = {
     "Sunday, 26 2013 12:12:12 AM Asia/Kolkata": None,
 }
 
-format_list_with_no_tz_dict_test_cases = {
-    "Sunday, May 26th 2013 12:12:12 AM IST Asia/Kolkata": None,
-    "Sunday, May 26th 2013 12:12:12 AM ZST Asia/Kolkata": None,
-    "Sunday, May 26th 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
-    "Sunday, May 26th 2013 12:12:12 AM": None,
-}
-
 dateutil_parser_test_cases = {
     ("11:12:00 21-05-10", True, True): "2021-10-05T11:12:00",
     ("11:12:00 21-05-10", True, False): "2021-05-10T11:12:00",
