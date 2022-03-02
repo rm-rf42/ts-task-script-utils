@@ -196,10 +196,13 @@ class DateTimeInfo:
         to populate the instance variables from parsed datetime
         """
         datetime_ = ts_datetime.datetime
-        attrs = ["day", "month", "year", "hour", "minute", "second"]
-        for attr in attrs:
-            val = getattr(datetime_, attr)
-            setattr(self, attr, str(val))
+
+        self.day = f"{int(datetime_.day):02d}"
+        self.month = f"{int(datetime_.month):02d}"
+        self.year = f"{int(datetime_.year):04d}"
+        self.hour = f"{int(datetime_.hour):02d}"
+        self.minute = f"{int(datetime_.minute):02d}"
+        self.seconds = f"{int(datetime_.second):02d}"
 
         offset = datetime_.strftime("%z")
         if offset:
