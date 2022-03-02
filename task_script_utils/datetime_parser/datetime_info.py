@@ -56,7 +56,7 @@ class DateTimeInfo:
         """This method is used to pre-process the input string
         if required, before the parsing starts. It performs following
         pre-processing:
-        1. Repace a character if it is sandwiched between two integer
+        1. Repace a letter if it is sandwiched between two integer
         """
         raw_dt = self.date_time_raw
         processed_dt = self._replace_single_characters(raw_dt)
@@ -96,7 +96,7 @@ class DateTimeInfo:
     @property
     def datetime_stamp(self):
         """Created Datetime string from parsed raw input string.
-        The format is DD-MM-YYYY hh:mm:ss and fractional seconds (upto 6 digit), AM/PM
+        The format is YYYY-MM-DD hh:mm:ss and fractional seconds (upto 6 digit), AM/PM
         and utc offset are appended conditionally
 
         Returns:
@@ -136,13 +136,13 @@ class DateTimeInfo:
     @property
     def datetime_format(self):
         """Build datetime format using pendulum tokens.
-        This property along with `dtstamp` property can be used
+        This property along with `datetime_stamp` property can be used
         to parse date using `pendulum.from_format`.
 
         Returns:
             str: A datetime format build using pendulum formatting
             tokens. This string represent the datetime format for
-            `dtstamp`
+            `datetime_stamp`
         """
         if self.parsed_datetime_format:
             return self.parsed_datetime_format
