@@ -2,7 +2,7 @@ import re
 import datetime as dt
 from typing import Sequence
 from itertools import product
-
+from typing import Tuple, Optional
 from pydash.arrays import flatten
 from pendulum import now
 from pendulum import datetime as pendulum_datetime
@@ -119,7 +119,9 @@ def replace_z_with_offset(datetime_str: str) -> str:
     return re.sub(r"(?<=\d|\s)Z(?=\s|$)", "+00:00", datetime_str)
 
 
-def parse_with_formats(datetime_str: str, datetime_config, formats: Sequence[str] = ()):
+def parse_with_formats(
+    datetime_str: str, datetime_config, formats: Sequence[str] = ()
+) -> Tuple[Optional[TSDatetime], Optional[str]]:
     # If datetime config contains tz_dict, then replace
     # abbreviated_tz in datetime_str with its corresponding
     # utc offset values from datetime_config.tz_dict
@@ -132,16 +134,16 @@ def parse_with_formats(datetime_str: str, datetime_config, formats: Sequence[str
         # Now if the format in formats_list contains "zz", replace
         # it with "Z". This is because no library parses abbreviated tz
         # due to its ambiguous nature
-        formats_with_no_zz = replace_zz_with_Z(formats)
-    else:
-        formats_with_no_zz = formats
+        formats = replace_zz_with_Z(formats)
 
-    for format_ in formats_with_no_zz:
+    for format_ in formats:
         try:
             parsed = from_pendulum_format(
                 datetime_str_with_no_abbreviated_tz, format_, tz=None
             )
             return parsed, format_
-        except Exception as e:
+        except ValueError as e:
+            continue
+        except re.error as e:
             continue
     return None, None
