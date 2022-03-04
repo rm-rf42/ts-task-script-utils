@@ -192,9 +192,6 @@ class DateTimeInfo:
 
     @datetime.setter
     def datetime(self, ts_datetime: TSDatetime):
-        """This setter is mainly used by LongDateTimeInfo
-        to populate the instance variables from parsed datetime
-        """
         datetime_ = ts_datetime.datetime
 
         self.day = f"{int(datetime_.day):02d}"
