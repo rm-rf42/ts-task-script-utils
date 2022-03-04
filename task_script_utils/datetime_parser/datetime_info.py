@@ -34,14 +34,13 @@ class DateTimeInfo:
 
         self.parsed_datetime: Optional[TSDatetime] = None
         self.parsed_datetime_format: Optional[str] = None
-        self.date_time_processed: str = self._pre_process_datetime_string()
 
     def __str__(self):
         return json.dumps(self.__dict__, indent=2)
 
     def _parse(self, matchers):
         _matchers = list(matchers)
-        tokens = self.date_time_processed.split()
+        tokens = self._tokenize_datetime_string()
         for token in tokens:
             for func in _matchers:
                 result = func(token)
@@ -52,24 +51,24 @@ class DateTimeInfo:
                     # remove it from the _matcher list
                     _matchers.remove(func)
 
-    def _pre_process_datetime_string(self):
+    def _tokenize_datetime_string(self):
         """This method is used to pre-process the input string
-        if required, before the parsing starts. It performs following
-        pre-processing:
-        1. Repace a letter if it is sandwiched between two integer
+        and return token list splitted by whitespace
+        It performs following pre-processing:
+        1. Repace the letter T if it is sandwiched between two integer
         """
         raw_dt = self.date_time_raw
-        processed_dt = self._replace_single_characters(raw_dt)
-        return processed_dt
+        processed_dt = self._replace_T_with_space(raw_dt)
+        return processed_dt.split()
 
-    def _replace_single_characters(self, string: str):
+    def _replace_T_with_space(self, string: str):
         # Input =  2018-13-09T11:12:23.000-05:30
         # output = 2018-13-09 11:12:23.000-05:30
         char_list = list(string)
         for i, current_char in enumerate(char_list[1:-1]):
             if (
                 char_list[i - 1].isdigit()
-                and char_list[i].isalpha()
+                and char_list[i] == "T"
                 and char_list[i + 1].isdigit()
             ):
                 char_list[i] = " "
