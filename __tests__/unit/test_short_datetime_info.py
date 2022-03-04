@@ -71,6 +71,7 @@ regex_test_cases = [
     ("2018-13-09T16:15+5:3 PM", None),
     ("2018-13-09T16:15+05332 PM", None),
     ("2018-13-09T16:15+2 AM", None),  # hrs = 16 but meridiem=AM
+    ("2018-13-09V11:15:15 +05:30 PM", None),
 ]
 
 
