@@ -55,13 +55,13 @@ class DateTimeInfo:
         """This method is used to pre-process the input string
         and return token list splitted by whitespace
         It performs following pre-processing:
-        1. Repace the letter T if it is sandwiched between two integers
+        1. Repace the letter T if it is sandwiched between two digits
         """
         raw_dt = self.date_time_raw
-        processed_dt = self._replace_T_with_space(raw_dt)
+        processed_dt = self._remove_T_between_two_digits(raw_dt)
         return processed_dt.split()
 
-    def _replace_T_with_space(self, string: str):
+    def _remove_T_between_two_digits(self, string: str):
         # Input =  2018-13-09T11:12:23.000-05:30
         # output = 2018-13-09 11:12:23.000-05:30
         char_list = list(string)
