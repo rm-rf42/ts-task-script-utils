@@ -76,7 +76,6 @@ class TSDatetime:
 
         self._datetime = self._datetime.replace(fold=new_fold)
 
-
     @property
     def _is_fold_required(self) -> bool:
         """Check whether an undefined `fold` would cause an ambiguous TSDatetime
@@ -94,4 +93,4 @@ class TSDatetime:
     def _pad_year(self, datetime_str):
         dt_tokens = datetime_str.split("-")
         dt_tokens[0] = f"{int(dt_tokens[0]):04d}"
-        return '-'.join(dt_tokens)
+        return "-".join(dt_tokens)
