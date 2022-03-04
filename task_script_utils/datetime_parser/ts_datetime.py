@@ -36,25 +36,25 @@ class TSDatetime:
     def tsformat(self) -> str:
         """Returns datetime string in Tetrascience's ISO8601 DateTime
         format"""
-        minimal_format = "%Y-%m-%dT%H:%M:%S"
+        minimal_format = "YYYY-MM-DDTHH:mm:ss"
 
         if self.tzinfo is not None:
             utc = pendulum.tz.UTC
             utc_date = utc.convert(self._datetime)
-            iso_8601 = utc_date.strftime(minimal_format)
+            iso_8601 = utc_date.format(minimal_format)
             if self._subseconds is not None:
                 iso_8601 = f"{iso_8601}.{self._subseconds}"
             iso_8601 = f"{iso_8601}Z"
         else:
-            iso_8601 = self._datetime.strftime(minimal_format)
+            iso_8601 = self._datetime.format(minimal_format)
             if self._subseconds is not None:
                 iso_8601 = f"{iso_8601}.{self._subseconds}"
-
+        iso_8601 = self._pad_year(iso_8601)
         return iso_8601
 
     def isoformat(self) -> str:
         """Returns datetime string in ISO format with offset values"""
-        iso_str = self._datetime.strftime("%Y-%m-%dT%H:%M:%S")
+        iso_str = self._datetime.format("YYYY-MM-DDTHH:mm:ss")
         if self._subseconds:
             iso_str += f".{str(self._subseconds)}"
         if self.tzinfo:
@@ -62,6 +62,7 @@ class TSDatetime:
             if ":" not in offset:
                 offset = f"{offset[:3]}:{offset[-2:]}"
             iso_str += offset
+        iso_str = self._pad_year(iso_str)
         return iso_str
 
     def change_fold(self, new_fold: int):
@@ -74,6 +75,7 @@ class TSDatetime:
             return
 
         self._datetime = self._datetime.replace(fold=new_fold)
+
 
     @property
     def _is_fold_required(self) -> bool:
@@ -88,3 +90,8 @@ class TSDatetime:
         dt.change_fold(1)
         dt_after_fold = dt.tsformat()
         return dt_before_fold != dt_after_fold
+
+    def _pad_year(self, datetime_str):
+        dt_tokens = datetime_str.split("-")
+        dt_tokens[0] = f"{int(dt_tokens[0]):04d}"
+        return '-'.join(dt_tokens)
