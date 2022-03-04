@@ -90,7 +90,13 @@ class TSDatetime:
         dt_after_fold = dt.tsformat()
         return dt_before_fold != dt_after_fold
 
-    def _pad_year(self, datetime_str):
+    def _pad_year(self, datetime_str: str) -> str:
+        """Make sure that year is padded to 4 digits.
+        for example,
+        Input = 1-01-01T12:12:!2
+        Output = 0001-01-01T12:12:12
+        """
+
         dt_tokens = datetime_str.split("-")
         dt_tokens[0] = f"{int(dt_tokens[0]):04d}"
         return "-".join(dt_tokens)
