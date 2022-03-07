@@ -1,3 +1,4 @@
+from typing import Optional
 import pytest
 from task_script_utils.datetime_parser.datetime_info import ShortDateTimeInfo
 from task_script_utils.datetime_parser.datetime_config import DatetimeConfig
@@ -94,15 +95,16 @@ def test_regex_parsing(input_, expected):
     config = {"year_first": True, "tz_dict": tz_dicts.USA}
     year_first = DatetimeConfig(**config)
     try:
-        d = ShortDateTimeInfo(input_, year_first)
-        parsed_datetime = d.datetime_stamp
+        short_datetime_info = ShortDateTimeInfo(input_, year_first)
+        parsed_datetime = short_datetime_info.datetime_stamp
     except DatetimeParserError as e:
         parsed_datetime = None
 
     assert parsed_datetime == expected
 
 
-def _build_date_str_from_datetime_info(dt_info: ShortDateTimeInfo) -> str:
+def _build_date_str_from_datetime_info(dt_info: ShortDateTimeInfo) -> Optional[str]:
     """Returns year-month-day"""
     if dt_info.day and dt_info.month and dt_info.year:
         return f"{dt_info.year}-{dt_info.month}-{dt_info.day}"
+    return None

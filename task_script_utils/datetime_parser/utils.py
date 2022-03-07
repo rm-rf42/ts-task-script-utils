@@ -122,6 +122,17 @@ def replace_z_with_offset(datetime_str: str) -> str:
 def parse_with_formats(
     datetime_str: str, datetime_config, formats: Sequence[str] = ()
 ) -> Tuple[Optional[TSDatetime], Optional[str]]:
+    """Given list of formats and datetime config, try
+    to parse the datetime string
+
+    Args:
+        datetime_str (str): raw datetime string
+        datetime_config (DatetimeConfig): a valid DatetimeConfig
+        formats (Sequence[str], optional): list of formats. Defaults to ().
+
+    Returns:
+        Tuple[Optional[TSDatetime], Optional[str]]: return TSDatetime, matched_format
+    """
     # If datetime config contains tz_dict, then replace
     # abbreviated_tz in datetime_str with its corresponding
     # utc offset values from datetime_config.tz_dict
@@ -142,8 +153,8 @@ def parse_with_formats(
                 datetime_str_with_no_abbreviated_tz, format_, tz=None
             )
             return parsed, format_
-        except ValueError as e:
+        except ValueError:
             continue
-        except re.error as e:
+        except re.error:
             continue
     return None, None

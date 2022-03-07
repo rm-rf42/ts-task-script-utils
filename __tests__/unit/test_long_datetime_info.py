@@ -31,7 +31,7 @@ def test_long_datetime_info(input_, expected):
         result = date_info.datetime
         if result is not None:
             result = result.isoformat()
-    except DatetimeParserError as e:
+    except DatetimeParserError:
         result = None
 
     assert result == expected

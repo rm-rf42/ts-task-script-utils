@@ -8,11 +8,19 @@ import pendulum
 from pendulum.locales.en import locale
 from pydash.arrays import flatten
 
-from .parser_exceptions import *
 from .datetime_config import DatetimeConfig
 from .tz_list import _all_abbreviated_tz_list
 from .ts_datetime import TSDatetime
 from .utils import parse_with_formats
+from .parser_exceptions import (
+    InvalidOffsetError,
+    OffsetNotKnownError,
+    InvalidDateError,
+    InvalidTimeError,
+    InvalidOffsetError,
+    MultipleOffsetsError,
+    AmbiguousDateError
+)
 
 
 class DateTimeInfo:
@@ -61,17 +69,18 @@ class DateTimeInfo:
         processed_dt = self._remove_T_between_two_digits(raw_dt)
         return processed_dt.split()
 
-    def _remove_T_between_two_digits(self, string: str):
+    @staticmethod
+    def _remove_T_between_two_digits(string: str):
         # Input =  2018-13-09T11:12:23.000-05:30
         # output = 2018-13-09 11:12:23.000-05:30
         char_list = list(string)
-        for i, current_char in enumerate(char_list[1:-1]):
+        for idx in range(len(char_list[1:-1])):
             if (
-                char_list[i - 1].isdigit()
-                and char_list[i] == "T"
-                and char_list[i + 1].isdigit()
+                char_list[idx - 1].isdigit()
+                and char_list[idx] == "T"
+                and char_list[idx + 1].isdigit()
             ):
-                char_list[i] = " "
+                char_list[idx] = " "
 
         return "".join(char_list)
 
@@ -95,8 +104,9 @@ class DateTimeInfo:
     @property
     def datetime_stamp(self):
         """Created Datetime string from parsed raw input string.
-        The format is YYYY-MM-DD hh:mm:ss and fractional seconds (upto 6 digit), AM/PM
-        and utc offset are appended conditionally
+        The format is YYYY-MM-DD hh:mm:ss and fractional seconds
+        (upto 6 digit), AM/PM and utc offset are appended
+        conditionally.
 
         Returns:
             str/None: A datetime string
@@ -117,7 +127,8 @@ class DateTimeInfo:
             if self.fractional_seconds:
                 # This property along with dt_format is used to create
                 # a datetime object. Since python datetime support 6 digits for
-                # microseconds, therefore truncating fraction seconds to 6 digits
+                # microseconds, therefore truncating fraction seconds to
+                # 6 digits
                 dt_str += f".{self.fractional_seconds[:6]}"
 
             if self.am_or_pm and int(self.hour) <= 12:
@@ -175,6 +186,7 @@ class DateTimeInfo:
 
     @property
     def datetime(self) -> TSDatetime:
+        """Use parsing result to build TSDatetime object"""
         if self.parsed_datetime:
             return self.parsed_datetime
 
