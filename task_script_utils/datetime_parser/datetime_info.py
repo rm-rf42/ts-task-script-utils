@@ -18,7 +18,7 @@ from .parser_exceptions import (
     InvalidDateError,
     InvalidTimeError,
     MultipleOffsetsError,
-    AmbiguousDateError
+    AmbiguousDateError,
 )
 
 
@@ -28,6 +28,7 @@ class DateTimeInfo:
     takes a list of matcher functions. Child class should define
     these matcher function.
     """
+
     def __init__(self, date_time_raw: str, config: DatetimeConfig):
         self.date_time_raw: str = date_time_raw
         self.config: DatetimeConfig = config
@@ -246,6 +247,7 @@ class LongDateTimeInfo(DateTimeInfo):
     can be used to parse `date_time_raw` string if it is a valid long datetime
     string. This cartesian product is performed by `_build_long_datetime_formats_list`
     """
+
     def __init__(self, date_time_raw: str, config: DatetimeConfig):
         super().__init__(date_time_raw, config)
 
@@ -410,6 +412,7 @@ class ShortDateTimeInfo(DateTimeInfo):
     """ShortDateTime info defines matcher function for
     detecting date, time and timezone values
     """
+
     def __init__(self, date_time_raw: str, config: DatetimeConfig):
         super().__init__(date_time_raw, config)
         self._parse_short_date_formats()
