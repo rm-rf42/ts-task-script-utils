@@ -75,7 +75,7 @@ regex_test_cases = [
     ("2018-13-09V11:15:15 +05:30 PM", None),
 ]
 
-
+# pylint: disable=C0116
 @pytest.mark.parametrize(
     "input_, year_first, day_first, expected", two_digit_date_with_config_test_cases
 )
@@ -89,7 +89,7 @@ def test_match_short_date(input_, year_first, day_first, expected):
 
     assert result == expected
 
-
+# pylint: disable=C0116
 @pytest.mark.parametrize("input_, expected", regex_test_cases)
 def test_regex_parsing(input_, expected):
     config = {"year_first": True, "tz_dict": tz_dicts.USA}

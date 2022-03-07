@@ -1,3 +1,5 @@
+# pylint: disable=C0114
+# pylint: disable=E0401
 import pytest
 from task_script_utils.datetime_parser.datetime_info import LongDateTimeInfo
 from task_script_utils.datetime_parser.datetime_config import DatetimeConfig
@@ -30,6 +32,7 @@ long_datetime_test_cases = {
 
 @pytest.mark.parametrize("input_, expected", long_datetime_test_cases.items())
 def test_long_datetime_info(input_, expected):
+    """Test LongDatetimeInfo class"""
     tz_dict = {"IST": "+05:30", "BST": "+01:00"}
     config = DatetimeConfig(year_first=None, day_first=None, tz_dict=tz_dict)
     try:

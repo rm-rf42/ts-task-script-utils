@@ -78,6 +78,9 @@ def test_subseconds(input_, iso_format, datetime_iso_format):
     "input_, format_, expected_ts_format, expected_iso_format", padding_test_cases
 )
 def test_datetime_padding(input_, format_, expected_ts_format, expected_iso_format):
+    """Test for making sure that resulting date is padded as
+    YYYY-MM-DD
+    """
     ts_datetime_ = from_pendulum_format(input_, format_, None, None)
     assert ts_datetime_.tsformat() == expected_ts_format
     assert ts_datetime_.isoformat() == expected_iso_format
