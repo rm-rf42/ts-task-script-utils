@@ -89,6 +89,7 @@ def test_match_short_date(input_, year_first, day_first, expected):
 
     assert result == expected
 
+
 # pylint: disable=C0116
 @pytest.mark.parametrize("input_, expected", regex_test_cases)
 def test_regex_parsing(input_, expected):
