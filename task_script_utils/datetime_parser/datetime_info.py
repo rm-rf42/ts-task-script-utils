@@ -17,13 +17,17 @@ from .parser_exceptions import (
     OffsetNotKnownError,
     InvalidDateError,
     InvalidTimeError,
-    InvalidOffsetError,
     MultipleOffsetsError,
     AmbiguousDateError
 )
 
 
 class DateTimeInfo:
+    """DatetimeInfo acts as base class for ShortDatetimeInfo and
+    LongDatetimeInfo. This class definer the parsing logic. _parse
+    takes a list of matcher functions. Child class should define
+    these matcher function.
+    """
     def __init__(self, date_time_raw: str, config: DatetimeConfig):
         self.date_time_raw: str = date_time_raw
         self.config: DatetimeConfig = config
@@ -47,6 +51,9 @@ class DateTimeInfo:
         return json.dumps(self.__dict__, indent=2)
 
     def _parse(self, matchers):
+        """Run every token in tokenized datetime string through
+        each matcher function in matchers list.
+        """
         _matchers = list(matchers)
         tokens = self._tokenize_datetime_string()
         for token in tokens:
@@ -223,6 +230,22 @@ class DateTimeInfo:
 
 
 class LongDateTimeInfo(DateTimeInfo):
+    """LongDatetimeInfo defines matchers:
+    - `_match_day_of_week_token`
+    - `_match_month_token`
+    - `_match_day_token`
+    - `_match_fractional_seconds`
+
+    The idea is to detect which pendulum token should be used for
+    building date format. The matchers detect the required tokens
+    and `_build_long_date_format` return the resulting pendulum format
+    for matching date.
+    We then take a cartesian product of the date format with an
+    exhaustive list of time formats built using `_build_time_formats`.
+    This cartesian product returns a list of long datetime formats, which
+    can be used to parse `date_time_raw` string if it is a valid long datetime
+    string. This cartesian product is performed by `_build_long_datetime_formats_list`
+    """
     def __init__(self, date_time_raw: str, config: DatetimeConfig):
         super().__init__(date_time_raw, config)
 
@@ -301,7 +324,8 @@ class LongDateTimeInfo(DateTimeInfo):
             return True
         return False
 
-    def _get_token(self, token, token_map: dict):
+    @staticmethod
+    def _get_token(token, token_map: dict):
         for key_, values in token_map.items():
             if token in values:
                 return key_
@@ -351,7 +375,7 @@ class LongDateTimeInfo(DateTimeInfo):
             time_formats = map(lambda x: [x, f"{x}.{token}"], time_formats)
 
         time_formats = flatten(time_formats)
-        time_formats = map(lambda x: map_am_pm(x), time_formats)
+        time_formats = map(map_am_pm, time_formats)
         time_formats = map(
             lambda x: [
                 x,
@@ -383,6 +407,9 @@ class LongDateTimeInfo(DateTimeInfo):
 
 
 class ShortDateTimeInfo(DateTimeInfo):
+    """ShortDateTime info defines matcher function for
+    detecting date, time and timezone values
+    """
     def __init__(self, date_time_raw: str, config: DatetimeConfig):
         super().__init__(date_time_raw, config)
         self._parse_short_date_formats()

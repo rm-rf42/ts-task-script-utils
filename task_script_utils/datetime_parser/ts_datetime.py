@@ -1,5 +1,6 @@
 import copy
 from datetime import datetime
+import stat
 from typing import Optional
 
 import pendulum
@@ -90,7 +91,8 @@ class TSDatetime:
         dt_after_fold = dt.tsformat()
         return dt_before_fold != dt_after_fold
 
-    def _pad_year(self, datetime_str: str) -> str:
+    @staticmethod
+    def _pad_year(datetime_str: str) -> str:
         """Make sure that year is padded to 4 digits.
         for example,
         Input = 1-01-01T12:12:!2
