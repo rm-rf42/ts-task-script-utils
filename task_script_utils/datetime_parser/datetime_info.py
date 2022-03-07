@@ -55,7 +55,7 @@ class DateTimeInfo:
         """This method is used to pre-process the input string
         and return token list splitted by whitespace
         It performs following pre-processing:
-        1. Repace the letter T if it is sandwiched between two digits
+        1. Replace the letter T if it is sandwiched between two digits
         """
         raw_dt = self.date_time_raw
         processed_dt = self._remove_T_between_two_digits(raw_dt)
