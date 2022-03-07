@@ -1,7 +1,6 @@
 import pytest
 from task_script_utils.datetime_parser.parser import (
     parse,
-    _parse_with_formats,
     DatetimeConfig,
 )
 
@@ -44,8 +43,6 @@ parse_with_no_datetime_formats_list_test_cases = {
     "May 26 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
     "Sunday, May 26th 2013 12:12:12 AM IST": "2013-05-26T00:12:12+05:30",
     "Sunday, May 26 2013 12:12:12.5677 Asia/Kolkata": "2013-05-26T12:12:12.5677+05:30",
-    "Sunday, May 26 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",
-    "Sunday, May 26th 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",
     # Single digit day
     "Thursday, Nov 4 2021 12:12:12 AM Asia/Kolkata": "2021-11-04T00:12:12+05:30",
     # Error Cases:
@@ -55,13 +52,6 @@ parse_with_no_datetime_formats_list_test_cases = {
     "Sunday, May 26th 2013 12:12:12 AM ZST Asia/Kolkata": None,
     # Missing Month
     "Sunday, 26 2013 12:12:12 AM Asia/Kolkata": None,
-}
-
-format_list_with_no_tz_dict_test_cases = {
-    "Sunday, May 26th 2013 12:12:12 AM IST Asia/Kolkata": None,
-    "Sunday, May 26th 2013 12:12:12 AM ZST Asia/Kolkata": None,
-    "Sunday, May 26th 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
-    "Sunday, May 26th 2013 12:12:12 AM": None,
 }
 
 dateutil_parser_test_cases = {
@@ -196,18 +186,6 @@ def test_parse_with_formats(input, expected):
 
 
 @pytest.mark.parametrize(
-    "input, expected", format_list_with_no_tz_dict_test_cases.items()
-)
-def test_parse_with_formats_with_no_tz_dict(input, expected):
-    parsed_datetime, _ = _parse_with_formats(input, DatetimeConfig(), formats_list)
-
-    if parsed_datetime is None:
-        assert parsed_datetime == expected
-    else:
-        assert parsed_datetime.isoformat() == expected
-
-
-@pytest.mark.parametrize(
     "input, expected", parse_with_no_datetime_formats_list_test_cases.items()
 )
 def test_parse(input, expected):
@@ -270,6 +248,5 @@ def test_datetime_str_with_Z(input_, dt_formats, expected):
         result = parse(input_, formats_list=list(dt_formats))
         result = result.tsformat()
     except DatetimeParserError as e:
-        print(str(e))
         result = None
     assert result == expected

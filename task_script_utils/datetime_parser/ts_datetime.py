@@ -49,7 +49,7 @@ class TSDatetime:
             iso_8601 = self._datetime.format(minimal_format)
             if self._subseconds is not None:
                 iso_8601 = f"{iso_8601}.{self._subseconds}"
-
+        iso_8601 = self._pad_year(iso_8601)
         return iso_8601
 
     def isoformat(self) -> str:
@@ -62,6 +62,7 @@ class TSDatetime:
             if ":" not in offset:
                 offset = f"{offset[:3]}:{offset[-2:]}"
             iso_str += offset
+        iso_str = self._pad_year(iso_str)
         return iso_str
 
     def change_fold(self, new_fold: int):
@@ -88,3 +89,14 @@ class TSDatetime:
         dt.change_fold(1)
         dt_after_fold = dt.tsformat()
         return dt_before_fold != dt_after_fold
+
+    def _pad_year(self, datetime_str: str) -> str:
+        """Make sure that year is padded to 4 digits.
+        for example,
+        Input = 1-01-01T12:12:!2
+        Output = 0001-01-01T12:12:12
+        """
+
+        dt_tokens = datetime_str.split("-")
+        dt_tokens[0] = f"{int(dt_tokens[0]):04d}"
+        return "-".join(dt_tokens)
