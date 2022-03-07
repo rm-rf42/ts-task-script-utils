@@ -12,18 +12,18 @@ long_datetime_test_cases = {
     "Sunday, May 26th 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
     "Sunday, May 26th, 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
     "Sunday, May 26 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
-    # pylint: disable=C0321
+    # pylint: disable=C0301
     "Sunday, May 26 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",
-    # pylint: disable=C0321
+    # pylint: disable=C0301
     "Sunday, May 26 2013 12:12:12.0000 AM Asia/Kolkata": "2013-05-26T00:12:12.0000+05:30",
-    # pylint: disable=C0321
+    # pylint: disable=C0301
     "Sunday, May 26th 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",
-    # pylint: disable=C0321
+    # pylint: disable=C0301
     "Sunday, May 26th 2013 12:12:12.0001 AM Asia/Kolkata": "2013-05-26T00:12:12.0001+05:30",
-    # pylint: disable=C0321
+    # pylint: disable=C0301
     "Sunday, May 26th 2013 12:12:12.0001 AM Asia/Kolkata IST": "2013-05-26T00:12:12.0001+05:30",
     "Sunday, May 26th 2013 12:12:12 AM IST": "2013-05-26T00:12:12+05:30",
-    # pylint: disable=C0321
+    # pylint: disable=C0301
     "Sunday, May 26th 2013 12:12:12.0001 AM Asia/Kolkata +05:30": "2013-05-26T00:12:12.0001+05:30",
 }
 
