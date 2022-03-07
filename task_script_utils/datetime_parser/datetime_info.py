@@ -6,6 +6,7 @@ from typing import List, Optional, Tuple
 
 import pendulum
 from pendulum.locales.en import locale
+# pylint: disable=C0401
 from pydash.arrays import flatten
 
 from .datetime_config import DatetimeConfig

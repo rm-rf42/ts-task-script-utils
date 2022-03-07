@@ -1,8 +1,7 @@
 import re
 import datetime as dt
-from typing import Sequence
+from typing import Sequence, Tuple, Optional
 from itertools import product
-from typing import Tuple, Optional
 from pydash.arrays import flatten
 from pendulum import now
 from pendulum import datetime as pendulum_datetime
