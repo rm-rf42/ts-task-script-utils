@@ -20,7 +20,7 @@ from .parser_exceptions import (
     MultipleOffsetsError,
     AmbiguousDateError,
     MultipleTimesFoundError,
-    InvalidYearError
+    InvalidYearError,
 )
 
 
