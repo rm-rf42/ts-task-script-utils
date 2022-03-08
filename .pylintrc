@@ -20,5 +20,6 @@ disable=raw-checker-failed,
         unspecified-encoding
 
 
+
 [FORMAT]
 max-line-length=88
