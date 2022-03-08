@@ -85,7 +85,7 @@ def test_match_short_date(input_, year_first, day_first, expected):
     try:
         date_info = ShortDateTimeInfo(input_, config)
         result = _build_date_str_from_datetime_info(date_info)
-    except DatetimeParserError as e:
+    except DatetimeParserError:
         result = None
 
     assert result == expected
@@ -99,7 +99,7 @@ def test_regex_parsing(input_, expected):
     try:
         short_datetime_info = ShortDateTimeInfo(input_, year_first)
         parsed_datetime = short_datetime_info.datetime_stamp
-    except DatetimeParserError as e:
+    except DatetimeParserError:
         parsed_datetime = None
 
     assert parsed_datetime == expected

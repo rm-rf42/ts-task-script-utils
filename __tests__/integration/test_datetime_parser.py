@@ -26,8 +26,8 @@ datetime_formats_list_test_cases = {
     "Sunday, May 26th 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
     "Sunday, May 26th, 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
     "Sunday, May 26 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
-    "Sunday, May 26 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",
-    "Sunday, May 26th 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",
+    "Sunday, May 26 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",  # noqa E501
+    "Sunday, May 26th 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",  # noqa E501
 }
 
 parse_with_no_datetime_formats_list_test_cases = {
@@ -36,8 +36,8 @@ parse_with_no_datetime_formats_list_test_cases = {
     "Sunday, May 26th 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
     "Sunday, May 26th, 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
     "Sunday, May 26 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
-    "Sunday, May 26 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",
-    "Sunday, May 26th 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",
+    "Sunday, May 26 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",  # noqa E501
+    "Sunday, May 26th 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",  # noqa E501
     "1:2:32 2021-12-23 AM America/Chicago": "2021-12-23T01:02:32-06:00",
     "1:2:32 2021-12-23 AM +530": "2021-12-23T01:02:32+05:30",
     "May 26 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
@@ -176,7 +176,7 @@ def test_parse_with_formats(input, expected):
             formats_list,
             datetime_config,
         )
-    except DatetimeParserError as e:
+    except DatetimeParserError:
         parsed_datetime = None
 
     if parsed_datetime is None:
@@ -198,7 +198,7 @@ def test_parse(input, expected):
             config=datetime_config,
         )
         parsed_datetime = parsed_datetime.isoformat()
-    except DatetimeParserError as e:
+    except DatetimeParserError:
         parsed_datetime = None
 
     assert parsed_datetime == expected
@@ -210,7 +210,7 @@ def test_convert_to_iso_with_fold(input_, fold, expected):
     try:
         result = parse(input_, config=config)
         result = result.tsformat()
-    except DatetimeParserError as e:
+    except DatetimeParserError:
         result = None
     assert result == expected
 
@@ -222,7 +222,7 @@ def test_convert_to_iso_with_fractional_seconds(input_, expected):
     try:
         result = parse(input_, config=config)
         result = result.tsformat()
-    except DatetimeParserError as e:
+    except DatetimeParserError:
         result = None
     assert result == expected
 
@@ -235,7 +235,7 @@ def test_convert_to_ts_format_for_padding(input_, year_first, day_first, expecte
     try:
         result = parse(input_, config=config)
         result = result.tsformat()
-    except DatetimeParserError as e:
+    except DatetimeParserError:
         result = None
     assert result == expected
 
@@ -247,6 +247,6 @@ def test_datetime_str_with_Z(input_, dt_formats, expected):
     try:
         result = parse(input_, formats_list=list(dt_formats))
         result = result.tsformat()
-    except DatetimeParserError as e:
+    except DatetimeParserError:
         result = None
     assert result == expected
