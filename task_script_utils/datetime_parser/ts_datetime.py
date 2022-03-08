@@ -68,7 +68,10 @@ class TSDatetime:
     def change_fold(self, new_fold: int):
         if new_fold is None and self._is_fold_required:
             raise AmbiguousFoldError(
-                "DatetimeConfig.fold must not be None to parse datetime without ambiguity."
+                (
+                    "DatetimeConfig.fold must not be None"
+                    "to parse datetime without ambiguity."
+                )
             )
 
         if self._datetime.tzinfo is None or new_fold == self._datetime.fold:

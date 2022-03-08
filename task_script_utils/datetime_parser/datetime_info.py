@@ -15,6 +15,7 @@ from .tz_list import _all_abbreviated_tz_list
 from .ts_datetime import TSDatetime
 from .utils import parse_with_formats
 from .parser_exceptions import (
+    DatetimeParserError,
     InvalidOffsetError,
     OffsetNotKnownError,
     InvalidDateError,
@@ -471,7 +472,7 @@ class ShortDateTimeInfo(DateTimeInfo):
             return False
         """
         # pylint: disable=C0301
-        hh_mm_ss_pattern = r"\d{1,2}:\d{1,2}:\d{1,2}\.\d+|^\d{1,2}:\d{1,2}:\d{1,2}$|^\d{1,2}:\d{1,2}:\d{1,2}[+-]"
+        hh_mm_ss_pattern = r"\d{1,2}:\d{1,2}:\d{1,2}\.\d+|^\d{1,2}:\d{1,2}:\d{1,2}$|^\d{1,2}:\d{1,2}:\d{1,2}[+-]"  # noqa E501
         hh_mm_pattern = r"^(?![+-])\d{1,2}:\d{1,2}$|^(?![+-])\d{1,2}:\d{1,2}[+-]{1,1}"
 
         matches = re.findall(hh_mm_ss_pattern, token)
@@ -612,7 +613,7 @@ class ShortDateTimeInfo(DateTimeInfo):
         # then it is a date don't match for offset
         try:
             short_date = self._match_short_date(token)
-        except Exception as e:
+        except DatetimeParserError:
             short_date = False
 
         if short_date:
@@ -688,8 +689,8 @@ class ShortDateTimeInfo(DateTimeInfo):
 
         # Validate day, year, month
         try:
-            dt_date = dt(day=int(day), month=int(month), year=int(year))
-        except Exception as e:
+            _ = dt(day=int(day), month=int(month), year=int(year))
+        except ValueError as e:
             msg = f"{str(e)}, date={date_parts}, config={self.config}"
             raise InvalidDateError(msg)
 
@@ -751,8 +752,8 @@ class ShortDateTimeInfo(DateTimeInfo):
 
         # Validate day, year, month
         try:
-            dt_date = dt(day=int(day), month=int(month), year=int(year))
-        except Exception as e:
+            _ = dt(day=int(day), month=int(month), year=int(year))
+        except ValueError as e:
             msg = f"{str(e)}, date={'-'.join(date_parts)}, {self.config}"
             raise InvalidDateError(msg)
 
@@ -848,7 +849,7 @@ class ShortDateTimeInfo(DateTimeInfo):
         try:
             parsed = pendulum.from_format(date_str, format)
             return parsed
-        except Exception as e:
+        except ValueError:
             return None
 
     def _try_formats(self, date_str: str, formats: Tuple[str, ...]):

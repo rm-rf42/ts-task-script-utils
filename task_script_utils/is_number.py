@@ -9,11 +9,11 @@ def isnumber(value):
     """
 
     # Note boolean can be converted to number so it has to be avoided
-    if type(value) is bool:
+    if isinstance(value, bool):
         return False
 
     try:
         float(value)
         return True
-    except:
+    except ValueError:
         return False

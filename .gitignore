@@ -6,3 +6,5 @@ htmlcov/
 build/
 dist/
 copy
+.DS_Store
+dev.*
