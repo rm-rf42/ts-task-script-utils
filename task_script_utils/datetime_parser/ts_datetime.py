@@ -8,6 +8,11 @@ from .parser_exceptions import AmbiguousFoldError
 
 
 class TSDatetime:
+    """TSDatetime wraps the parsed datetime and subsecond values and
+    provide formatting functions like tsformat and isoformat
+    """
+
+    # pylint: disable=E0601
     def __init__(self, datetime_: datetime, subseconds: Optional[str] = None):
         if not isinstance(datetime_, datetime):
             raise TypeError("datetime_ must be a datetime object")
@@ -17,6 +22,7 @@ class TSDatetime:
 
     @property
     def tzinfo(self) -> datetime.tzinfo:
+        """Returns tzinfo for the stored datetime object"""
         return self._datetime.tzinfo
 
     @property
@@ -66,6 +72,9 @@ class TSDatetime:
         return iso_str
 
     def change_fold(self, new_fold: int):
+        """Replace the fold value of stored datetime object
+        if needed.
+        """
         if new_fold is None and self._is_fold_required:
             raise AmbiguousFoldError(
                 (
@@ -86,11 +95,11 @@ class TSDatetime:
         datetime, False otherwise.
         """
         # Copy because TSDatetime is mutable
-        dt = copy.deepcopy(self)
-        dt.change_fold(0)
-        dt_before_fold = dt.tsformat()
-        dt.change_fold(1)
-        dt_after_fold = dt.tsformat()
+        date_time = copy.deepcopy(self)
+        date_time.change_fold(0)
+        dt_before_fold = date_time.tsformat()
+        date_time.change_fold(1)
+        dt_after_fold = date_time.tsformat()
         return dt_before_fold != dt_after_fold
 
     @staticmethod

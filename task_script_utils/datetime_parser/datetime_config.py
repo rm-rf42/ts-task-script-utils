@@ -2,7 +2,16 @@ from typing import Optional
 from .utils import map_offset_to_seconds
 
 
+# pylint: disable=R0903
 class DatetimeConfig:
+    """DatetimeConfig provides complementary information on how to mark
+    parsed digits as day, month or year.
+    It also provides an option to handle abbreviated time zones and
+    fold for parsing ambiguous timestamps during daylight saving transitions.
+    Ideally, DatetimeConfig should be constructed from pipeline configuration
+    passed to task scripts.
+    """
+
     def __init__(
         self,
         day_first: Optional[bool] = None,
@@ -10,12 +19,7 @@ class DatetimeConfig:
         tz_dict: dict = {},
         fold: Optional[int] = None,
     ):
-        """DatetimeConfig provides complementary information on how to mark
-        parsed digits as day, month or year.
-        It also provides an option to handle abbreviated time zones and
-        fold for parsing ambiguous timestamps during daylight saving transitions.
-        Ideally, DatetimeConfig should be constructed from pipeline configuration
-        passed to task scripts.
+        """DatetimeConfig constructor.
 
         Args:
             day_first (Optional[bool], optional): Whether to interpret the first

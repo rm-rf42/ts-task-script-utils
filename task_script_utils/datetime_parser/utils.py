@@ -1,8 +1,6 @@
 import re
 import datetime as dt
 from typing import Sequence, Tuple, Optional
-from itertools import product
-from pydash.arrays import flatten
 from pendulum import now
 from pendulum import datetime as pendulum_datetime
 
@@ -11,31 +9,6 @@ from .fractional_seconds_formatter import FractionalSecondsFormatter
 
 
 _formatter = FractionalSecondsFormatter()
-
-TIME_PARTS = [
-    ["h", "hh", "H", "HH"],
-    ["m", "mm"],
-    ["s", "ss"],
-]
-
-
-def get_time_formats_for_long_date(fractional_seconds):
-    def map_am_pm(time_format):
-        return time_format if time_format.startswith("H") else time_format + " A"
-
-    time_formats = [":".join(tokens) for tokens in product(*TIME_PARTS)]
-    if fractional_seconds:
-        token = "SSSSSS"
-        time_formats = map(lambda x: [x, f"{x}.{token}"], time_formats)
-
-    time_formats = flatten(time_formats)
-    time_formats = map(lambda x: map_am_pm(x), time_formats)
-    time_formats = map(
-        lambda x: [x, x + " Z", x + " z", x + " ZZ", x + " Z z", x + " ZZ z"],
-        time_formats,
-    )
-    time_formats = flatten(time_formats)
-    return tuple(time_formats)
 
 
 def convert_offset_to_seconds(offset_value):
@@ -68,9 +41,9 @@ def replace_abbreviated_tz_with_utc_offset(datetime_str: str, tz_dict):
     Converts `12-12-2012 12:12:12 AM IST` to `12-12-2012 12:12:12 AM +05:30`
     if `IST: +05:30` exist in tz_dict
     """
-    for tz in tz_dict:
-        if tz in datetime_str:
-            return datetime_str.replace(tz, tz_dict[tz])
+    for tz_name in tz_dict:
+        if tz_name in datetime_str:
+            return datetime_str.replace(tz_name, tz_dict[tz_name])
     return datetime_str
 
 

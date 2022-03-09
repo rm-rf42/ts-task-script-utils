@@ -23,5 +23,6 @@ def check_file_type(filename: str, expected_type: typing.Union[str, list]):
             raise ValueError(f"expected string or list but received {expected_type}")
     except AssertionError:
         sys.exit(
+            # pylint: disable=C0301
             f"The pipeline is expecting the file type to be {expected_type}, but the provided file has a file type of {extension}."  # noqa E501
         )

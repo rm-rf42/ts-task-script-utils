@@ -27,6 +27,7 @@ from .parser_exceptions import (
 )
 
 
+# pylint: disable=R0902
 class DateTimeInfo:
     """DatetimeInfo acts as base class for ShortDatetimeInfo and
     LongDatetimeInfo. This class definer the parsing logic. _parse
@@ -83,6 +84,7 @@ class DateTimeInfo:
         return processed_dt.split()
 
     @staticmethod
+    # pylint: disable=C0103
     def _remove_T_between_two_digits(string: str):
         # Input =  2018-13-09T11:12:23.000-05:30
         # output = 2018-13-09 11:12:23.000-05:30
@@ -336,7 +338,7 @@ class LongDateTimeInfo(DateTimeInfo):
         for key_, values in token_map.items():
             if token in values:
                 return key_
-            elif token.replace(",", "") in values:
+            if token.replace(",", "") in values:
                 return f"{key_},"
         return None
 
@@ -367,7 +369,7 @@ class LongDateTimeInfo(DateTimeInfo):
         return date_fmt
 
     def _build_time_formats(self):
-        TIME_PARTS = [
+        pendulum_time_tokens = [
             ["h", "hh", "H", "HH"],
             ["m", "mm"],
             ["s", "ss"],
@@ -376,7 +378,7 @@ class LongDateTimeInfo(DateTimeInfo):
         def map_am_pm(time_format):
             return time_format if time_format.startswith("H") else time_format + " A"
 
-        time_formats = [":".join(tokens) for tokens in product(*TIME_PARTS)]
+        time_formats = [":".join(tokens) for tokens in product(*pendulum_time_tokens)]
         if self.fractional_seconds:
             token = "SSSSSS"
             time_formats = map(lambda x: [x, f"{x}.{token}"], time_formats)
@@ -451,6 +453,7 @@ class ShortDateTimeInfo(DateTimeInfo):
             return True
         return False
 
+    # pylint: disable=R0912
     def _match_time(self, token: str) -> bool:
         """Use Regex to find any time string present in
         input token. If time string is parsed successfully
@@ -507,15 +510,15 @@ class ShortDateTimeInfo(DateTimeInfo):
 
         time_errors = []
 
-        if not (0 <= int(hour) <= 24):
+        if not 0 <= int(hour) <= 24:
             time_errors.append(
                 f"Invalid time : {hour}. Hours value must be between 0 and 24"
             )
-        if not (0 <= int(minutes) <= 60):
+        if not 0 <= int(minutes) <= 60:
             time_errors.append(
                 f"Invalid time : {minutes}. Minutes value must be between 0 and 60"
             )
-        if not (0 <= int(seconds) <= 60):
+        if not 0 <= int(seconds) <= 60:
             time_errors.append(
                 f"Invalid time : {seconds}. Seconds value must be between 0 and 60"
             )
@@ -690,8 +693,8 @@ class ShortDateTimeInfo(DateTimeInfo):
         # Validate day, year, month
         try:
             _ = dt(day=int(day), month=int(month), year=int(year))
-        except ValueError as e:
-            msg = f"{str(e)}, date={date_parts}, config={self.config}"
+        except ValueError as val_error:
+            msg = f"{str(val_error)}, date={date_parts}, config={self.config}"
             raise InvalidDateError(msg)
 
         day = f"{int(day):02d}"
@@ -699,6 +702,7 @@ class ShortDateTimeInfo(DateTimeInfo):
 
         return day, month, year
 
+    # pylint: disable=R0912
     def _process_two_digit_date_pattern(self, date_parts):
         if self.config.year_first is True:
             if self.config.day_first is True:
@@ -753,13 +757,14 @@ class ShortDateTimeInfo(DateTimeInfo):
         # Validate day, year, month
         try:
             _ = dt(day=int(day), month=int(month), year=int(year))
-        except ValueError as e:
-            msg = f"{str(e)}, date={'-'.join(date_parts)}, {self.config}"
+        except ValueError as val_error:
+            msg = f"{str(val_error)}, date={'-'.join(date_parts)}, {self.config}"
             raise InvalidDateError(msg)
 
         return day, month, year
 
-    def _process_day_and_month(self, tokens: List[str]) -> tuple:
+    @staticmethod
+    def _process_day_and_month(tokens: List[str]) -> tuple:
         """Given a list of two numeric tokens,
         try to decide which token is day and which
         is month.
@@ -794,46 +799,34 @@ class ShortDateTimeInfo(DateTimeInfo):
         )
         return day, month
 
-    def _pad_and_validate_offset_value(self, offset):
+    @staticmethod
+    def _pad_and_validate_offset_value(offset):
         if ":" in offset:
             # 5:30 --> 05:30
             # 05:30 --> 05:30
             if len(offset) == 4:
                 return f"0{offset}"
-            elif len(offset) == 5:
+            if len(offset) == 5:
                 return offset
-            else:
-                raise InvalidOffsetError(offset)
-        else:
-            # 2 --> 02:00 | 09 --> 09:00 | 12 --> 12:00
-            # 530 --> 05:30
-            # 0930 --> 09:30 | 1200 --> 12:00
-            if len(offset) == 1:
-                return f"0{offset}:00"
-            elif len(offset) == 2:
-                return f"{offset}:00"
-            elif len(offset) == 3:
-                return f"0{offset[0]}:{offset[1:]}"
-            elif len(offset) == 4:
-                return f"{offset[:2]}:{offset[2:]}"
-            else:
-                raise InvalidOffsetError(offset)
+            raise InvalidOffsetError(offset)
 
-    def _replace_single_characters(self, string: str):
-        # Input =  2018-13-09T11:12:23.000-05:30
-        # output = 2018-13-09 11:12:23.000-05:30
-        char_list = list(string)
-        for i, current_char in enumerate(char_list[1:-1]):
-            if (
-                char_list[i - 1].isdigit()
-                and char_list[i].isalpha()
-                and char_list[i + 1].isdigit()
-            ):
-                char_list[i] = " "
+        # Else
+        # 2 --> 02:00 | 09 --> 09:00 | 12 --> 12:00
+        # 530 --> 05:30
+        # 0930 --> 09:30 | 1200 --> 12:00
+        if len(offset) == 1:
+            return f"0{offset}:00"
+        if len(offset) == 2:
+            return f"{offset}:00"
+        if len(offset) == 3:
+            return f"0{offset[0]}:{offset[1:]}"
+        if len(offset) == 4:
+            return f"{offset[:2]}:{offset[2:]}"
 
-        return "".join(char_list)
+        raise InvalidOffsetError(offset)
 
-    def _is_format(self, date_str: str, format: str):
+    @staticmethod
+    def _is_format(date_str: str, format_: str):
         """Given a date string and a format,
         try to parse the date.
 
@@ -847,7 +840,7 @@ class ShortDateTimeInfo(DateTimeInfo):
             (True, datetime object) else return (False, None)
         """
         try:
-            parsed = pendulum.from_format(date_str, format)
+            parsed = pendulum.from_format(date_str, format_)
             return parsed
         except ValueError:
             return None

@@ -1,3 +1,4 @@
+# pylint: skip-file
 from pendulum.formatting import Formatter
 
 

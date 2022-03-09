@@ -38,6 +38,7 @@ def convert_datetime_to_ts_format(
 
     if parsed_time is None:
         raise ValueError(
+            # pylint: disable=C0301
             f"Could not parse input datetime string {datetime} using {parser_name} and the following input formats: {datetime_format}"  # noqa: E501
         )
 
@@ -48,6 +49,7 @@ def convert_datetime_to_ts_format(
             timezone_to_use = tz.gettz(timezone)
         except Exception:
             print(
+                # pylint: disable=C0301
                 "The provided timezone can't be parsed by dateutil tz, going to use the plain value"  # noqa: E501
             )
             timezone_to_use = timezone
