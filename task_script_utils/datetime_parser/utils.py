@@ -9,6 +9,8 @@ from pendulum import datetime as pendulum_datetime
 
 from task_script_utils.datetime_parser.ts_datetime import TSDatetime
 from .fractional_seconds_formatter import FractionalSecondsFormatter
+from .parser_exceptions import AmbiguousDatetimeFormatsError
+
 
 _formatter = FractionalSecondsFormatter()
 
@@ -116,3 +118,20 @@ def replace_z_with_offset(datetime_str: str) -> str:
     12-12-12T14:53:00 Z -> 12-12-12T14:53:00 +00:00
     """
     return re.sub(r"(?<=\d|\s)Z(?=\s|$)", "+00:00", datetime_str)
+
+
+def does_format_list_contain_ambiguity(formats_list: Sequence[str] = []):
+    if formats_list:
+        ambiguous_datetime = pendulum_datetime(2001, 2, 3, 4, 5, 6, 7)
+        ambiguous_format_datetime = ambiguous_datetime.format(formats_list[0])
+        for datetime_format in formats_list:
+            try:
+                if ambiguous_format_datetime != ambiguous_datetime.format(
+                    datetime_format
+                ):
+                    raise AmbiguousDatetimeFormatsError
+            except AmbiguousDatetimeFormatsError as e:
+                raise e
+            except Exception as e:
+                continue
+    return None

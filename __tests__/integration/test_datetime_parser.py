@@ -5,12 +5,25 @@ from task_script_utils.datetime_parser.parser import (
     DatetimeConfig,
 )
 
-from task_script_utils.datetime_parser.parser_exceptions import DatetimeParserError
+from task_script_utils.datetime_parser.parser_exceptions import (
+    DatetimeParserError,
+    AmbiguousDatetimeFormatsError,
+)
 
 
 tz_dict = {"IST": "+05:30", "BST": "+01:00"}
 
-formats_list = [
+ambiguous_formats_list = [
+    "MM/DD/YYYY hh:mm:ss A z",
+    "DD/MM/YYYY hh:mm:ss A z",
+]
+
+ambiguous_datetime_formats_cases = {
+    "31/12/2022 01:23:45 AM EST": "2022-12-31T01:23:45-05:00",
+    "01/12/2022 01:23:45 PM EST": "2022-01-12T13:23:45-05:00",
+}
+
+unambiguous_formats_list = [
     "dddd, MMMM Do YYYY hh:mm:ss A zz z",
     "dddd, MMMM Do YYYY hh:mm:ss A z",
     "dddd, MMMM Do YYYY hh:mm:ss A zz",
@@ -175,6 +188,46 @@ datetime_strings_with_and_without_Z = {
 }
 
 
+@pytest.mark.parametrize("input, expected", ambiguous_datetime_formats_cases.items())
+def test_parse_with_ambiguous_formats_not_enforcing_unambiguity(input, expected):
+    # Arrange
+    datetime_config_dict = {"tz_dict": tz_dict, "enforce_unambiguity": False}
+
+    datetime_config = DatetimeConfig(**datetime_config_dict)
+    # Act
+    try:
+        parsed_datetime = parse(
+            input,
+            ambiguous_formats_list,
+            datetime_config,
+        )
+    except DatetimeParserError as e:
+        parsed_datetime = None
+
+    # Assert
+    if parsed_datetime is None:
+        assert parsed_datetime == expected
+    else:
+        assert parsed_datetime.isoformat() == expected
+
+
+@pytest.mark.parametrize("input", ambiguous_datetime_formats_cases)
+def test_parse_with_ambiguous_formats_enforcing_unambiguity(input):
+    # Arrange
+    datetime_config_dict = {"tz_dict": tz_dict, "enforce_unambiguity": True}
+
+    datetime_config = DatetimeConfig(**datetime_config_dict)
+    # Act
+    # Assert
+    with pytest.raises(AmbiguousDatetimeFormatsError):
+        parsed_datetime = parse(
+            input,
+            ambiguous_formats_list,
+            datetime_config,
+        )
+        print(parsed_datetime.isoformat())
+
+
 @pytest.mark.parametrize("input, expected", datetime_formats_list_test_cases.items())
 def test_parse_with_formats(input, expected):
     datetime_config_dict = {"tz_dict": tz_dict}
@@ -183,7 +236,7 @@ def test_parse_with_formats(input, expected):
     try:
         parsed_datetime = parse(
             input,
-            formats_list,
+            unambiguous_formats_list,
             datetime_config,
         )
     except DatetimeParserError as e:
@@ -199,7 +252,9 @@ def test_parse_with_formats(input, expected):
     "input, expected", format_list_with_no_tz_dict_test_cases.items()
 )
 def test_parse_with_formats_with_no_tz_dict(input, expected):
-    parsed_datetime, _ = _parse_with_formats(input, DatetimeConfig(), formats_list)
+    parsed_datetime, _ = _parse_with_formats(
+        input, DatetimeConfig(), unambiguous_formats_list
+    )
 
     if parsed_datetime is None:
         assert parsed_datetime == expected
@@ -270,6 +325,5 @@ def test_datetime_str_with_Z(input_, dt_formats, expected):
         result = parse(input_, formats_list=list(dt_formats))
         result = result.tsformat()
     except DatetimeParserError as e:
-        print(str(e))
         result = None
     assert result == expected

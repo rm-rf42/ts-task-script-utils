@@ -9,6 +9,7 @@ class DatetimeConfig:
         year_first: Optional[bool] = None,
         tz_dict: dict = {},
         fold: Optional[int] = None,
+        enforce_unambiguity: Optional[bool] = False,
     ):
         """DatetimeConfig provides complementary information on how to mark
         parsed digits as day, month or year.
@@ -36,12 +37,16 @@ class DatetimeConfig:
             2 hour window when clocks are set back in a timezone which keeps
             track of daylight savings (such as IANA timezones like `Europe/London`).
             Defaults to None.
+
+            enforce_unambiguity (Optional[bool]): Whether enforce unambiguity in
+            datetime formats.
         """
         self.day_first = day_first
         self.year_first = year_first
         self.tz_dict = tz_dict
         self.tz_dict_seconds = map_offset_to_seconds(tz_dict)
         self.fold = fold
+        self.enforce_unambiguity = enforce_unambiguity
 
     def __str__(self):
         return (
@@ -49,6 +54,7 @@ class DatetimeConfig:
             f"year_first={self.year_first}, "
             f"fold={self.fold}, "
             f"tz_dict={self.tz_dict}"
+            f"enforce_unambiguity={self.enforce_unambiguity}"
         )
 
 

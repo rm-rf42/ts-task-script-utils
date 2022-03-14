@@ -12,6 +12,7 @@ from .utils import (
     replace_zz_with_Z,
     from_pendulum_format,
     replace_z_with_offset,
+    does_format_list_contain_ambiguity,
 )
 
 
@@ -35,6 +36,8 @@ def parse(
     Returns:
         TSDatetime
     """
+    if config.enforce_unambiguity:
+        does_format_list_contain_ambiguity(formats_list)
     parsed_datetime = None
     datetime_info = None
 
