@@ -53,7 +53,7 @@ class DatetimeConfig:
             f"day_first={self.day_first}, "
             f"year_first={self.year_first}, "
             f"fold={self.fold}, "
-            f"tz_dict={self.tz_dict}"
+            f"tz_dict={self.tz_dict}, "
             f"enforce_unambiguity={self.enforce_unambiguity}"
         )
 

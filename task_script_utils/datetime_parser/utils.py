@@ -1,16 +1,15 @@
 import re
 import datetime as dt
-from typing import Sequence
+from typing import Dict, Optional, Sequence
 from itertools import product
 
 from pydash.arrays import flatten
 from pendulum import now
 from pendulum import datetime as pendulum_datetime
 
-from task_script_utils.datetime_parser.ts_datetime import TSDatetime
+from .ts_datetime import TSDatetime
 from .fractional_seconds_formatter import FractionalSecondsFormatter
 from .parser_exceptions import AmbiguousDatetimeFormatsError
-
 
 _formatter = FractionalSecondsFormatter()
 
@@ -21,7 +20,7 @@ TIME_PARTS = [
 ]
 
 
-def get_time_formats_for_long_date(fractional_seconds):
+def get_time_formats_for_long_date(fractional_seconds: Optional[str]):
     def map_am_pm(time_format):
         return time_format if time_format.startswith("H") else time_format + " A"
 
@@ -40,7 +39,7 @@ def get_time_formats_for_long_date(fractional_seconds):
     return tuple(time_formats)
 
 
-def convert_offset_to_seconds(offset_value):
+def convert_offset_to_seconds(offset_value: str):
     """Convert +/-hh:mm utc offset string value
     to +/-<seconds>
     eg. +00:33 --> 1980.0
@@ -65,7 +64,9 @@ def map_offset_to_seconds(tz_dict):
     }
 
 
-def replace_abbreviated_tz_with_utc_offset(datetime_str: str, tz_dict):
+def replace_abbreviated_tz_with_utc_offset(
+    datetime_str: str, tz_dict: Optional[Dict] = {}
+):
     """
     Converts `12-12-2012 12:12:12 AM IST` to `12-12-2012 12:12:12 AM +05:30`
     if `IST: +05:30` exist in tz_dict
@@ -76,7 +77,7 @@ def replace_abbreviated_tz_with_utc_offset(datetime_str: str, tz_dict):
     return datetime_str
 
 
-def replace_zz_with_Z(formats: Sequence[str]):
+def replace_zz_with_Z(formats: Optional[Sequence[str]] = ()):
     """
     eg. `DD-MM-YYYY hh:m:ss zz` -> `DD-MM-YYYY hh:m:ss Z`
     """
@@ -89,8 +90,8 @@ def replace_zz_with_Z(formats: Sequence[str]):
 
 
 def from_pendulum_format(
-    datetime_string,
-    fmt,
+    datetime_string: str,
+    fmt: str,
     tz=None,
     locale=None,
 ) -> TSDatetime:
@@ -120,18 +121,47 @@ def replace_z_with_offset(datetime_str: str) -> str:
     return re.sub(r"(?<=\d|\s)Z(?=\s|$)", "+00:00", datetime_str)
 
 
-def does_format_list_contain_ambiguity(formats_list: Sequence[str] = []):
+def check_for_mutual_ambiguity(
+    tz_dict: Optional[Dict] = {}, formats_list: Optional[Sequence[str]] = []
+):
     if formats_list:
+        formats_list = replace_zz_with_Z(formats_list)
         ambiguous_datetime = pendulum_datetime(2001, 2, 3, 4, 5, 6, 7)
-        ambiguous_format_datetime = ambiguous_datetime.format(formats_list[0])
+        formats_list = set(formats_list)
         for datetime_format in formats_list:
-            try:
-                if ambiguous_format_datetime != ambiguous_datetime.format(
-                    datetime_format
-                ):
-                    raise AmbiguousDatetimeFormatsError
-            except AmbiguousDatetimeFormatsError as e:
-                raise e
-            except Exception as e:
-                continue
-    return None
+            input_ = ambiguous_datetime.format(datetime_format)
+            for other_datetime_format in formats_list - {datetime_format}:
+                try:
+                    utc_offset_datatime = replace_abbreviated_tz_with_utc_offset(
+                        input_, tz_dict
+                    )
+                    input_ = (
+                        replace_zz_with_Z(utc_offset_datatime)
+                        if utc_offset_datatime != input_
+                        else input_
+                    )
+
+                    ambiguous_format_datetime = from_pendulum_format(
+                        input_, datetime_format, tz=tz_dict
+                    )
+                    other_ambiguous_format_datetime = from_pendulum_format(
+                        input_, other_datetime_format, tz=tz_dict
+                    )
+                    print(ambiguous_format_datetime, other_ambiguous_format_datetime)
+                    if input_ != other_ambiguous_format_datetime:
+                        raise AmbiguousDatetimeFormatsError(
+                            f"""
+                            Ambiguity found between datetime formats [{datetime_format}] and
+                            [{other_datetime_format}]. Formats parsed [{ambiguous_datetime}]
+                            to [{ambiguous_format_datetime}] and
+                            [{other_ambiguous_format_datetime}], respectively.
+                            """
+                        )
+                except ValueError:
+                    # Ignoring ValueError because we're not concerned about validity of
+                    # parses in this function
+                    pass
+                except AssertionError:
+                    # Ignoring AssertionErrors because we're not concerned about
+                    # validity of parses in this function
+                    pass

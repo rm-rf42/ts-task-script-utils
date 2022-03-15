@@ -1,7 +1,6 @@
-from typing import Sequence
+from typing import Dict, Sequence, Optional
 
 import pendulum
-from dateutil.parser import parse as dateutil_parse
 
 from task_script_utils.datetime_parser.parser_exceptions import DatetimeParserError
 from task_script_utils.datetime_parser.ts_datetime import TSDatetime
@@ -12,14 +11,14 @@ from .utils import (
     replace_zz_with_Z,
     from_pendulum_format,
     replace_z_with_offset,
-    does_format_list_contain_ambiguity,
+    check_for_mutual_ambiguity,
 )
 
 
 def parse(
     datetime_raw_str: str,
-    formats_list: Sequence[str] = (),
-    config: DatetimeConfig = DEFAULT_DATETIME_CONFIG,
+    formats_list: Optional[Sequence[str]] = (),
+    config: Optional[DatetimeConfig] = DEFAULT_DATETIME_CONFIG,
 ) -> TSDatetime:
     """Parse datetime_str and construct a TSDatetime Object
 
@@ -37,7 +36,7 @@ def parse(
         TSDatetime
     """
     if config.enforce_unambiguity:
-        does_format_list_contain_ambiguity(formats_list)
+        check_for_mutual_ambiguity(config.tz_dict, formats_list)
     parsed_datetime = None
     datetime_info = None
 
@@ -46,8 +45,8 @@ def parse(
     datetime_str = replace_z_with_offset(datetime_raw_str)
     # Parse Using formats list
     if formats_list:
-        parsed_datetime, matched_format = _parse_with_formats(
-            datetime_str, datetime_config=config, formats=formats_list
+        parsed_datetime, _ = _parse_with_formats(
+            datetime_str, tz_dict=config.tz_dict, formats=formats_list
         )
 
     # Otherwise use DateInfo Parser to parse short dates
@@ -61,10 +60,10 @@ def parse(
 
     # Use long date formats
     if not parsed_datetime:
-        parsed_datetime, matched_format = _parse_with_formats(
+        parsed_datetime, _ = _parse_with_formats(
             datetime_str=datetime_str,
+            tz_dict=config.tz_dict,
             formats=datetime_info.long_datetime_formats,
-            datetime_config=config,
         )
 
     if parsed_datetime is None:
@@ -79,13 +78,13 @@ def parse(
 
 
 def _parse_with_formats(
-    datetime_str: str, datetime_config: DatetimeConfig, formats: Sequence[str] = ()
+    datetime_str: str, tz_dict: Optional[Dict] = [], formats: Sequence[str] = ()
 ):
     # If datetime config contains tz_dict, then replace
     # abbreviated_tz in datetime_str with its corresponding
     # utc offset values from datetime_config.tz_dict
     datetime_str_with_no_abbreviated_tz = replace_abbreviated_tz_with_utc_offset(
-        datetime_str, datetime_config.tz_dict
+        datetime_str, tz_dict
     )
     if datetime_str_with_no_abbreviated_tz != datetime_str:
         # It means datetime_str did contain abbreviated_tz and we
