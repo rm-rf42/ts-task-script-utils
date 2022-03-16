@@ -2,4 +2,6 @@
 # Recommend matching the black line length (default 88),
 # rather than using the flake8 default of 79:
 max-line-length = 88
-exclude=__tests__
+exclude = __tests__/**/*.py
+extend-ignore =
+    C0114,missing-module-docstring
