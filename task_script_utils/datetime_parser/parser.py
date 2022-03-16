@@ -24,10 +24,11 @@ def parse(
 
     Args:
         datetime_raw_str (str): Raw datetime string
-        formats_list (Sequence[str], optional): List of possible datetime formats.
+        formats_list (Optional[Sequence[str]], optional): List of possible datetime
+        formats. Defaults to ().
         These datetime formats must be built using `pendulum` datetime tokens.
         Defaults to [].
-        config (DatetimeConfig, optional): Datetime Configuration.
+        config (Optional[DatetimeConfig], optional): Datetime Configuration.
         Defaults to DEFAULT_DATETIME_CONFIG.
 
     Raises:

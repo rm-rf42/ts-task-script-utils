@@ -58,7 +58,7 @@ subseconds_test_cases = [
 @pytest.mark.parametrize(
     "input_, iso_format, datetime_iso_format", subseconds_test_cases
 )
-def test_subseconds(input_, iso_format, datetime_iso_format):
+def test_subseconds(input_: str, iso_format: str, datetime_iso_format: str):
     fmt = "dddd, MMMM Do YYYY hh:mm:ss.SSSSSS A z"
     ts_datetime = from_pendulum_format(input_, fmt, now(), None)
     assert ts_datetime.isoformat() == iso_format

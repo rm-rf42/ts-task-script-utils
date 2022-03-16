@@ -1,3 +1,4 @@
+from typing import Optional
 import pytest
 from task_script_utils.datetime_parser.datetime_info import DateTimeInfo
 from task_script_utils.datetime_parser.datetime_config import DatetimeConfig
@@ -6,7 +7,7 @@ from task_script_utils.datetime_parser.parser_exceptions import DatetimeParserEr
 
 
 two_digit_date_with_config_test_cases = [
-    # input, year_first, day_first, expected
+    # input_, year_first, day_first, expected
     # Expected date format = YYYY-MM-DD
     ("01/02/03", True, True, "2001-03-02"),
     ("01/02/03", False, True, "2003-02-01"),
@@ -75,12 +76,17 @@ regex_test_cases = [
 
 
 @pytest.mark.parametrize(
-    "input, year_first, day_first, expected", two_digit_date_with_config_test_cases
+    "input_, year_first, day_first, expected", two_digit_date_with_config_test_cases
 )
-def test_match_short_date(input, year_first, day_first, expected):
+def test_match_short_date(
+    input_: str,
+    year_first: Optional[bool],
+    day_first: Optional[bool],
+    expected: Optional[str],
+):
     config = DatetimeConfig(year_first=year_first, day_first=day_first)
     try:
-        date_info = DateTimeInfo(input, config)
+        date_info = DateTimeInfo(input_, config)
         result = date_info._date_str
     except DatetimeParserError as e:
         result = None
@@ -88,12 +94,12 @@ def test_match_short_date(input, year_first, day_first, expected):
     assert result == expected
 
 
-@pytest.mark.parametrize("input, expected", regex_test_cases)
-def test_regex_parsing(input, expected):
+@pytest.mark.parametrize("input_, expected", regex_test_cases)
+def test_regex_parsing(input_: str, expected: Optional[str]):
     config = {"year_first": True, "tz_dict": tz_dicts.USA}
     year_first = DatetimeConfig(**config)
     try:
-        d = DateTimeInfo(input, year_first)
+        d = DateTimeInfo(input_, year_first)
         parsed_datetime = d.dtstamp
     except DatetimeParserError as e:
         parsed_datetime = None

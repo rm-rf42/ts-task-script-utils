@@ -9,8 +9,9 @@ Utility functions for Tetra Task Scripts
 - [Datetime Parser](#datetime-parser)
 - [Test](#test)
 - [Changelog](#changelog)
-  - [v1.1.0](#v110)
+  - [1.2.0](#120)
   - [v1.1.1](#v111)
+  - [v1.1.0](#v110)
 
 ## Installation
 
@@ -46,6 +47,15 @@ then
 `pipenv run python -m pytest`
 
 ## Changelog
+
+### 1.2.0
+
+- Add boolean config parameter `enforce_unambiguity` to `DatetimeConfig`
+- Add function `utils.check_for_mutual_ambiguity` to be called during parsing if `DatetimeConfig.enforce_unambiguity` is set to `True`
+  - `AmbiguousDatetimeFormatsError` is raised if mutually ambiguous formats are detected
+- Add tests for `utils.check_for_mutual_ambiguity` to the unit tests
+- Add parameter typing throughout 
+- Add `pull_request_template.md`
 
 ### v1.1.1
 
