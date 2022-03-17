@@ -4,4 +4,5 @@
 max-line-length = 88
 exclude = __tests__/**/*.py
 extend-ignore =
-    C0114,missing-module-docstring
+    C0114,
+    E0401
