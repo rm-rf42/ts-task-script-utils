@@ -30,10 +30,11 @@ def check_for_mutual_ambiguity(
     tz_dict = datetime_config.tz_dict
     formats_list = replace_zz_with_Z(formats_list)
     ambiguous_datetime = pendulum_datetime(2001, 2, 3, 4, 5, 6, 7)
-    formats_list = set(formats_list)
-    for datetime_format in formats_list:
+    for idx, datetime_format in enumerate(formats_list):
         input_ = ambiguous_datetime.format(datetime_format)
-        for other_datetime_format in formats_list - {datetime_format}:
+        if idx - len(formats_list) == 1:
+            break
+        for other_datetime_format in formats_list[idx + 1 :]:
             try:
                 utc_offset_datatime = replace_abbreviated_tz_with_utc_offset(
                     input_, tz_dict
