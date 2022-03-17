@@ -1,6 +1,6 @@
 import pytest
 from task_script_utils.datetime_parser import DatetimeConfig
-from task_script_utils.datetime_parser.utils import check_for_mutual_ambiguity
+from task_script_utils.datetime_parser.utils.checks import check_for_mutual_ambiguity
 from task_script_utils.datetime_parser.parser_exceptions import (
     AmbiguousDatetimeFormatsError,
 )
@@ -23,7 +23,6 @@ unambiguous_formats_list = [
 
 def test_unambiguous_formats():
     check_for_mutual_ambiguity(formats_list=unambiguous_formats_list)
-    assert True
 
 
 def test_ambiguous_formats():
@@ -32,7 +31,8 @@ def test_ambiguous_formats():
 
 
 def test_enforcing_unambiguity_with_unambiguous_formats():
-    if DatetimeConfig(enforce_unambiguity=True).enforce_unambiguity:
+    datetime_config = DatetimeConfig(enforce_unambiguity=True)
+    if datetime_config.enforce_unambiguity:
         check_for_mutual_ambiguity(formats_list=unambiguous_formats_list)
         assert True
     else:
@@ -40,7 +40,8 @@ def test_enforcing_unambiguity_with_unambiguous_formats():
 
 
 def test_enforcing_unambiguity_with_ambiguous_formats():
-    if DatetimeConfig(enforce_unambiguity=True).enforce_unambiguity:
+    datetime_config = DatetimeConfig(enforce_unambiguity=True)
+    if datetime_config.enforce_unambiguity:
         with pytest.raises(AmbiguousDatetimeFormatsError):
             check_for_mutual_ambiguity(formats_list=ambiguous_formats_list)
     else:

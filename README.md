@@ -34,9 +34,9 @@ parse("2004-12-23T12:30 AM +05:30", <format_list>)
 parse("2004-12-23T12:30 AM +05:30", <format_list>, <datetime_config>)
 ```
 
-Parse() returns a TSDatetime Object. You can use TSDatetime.tsformat() and
-TSDatetime.isoformat() to get datetime string. You can also use
-TSDatetime.datetime to access python datetime object.
+`parse()` returns a `TSDatetime` Object. You can use `TSDatetime.tsformat()` and
+`TSDatetime.isoformat()` to get datetime string. You can also use
+`TSDatetime.datetime()` to access python datetime object.
 
 You can read more about the datetime parser [here](task_script_utils/datetime_parser/README.md).
 
@@ -51,10 +51,11 @@ then
 ### 1.2.0
 
 - Add boolean config parameter `enforce_unambiguity` to `DatetimeConfig`
-- Add function `utils.check_for_mutual_ambiguity` to be called during parsing if `DatetimeConfig.enforce_unambiguity` is set to `True`
+- Move and rename `utils.py` to `utils/conversions.py` and add new file `utils/checks.py`
+- Add function `utils.checks.check_for_mutual_ambiguity` to be called during parsing if `DatetimeConfig.enforce_unambiguity` is set to `True`
   - `AmbiguousDatetimeFormatsError` is raised if mutually ambiguous formats are detected
-- Add tests for `utils.check_for_mutual_ambiguity` to the unit tests
-- Add parameter typing throughout 
+- Add tests for `utils.checks.check_for_mutual_ambiguity` to the unit tests
+- Add parameter typing throughout repository
 - Add `pull_request_template.md`
 
 ### v1.1.1

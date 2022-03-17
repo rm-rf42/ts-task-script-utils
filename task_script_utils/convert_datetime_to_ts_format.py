@@ -1,5 +1,5 @@
 from typing import Optional
-import dateparser, arrow, datetime
+import dateparser, arrow
 from dateutil import tz
 
 
