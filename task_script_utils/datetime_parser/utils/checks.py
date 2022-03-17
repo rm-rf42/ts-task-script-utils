@@ -15,7 +15,7 @@ def check_for_mutual_ambiguity(
     datetime_config: Optional[DatetimeConfig] = DatetimeConfig(),
     formats_list: Optional[Sequence[str]] = (),
 ):
-    """Checks if any of the datetime formates in `formats_list` are mutually ambiguous.
+    """Checks if any of the datetime formats in `formats_list` are mutually ambiguous.
 
     Args:
         tz_dict (Optional[DatetimeConfig], optional): A python dict that maps
