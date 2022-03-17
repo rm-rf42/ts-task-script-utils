@@ -1,7 +1,7 @@
 import datetime as dt
 import re
 from itertools import product
-from typing import Dict, Iterable, Optional, Sequence
+from typing import Mapping, Optional, Sequence
 
 from pendulum import datetime as pendulum_datetime
 from pendulum import now
@@ -66,7 +66,7 @@ def convert_offset_to_seconds(offset_value: str):
 
 
 def replace_abbreviated_tz_with_utc_offset(
-    datetime_str: str, tz_dict: Optional[Iterable] = ()
+    datetime_str: str, tz_dict: Optional[Mapping] = ()
 ):
     """
     Converts `12-12-2012 12:12:12 AM IST` to `12-12-2012 12:12:12 AM +05:30`
