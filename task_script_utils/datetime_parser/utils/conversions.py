@@ -73,9 +73,9 @@ def replace_abbreviated_tz_with_utc_offset(
     if `IST: +05:30` exist in tz_dict
     """
     if tz_dict:
-        for tz in tz_dict:
-            if tz in datetime_str:
-                return datetime_str.replace(tz, tz_dict[tz])
+        for tz_key in tz_dict:
+            if tz_key in datetime_str:
+                return datetime_str.replace(tz_key, tz_dict[tz_key])
     return datetime_str
 
 

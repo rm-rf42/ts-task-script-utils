@@ -1,4 +1,4 @@
-from typing import Dict, Sequence, Optional
+from typing import Sequence, Optional
 
 import pendulum
 
