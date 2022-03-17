@@ -631,7 +631,7 @@ class ShortDateTimeInfo(DateTimeInfo):
                 if match.lower().startswith("utc"):
                     match = match[3:]
                 sign, offset = match[0], match[1:]
-                offset = self._pad_and_validate_offset_value(offset)
+                offset = self._pad_and_validate_time_offset_value(offset)
                 if offset:
                     self.offset_ = f"{sign}{offset}"
                     return True
@@ -800,7 +800,7 @@ class ShortDateTimeInfo(DateTimeInfo):
         return day, month
 
     @staticmethod
-    def _pad_and_validate_offset_value(offset):
+    def _pad_and_validate_time_offset_value(offset: str) -> str:
         if ":" in offset:
             # 5:30 --> 05:30
             # 05:30 --> 05:30
