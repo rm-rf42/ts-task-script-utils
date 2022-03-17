@@ -688,7 +688,7 @@ class ShortDateTimeInfo(DateTimeInfo):
                 if int(month) > 12:
                     month, day = day, month
             else:
-                day, month = self._process_day_and_month(others)
+                day, month = self._disambiguate_day_and_month(others)
 
         # Validate day, year, month
         try:
@@ -764,7 +764,7 @@ class ShortDateTimeInfo(DateTimeInfo):
         return day, month, year
 
     @staticmethod
-    def _process_day_and_month(tokens: List[str]) -> tuple:
+    def _disambiguate_day_and_month(tokens: List[str]) -> tuple:
         """Given a list of two numeric tokens,
         try to decide which token is day and which
         is month.
