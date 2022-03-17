@@ -66,15 +66,16 @@ def convert_offset_to_seconds(offset_value: str):
 
 
 def replace_abbreviated_tz_with_utc_offset(
-    datetime_str: str, tz_dict: Optional[Mapping] = ()
+    datetime_str: str, tz_dict: Optional[Mapping] = None
 ):
     """
     Converts `12-12-2012 12:12:12 AM IST` to `12-12-2012 12:12:12 AM +05:30`
     if `IST: +05:30` exist in tz_dict
     """
-    for tz in tz_dict:
-        if tz in datetime_str:
-            return datetime_str.replace(tz, tz_dict[tz])
+    if tz_dict:
+        for tz in tz_dict:
+            if tz in datetime_str:
+                return datetime_str.replace(tz, tz_dict[tz])
     return datetime_str
 
 

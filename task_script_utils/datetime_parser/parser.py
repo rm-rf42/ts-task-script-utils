@@ -37,7 +37,7 @@ def parse(
         TSDatetime
     """
     if config.enforce_unambiguity:
-        check_for_mutual_ambiguity(config.tz_dict, formats_list)
+        check_for_mutual_ambiguity(config, formats_list)
     parsed_datetime = None
     datetime_info = None
 
@@ -47,7 +47,7 @@ def parse(
     # Parse Using formats list
     if formats_list:
         parsed_datetime, _ = _parse_with_formats(
-            datetime_str, tz_dict=config.tz_dict, formats=formats_list
+            datetime_str, config=config, formats=formats_list
         )
 
     # Otherwise use DateInfo Parser to parse short dates
@@ -63,7 +63,7 @@ def parse(
     if not parsed_datetime:
         parsed_datetime, _ = _parse_with_formats(
             datetime_str=datetime_str,
-            tz_dict=config.tz_dict,
+            config=config,
             formats=datetime_info.long_datetime_formats,
         )
 
@@ -79,13 +79,15 @@ def parse(
 
 
 def _parse_with_formats(
-    datetime_str: str, tz_dict: Optional[Dict] = [], formats: Sequence[str] = ()
+    datetime_str: str,
+    config: Optional[DatetimeConfig] = DEFAULT_DATETIME_CONFIG,
+    formats: Sequence[str] = (),
 ):
     # If datetime config contains tz_dict, then replace
     # abbreviated_tz in datetime_str with its corresponding
     # utc offset values from datetime_config.tz_dict
     datetime_str_with_no_abbreviated_tz = replace_abbreviated_tz_with_utc_offset(
-        datetime_str, tz_dict
+        datetime_str, config.tz_dict
     )
     if datetime_str_with_no_abbreviated_tz != datetime_str:
         # It means datetime_str did contain abbreviated_tz and we
