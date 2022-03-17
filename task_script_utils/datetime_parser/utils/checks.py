@@ -18,10 +18,10 @@ def check_for_mutual_ambiguity(
     """Checks if any of the datetime formates in `formats_list` are mutually ambiguous.
 
     Args:
-        tz_dict (Optional[DatetimeConfig], optional): A python dict that maps abbreviated timezone
-        names to their corresponding offset. Defaults to DEFAULT_DATETIME_CONFIG.
-        formats_list (Optional[Sequence[str]], optional): List of possible datetime
-        formats. Defaults to ().
+        tz_dict (Optional[DatetimeConfig], optional): A python dict that maps
+        abbreviated timezone names to their corresponding offset. Defaults to
+        DEFAULT_DATETIME_CONFIG. formats_list (Optional[Sequence[str]], optional): List
+        of possible datetime formats. Defaults to ().
 
     Raises:
         AmbiguousDatetimeFormatsError: Exception to be raised if any of the datetime
@@ -51,7 +51,6 @@ def check_for_mutual_ambiguity(
                 other_ambiguous_format_datetime = from_pendulum_format(
                     input_, other_datetime_format, tz=tz_dict
                 )
-                print(ambiguous_format_datetime, other_ambiguous_format_datetime)
                 if input_ != other_ambiguous_format_datetime:
                     raise AmbiguousDatetimeFormatsError(
                         f"""
