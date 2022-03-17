@@ -692,7 +692,7 @@ class ShortDateTimeInfo(DateTimeInfo):
 
         # Validate day, year, month
         try:
-            _ = dt(day=int(day), month=int(month), year=int(year))
+            dt(day=int(day), month=int(month), year=int(year))
         except ValueError as val_error:
             msg = f"{str(val_error)}, date={date_parts}, config={self.config}"
             raise InvalidDateError(msg)
@@ -756,7 +756,7 @@ class ShortDateTimeInfo(DateTimeInfo):
 
         # Validate day, year, month
         try:
-            _ = dt(day=int(day), month=int(month), year=int(year))
+            dt(day=int(day), month=int(month), year=int(year))
         except ValueError as val_error:
             msg = f"{str(val_error)}, date={'-'.join(date_parts)}, {self.config}"
             raise InvalidDateError(msg)
