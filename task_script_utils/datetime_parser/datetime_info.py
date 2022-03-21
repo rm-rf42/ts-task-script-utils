@@ -688,7 +688,7 @@ class ShortDateTimeInfo(DateTimeInfo):
                 if int(month) > 12:
                     month, day = day, month
             else:
-                day, month = self._disambiguate_day_and_month(others)
+                day, month = self._disambiguate_day_and_month(*others)
 
         # Validate day, year, month
         try:
@@ -764,38 +764,33 @@ class ShortDateTimeInfo(DateTimeInfo):
         return day, month, year
 
     @staticmethod
-    def _disambiguate_day_and_month(tokens: List[str]) -> tuple:
-        """Given a list of two numeric tokens,
-        try to decide which token is day and which
-        is month.
-
-        Args:
-            tokens (List): a list containing two
-            numeric tokens
+    def _disambiguate_day_and_month(first_token: str , second_token: str) -> tuple:
+        """Takes two tokens as input and try to
+        decide which token is day and which is month.
 
         Raises:
-            AmbiguousDateError: When we fail to decide between day and month
+            AmbiguousDateError: When it fail to decide between day and month
 
 
         Returns:
             tuple: (day, month)
         """
 
-        first_token_is_month = int(tokens[0]) <= 12
-        second_token_is_month = int(tokens[1]) <= 12
+        first_token_is_month = int(first_token) <= 12
+        second_token_is_month = int(second_token) <= 12
         if (first_token_is_month and second_token_is_month) and (
-            tokens[0] == tokens[1]
+            first_token == second_token
         ):
-            return tokens[0], tokens[1]
+            return first_token, second_token
 
         if first_token_is_month and second_token_is_month:
-            raise AmbiguousDateError(f"Can't decide day and month between: {tokens}")
+            raise AmbiguousDateError(f"Can't decide day and month between: {first_token}, {second_token}")
 
         if not first_token_is_month and not second_token_is_month:
-            raise AmbiguousDateError(f"Can't decide day and month between: {tokens}")
+            raise AmbiguousDateError(f"Can't decide day and month between: {first_token}, {second_token}")
 
         day, month = (
-            (tokens[0], tokens[1]) if second_token_is_month else (tokens[1], tokens[0])
+            (first_token, second_token) if second_token_is_month else (second_token, first_token)
         )
         return day, month
 
