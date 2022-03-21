@@ -93,7 +93,7 @@ def replace_zz_with_Z(formats: Sequence[str] = ()):
 def from_pendulum_format(
     datetime_string: str,
     fmt: str,
-    tz: Optional[pendulum.tz.Timezone] = None,
+    tz: Optional[pendulum.tz.timezone] = None,
     locale=None,
 ) -> TSDatetime:
     """
