@@ -764,7 +764,7 @@ class ShortDateTimeInfo(DateTimeInfo):
         return day, month, year
 
     @staticmethod
-    def _disambiguate_day_and_month(first_token: str , second_token: str) -> tuple:
+    def _disambiguate_day_and_month(first_token: str, second_token: str) -> tuple:
         """Takes two tokens as input and try to
         decide which token is day and which is month.
 
@@ -784,13 +784,19 @@ class ShortDateTimeInfo(DateTimeInfo):
             return first_token, second_token
 
         if first_token_is_month and second_token_is_month:
-            raise AmbiguousDateError(f"Can't decide day and month between: {first_token}, {second_token}")
+            raise AmbiguousDateError(
+                f"Can't decide day and month between: {first_token}, {second_token}"
+            )
 
         if not first_token_is_month and not second_token_is_month:
-            raise AmbiguousDateError(f"Can't decide day and month between: {first_token}, {second_token}")
+            raise AmbiguousDateError(
+                f"Can't decide day and month between: {first_token}, {second_token}"
+            )
 
         day, month = (
-            (first_token, second_token) if second_token_is_month else (second_token, first_token)
+            (first_token, second_token)
+            if second_token_is_month
+            else (second_token, first_token)
         )
         return day, month
 
