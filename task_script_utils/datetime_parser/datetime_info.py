@@ -2,7 +2,7 @@ import re
 import json
 from datetime import datetime as dt
 from itertools import product
-from typing import List, Optional, Tuple
+from typing import Optional, Tuple
 
 import pendulum
 from pendulum.locales.en import locale
