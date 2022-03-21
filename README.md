@@ -54,9 +54,8 @@ then
 - Move and rename `utils.py` to `utils/conversions.py` and add new file `utils/checks.py`
 - Add function `utils.checks.check_for_mutual_ambiguity` to be called during parsing if `DatetimeConfig.enforce_unambiguity` is set to `True`
   - `AmbiguousDatetimeFormatsError` is raised if mutually ambiguous formats are detected
-- Add tests for `utils.checks.check_for_mutual_ambiguity` to the unit tests
+- Add unit tests for `utils.checks.check_for_mutual_ambiguity`
 - Add parameter typing throughout repository
-- Add `pull_request_template.md`
 
 ### v1.1.1
 

@@ -17,18 +17,17 @@ from .utils.conversions import (
 
 def parse(
     datetime_raw_str: str,
-    formats_list: Optional[Sequence[str]] = (),
-    config: Optional[DatetimeConfig] = DEFAULT_DATETIME_CONFIG,
+    formats_list: Sequence[str] = (),
+    config: DatetimeConfig = DEFAULT_DATETIME_CONFIG,
 ) -> TSDatetime:
     """Parse datetime_str and construct a TSDatetime Object
 
     Args:
         datetime_raw_str (str): Raw datetime string
-        formats_list (Optional[Sequence[str]], optional): List of possible datetime
-        formats. Defaults to ().
+        formats_list (Sequence[str], optional): List of possible datetime
+        formats. Defaults to empty tuple.
         These datetime formats must be built using `pendulum` datetime tokens.
-        Defaults to [].
-        config (Optional[DatetimeConfig], optional): Datetime Configuration.
+        config (DatetimeConfig, optional): Datetime Configuration.
         Defaults to DEFAULT_DATETIME_CONFIG.
 
     Raises:
@@ -80,7 +79,7 @@ def parse(
 
 def _parse_with_formats(
     datetime_str: str,
-    config: Optional[DatetimeConfig] = DEFAULT_DATETIME_CONFIG,
+    config: DatetimeConfig = DEFAULT_DATETIME_CONFIG,
     formats: Sequence[str] = (),
 ):
     # If datetime config contains tz_dict, then replace

@@ -3,10 +3,9 @@ import re
 from itertools import product
 from typing import Mapping, Optional, Sequence
 
+import pendulum
 from pendulum import datetime as pendulum_datetime
-from pendulum import now
 from pydash.arrays import flatten
-
 from task_script_utils.datetime_parser.fractional_seconds_formatter import (
     FractionalSecondsFormatter,
 )
@@ -79,7 +78,7 @@ def replace_abbreviated_tz_with_utc_offset(
     return datetime_str
 
 
-def replace_zz_with_Z(formats: Optional[Sequence[str]] = ()):
+def replace_zz_with_Z(formats: Sequence[str] = ()):
     """
     eg. `DD-MM-YYYY hh:m:ss zz` -> `DD-MM-YYYY hh:m:ss Z`
     """
@@ -94,14 +93,14 @@ def replace_zz_with_Z(formats: Optional[Sequence[str]] = ()):
 def from_pendulum_format(
     datetime_string: str,
     fmt: str,
-    tz=None,
+    tz: Optional[pendulum.tz.Timezone] = None,
     locale=None,
 ) -> TSDatetime:
     """
     Creates a DateTime instance from a specific format.
     """
     subseconds = None
-    parts = _formatter.parse(datetime_string, fmt, now(), locale=locale)
+    parts = _formatter.parse(datetime_string, fmt, pendulum.now(), locale=locale)
     if parts["tz"] is None:
         parts["tz"] = tz
 

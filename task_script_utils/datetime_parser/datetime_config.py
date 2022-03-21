@@ -9,7 +9,7 @@ class DatetimeConfig:
         year_first: Optional[bool] = None,
         tz_dict: dict = {},
         fold: Optional[int] = None,
-        enforce_unambiguity: Optional[bool] = False,
+        enforce_unambiguity: bool = False,
     ):
         """DatetimeConfig provides complementary information on how to mark
         parsed digits as day, month or year.
@@ -38,8 +38,8 @@ class DatetimeConfig:
             track of daylight savings (such as IANA timezones like `Europe/London`).
             Defaults to None.
 
-            enforce_unambiguity (Optional[bool]): Whether enforce unambiguity in
-            datetime formats.
+            enforce_unambiguity (bool): Whether enforce unambiguity in
+            datetime formats. Defaults to False.
         """
         self.day_first = day_first
         self.year_first = year_first
