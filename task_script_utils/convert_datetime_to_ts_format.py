@@ -1,11 +1,10 @@
-from typing import Optional
 import dateparser
 import arrow
 from dateutil import tz
 
 
 def convert_datetime_to_ts_format(
-    datetime, datetime_format: Optional[str] = "", timezone: Optional[str] = ""
+    datetime, datetime_format: str = "", timezone: str = ""
 ):
     """Convert datetime to TetraScience standard: ISO-8601 in milliseconds in UTC if timezone is available
 
