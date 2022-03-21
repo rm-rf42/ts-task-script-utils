@@ -1,9 +1,10 @@
 from itertools import combinations
-from typing import Optional, Sequence
+from typing import Sequence
+
 from pendulum import datetime as pendulum_datetime
 from task_script_utils.datetime_parser.datetime_config import (
-    DatetimeConfig,
     DEFAULT_DATETIME_CONFIG,
+    DatetimeConfig,
 )
 from task_script_utils.datetime_parser.parser_exceptions import (
     AmbiguousDatetimeFormatsError,
