@@ -765,11 +765,11 @@ class ShortDateTimeInfo(DateTimeInfo):
 
     @staticmethod
     def _disambiguate_day_and_month(first_token: str, second_token: str) -> tuple:
-        """Takes two tokens as input and try to
+        """Takes two tokens as input and tries to
         decide which token is day and which is month.
 
         Raises:
-            AmbiguousDateError: When it fail to decide between day and month
+            AmbiguousDateError: When it fails to decide between day and month
 
 
         Returns:
