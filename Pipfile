@@ -1,12 +1,7 @@
 [[source]]
-name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
-
-[dev-packages]
-pytest = "*"
-pytest-cov = "*"
-black = ">=21.12b0"
+name = "pypi"
 
 [packages]
 numpy = "*"
@@ -15,6 +10,9 @@ dateparser = "*"
 arrow = "*"
 pendulum = "2.1.2"
 pydash = "*"
+
+[dev-packages]
+pytest = "*"
 
 [pipenv]
 allow_prereleases = true
