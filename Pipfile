@@ -12,7 +12,7 @@ pendulum = "2.1.2"
 pydash = "*"
 
 [dev-packages]
-pytest = "*"
+pytest-snapshot = "0.8.1"
 
 [pipenv]
 allow_prereleases = true
