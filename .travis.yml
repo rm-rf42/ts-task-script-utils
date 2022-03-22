@@ -3,6 +3,6 @@ python:
   - "3.7"
 install:
   - pip install pipenv
-  - pipenv install --dev
+  - pipenv sync --dev
 script:
   - pipenv run python -m pytest --cov=task_script_utils --cov-branch
