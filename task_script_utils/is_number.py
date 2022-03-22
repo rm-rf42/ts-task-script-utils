@@ -1,7 +1,3 @@
-import numpy as np
-from numbers import Number
-
-
 def isnumber(value):
     """Check if the target value is a number.
 
