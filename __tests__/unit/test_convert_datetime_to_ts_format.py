@@ -37,7 +37,7 @@ def test_input_timezone():
         ("2019-07-17 11:21:00", 123, AttributeError),
     ]
     for raw, timezone, expect in raw_timezone_expect:
-        if type(expect) is str:
+        if isinstance(expect, str):
             assert convert_datetime_to_ts_format(raw, timezone=timezone) == expect
         else:
             # expect is an Exception type
