@@ -2,7 +2,7 @@ language: python
 python:
   - "3.7"
 install:
-  - pip install pipenv
+  - pip install pipenv==2022.1.8
   - pipenv install --dev
 script:
   - pipenv run python -m pytest --cov=task_script_utils --cov-branch
