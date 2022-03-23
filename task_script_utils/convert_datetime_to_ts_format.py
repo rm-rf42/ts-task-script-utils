@@ -48,7 +48,7 @@ def convert_datetime_to_ts_format(
     if timezone:
         try:
             timezone_to_use = tz.gettz(timezone)
-        except Exception:
+        except AttributeError:
             warnings.warn(
                 # pylint: disable=C0301
                 "The provided timezone can't be parsed by dateutil tz, going to use the plain value"  # noqa: E501
