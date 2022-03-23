@@ -54,8 +54,6 @@ def convert_datetime_to_ts_format(
                 "The provided timezone can't be parsed by dateutil tz, going to use the plain value"  # noqa: E501
             )
             timezone_to_use = timezone
-        except AttributeError:
-            raise
 
     datetime_iso_local = ""
     utc_indicator = ""

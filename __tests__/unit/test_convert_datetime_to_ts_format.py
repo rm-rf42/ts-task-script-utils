@@ -1,4 +1,3 @@
-from cmath import exp
 import sys
 from dateutil import tz
 import pytest
