@@ -103,7 +103,7 @@ def from_pendulum_format(
     parts = _formatter.parse(datetime_string, fmt, pendulum.now(), locale=locale)
     if not isinstance(parts, dict):
         raise TypeError(f"Could not match any datetime tokens in '{fmt}'.")
-    if  parts["tz"] is None:
+    if parts["tz"] is None:
         parts["tz"] = tz
 
     if "S" in fmt:
