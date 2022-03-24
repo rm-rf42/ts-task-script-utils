@@ -9,7 +9,7 @@ class DatetimeConfig:
         year_first: Optional[bool] = None,
         tz_dict: dict = {},
         fold: Optional[int] = None,
-        enforce_unambiguity: bool = False,
+        require_unambiguous_formats: bool = False,
     ):
         """DatetimeConfig provides complementary information on how to mark
         parsed digits as day, month or year.
@@ -28,7 +28,8 @@ class DatetimeConfig:
             Defaults to None. When the year has four digits, then whether
             `year_first` is `true` or `false`,is decided by regex parsing done
             by `DatetimeInfo` class. If both `year_first` and `day_first` are true,
-            then `year_first` will take priority and resulting date format will be as YDM.
+            then `year_first` will take priority and resulting date format will be as
+            YDM.
 
             tz_dict (dict, optional): A python dict that maps abbreviated timezone
             names to their corresponding offset. Defaults to {}.
@@ -38,15 +39,15 @@ class DatetimeConfig:
             track of daylight savings (such as IANA timezones like `Europe/London`).
             Defaults to None.
 
-            enforce_unambiguity (bool): Whether enforce unambiguity in
-            datetime formats. Defaults to False.
+            require_unambiguous_formats (bool): Whether require datetime formats to be
+            unambiguous. Defaults to False.
         """
         self.day_first = day_first
         self.year_first = year_first
         self.tz_dict = tz_dict
         self.tz_dict_seconds = map_offset_to_seconds(tz_dict)
         self.fold = fold
-        self.enforce_unambiguity = enforce_unambiguity
+        self.require_unambiguous_formats = require_unambiguous_formats
 
     def __str__(self):
         return (
@@ -54,7 +55,7 @@ class DatetimeConfig:
             f"year_first={self.year_first}, "
             f"fold={self.fold}, "
             f"tz_dict={self.tz_dict}, "
-            f"enforce_unambiguity={self.enforce_unambiguity}"
+            f"require_unambiguous_formats={self.require_unambiguous_formats}"
         )
 
 

@@ -84,8 +84,8 @@ def replace_zz_with_Z(formats: Sequence[str] = ()):
     """
     result_formats = list(formats)
     for idx, format_ in enumerate(result_formats):
-        if " zz" in format_:
-            result_formats[idx] = format_.replace(" zz", " Z")
+        if "zz" in format_:
+            result_formats[idx] = format_.replace("zz", "Z")
 
     return result_formats
 
@@ -101,7 +101,9 @@ def from_pendulum_format(
     """
     subseconds = None
     parts = _formatter.parse(datetime_string, fmt, pendulum.now(), locale=locale)
-    if parts["tz"] is None:
+    if not isinstance(parts, dict):
+        raise TypeError(f"Could not match any datetime tokens in '{fmt}'.")
+    if  parts["tz"] is None:
         parts["tz"] = tz
 
     if "S" in fmt:

@@ -11,7 +11,7 @@ from task_script_utils.datetime_parser.parser_exceptions import DatetimeParserEr
 
 tz_dict = {"IST": "+05:30", "BST": "+01:00"}
 
-formats_list = [
+formats = [
     "dddd, MMMM Do YYYY hh:mm:ss A zz z",
     "dddd, MMMM Do YYYY hh:mm:ss A z",
     "dddd, MMMM Do YYYY hh:mm:ss A zz",
@@ -21,7 +21,7 @@ formats_list = [
     "dddd, MMMM Do, YYYY hh:mm:ss.SSSSSS A z",
 ]
 
-datetime_formats_list_test_cases = {
+datetime_formats_test_cases = {
     "Sunday, May 26th 2013 12:12:12 AM IST Asia/Kolkata": "2013-05-26T00:12:12+05:30",
     "Sunday, May 26th 2013 12:12:12 AM ZST Asia/Kolkata": None,
     "Sunday, May 26th 2013 12:12:12 AM BST": "2013-05-26T00:12:12+01:00",
@@ -32,7 +32,7 @@ datetime_formats_list_test_cases = {
     "Sunday, May 26th 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",
 }
 
-parse_with_no_datetime_formats_list_test_cases = {
+parse_with_no_datetime_formats_test_cases = {
     "Sunday, May 26th 2013 12:12:12 AM IST Asia/Kolkata": "2013-05-26T00:12:12+05:30",
     "Sunday, May 26th 2013 12:12:12 AM BST": "2013-05-26T00:12:12+01:00",
     "Sunday, May 26th 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
@@ -164,7 +164,7 @@ datetime_with_config_tests = {
 }
 
 datetime_strings_with_and_without_Z = {
-    # (input_, datetime_formats_lists, expected)
+    # (input_, datetime_formatss, expected)
     ("2021-12-13T13:00:00.1234567Z", (), "2021-12-13T13:00:00.1234567Z"),
     ("2021-12-13T13:00:00.1234567 Z", (), "2021-12-13T13:00:00.1234567Z"),
     ("2021-12-13T13:00:00.1234567", (), "2021-12-13T13:00:00.1234567"),
@@ -176,7 +176,7 @@ datetime_strings_with_and_without_Z = {
 }
 
 
-@pytest.mark.parametrize("input_, expected", datetime_formats_list_test_cases.items())
+@pytest.mark.parametrize("input_, expected", datetime_formats_test_cases.items())
 def test_parse_with_formats(input_: str, expected: Optional[str]):
     datetime_config_dict = {"tz_dict": tz_dict}
 
@@ -184,7 +184,7 @@ def test_parse_with_formats(input_: str, expected: Optional[str]):
     try:
         parsed_datetime = parse(
             input_,
-            formats_list,
+            formats,
             datetime_config,
         )
     except DatetimeParserError as e:
@@ -200,7 +200,7 @@ def test_parse_with_formats(input_: str, expected: Optional[str]):
     "input_, expected", format_list_with_no_tz_dict_test_cases.items()
 )
 def test_parse_with_formats_with_no_tz_dict(input_: str, expected: Optional[str]):
-    parsed_datetime, _ = _parse_with_formats(input_, formats=formats_list)
+    parsed_datetime, _ = _parse_with_formats(input_, formats=formats)
 
     if parsed_datetime is None:
         assert parsed_datetime == expected
@@ -209,7 +209,7 @@ def test_parse_with_formats_with_no_tz_dict(input_: str, expected: Optional[str]
 
 
 @pytest.mark.parametrize(
-    "input_, expected", parse_with_no_datetime_formats_list_test_cases.items()
+    "input_, expected", parse_with_no_datetime_formats_test_cases.items()
 )
 def test_parse(input_: str, expected: Optional[str]):
     datetime_config_dict = {"tz_dict": tz_dict}
@@ -277,7 +277,7 @@ def test_datetime_str_with_Z(
     input_: str, dt_formats: Optional[Sequence[str]], expected: Optional[str]
 ):
     try:
-        result = parse(input_, formats_list=list(dt_formats))
+        result = parse(input_, formats=list(dt_formats))
         result = result.tsformat()
     except DatetimeParserError as e:
         print(str(e))

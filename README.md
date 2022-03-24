@@ -9,7 +9,7 @@ Utility functions for Tetra Task Scripts
 - [Datetime Parser](#datetime-parser)
 - [Test](#test)
 - [Changelog](#changelog)
-  - [1.2.0](#120)
+  - [v1.2.0](#v120)
   - [v1.1.1](#v111)
   - [v1.1.0](#v110)
 
@@ -48,11 +48,11 @@ then
 
 ## Changelog
 
-### 1.2.0
+### v1.2.0
 
-- Add boolean config parameter `enforce_unambiguity` to `DatetimeConfig`
+- Add boolean config parameter `require_unambiguous_formats` to `DatetimeConfig`
 - Move and rename `utils.py` to `utils/conversions.py` and add new file `utils/checks.py`
-- Add function `utils.checks.check_for_mutual_ambiguity` to be called during parsing if `DatetimeConfig.enforce_unambiguity` is set to `True`
+- Add function `utils.checks.check_for_mutual_ambiguity` to be called during parsing if `DatetimeConfig.require_unambiguous_formats` is set to `True`
   - `AmbiguousDatetimeFormatsError` is raised if mutually ambiguous formats are detected
 - Add unit tests for `utils.checks.check_for_mutual_ambiguity`
 - Add parameter typing throughout repository

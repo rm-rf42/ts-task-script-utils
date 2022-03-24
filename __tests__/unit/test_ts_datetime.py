@@ -63,3 +63,16 @@ def test_subseconds(input_: str, iso_format: str, datetime_iso_format: str):
     ts_datetime = from_pendulum_format(input_, fmt, now(), None)
     assert ts_datetime.isoformat() == iso_format
     assert ts_datetime.datetime.isoformat() == datetime_iso_format
+
+
+def test_invalid_format_string():
+    """
+    If a format string does not contain any datetime tokens, pendulum can not handle it.
+    """
+    with pytest.raises(TypeError):
+        from_pendulum_format(
+            "Sunday, May 26th 2013 12:12:12.00000000 AM Asia/Kolkata",
+            "GTPgtp",
+            now(),
+            None,
+        )

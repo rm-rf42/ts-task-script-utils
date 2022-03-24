@@ -3,7 +3,7 @@
 - [Usage](#usage)
 - [Unambiguous Datetime](#unambiguous-datetime)
 - [Ambiguous Datetime](#ambiguous-datetime)
-- [Working with formats_list](#working-with-formats_list)
+- [Working with formats](#working-with-formats)
   - [Working with fractional seconds](#working-with-fractional-seconds)
   - [Working with abbreviated timezones](#working-with-abbreviated-timezones)
 - [Working with DatetimeConfig](#working-with-datetimeconfig)
@@ -18,7 +18,7 @@
 Input:
 
 - `datetime_raw_str: str`: raw datetime string to be parsed.
-- `formats_list: Sequence[str] (optional)`: You can optionally pass a list of formats to try to parse datetime string. If `datetime_raw_str` doesn't matches with any format, the datetime parser will still try to parse `datetime_raw_str` with other methods such as using regex and trying long datetime format
+- `formats: Sequence[str] (optional)`: You can optionally pass a list of formats to try to parse datetime string. If `datetime_raw_str` doesn't matches with any format, the datetime parser will still try to parse `datetime_raw_str` with other methods such as using regex and trying long datetime format
 - `config: DatetimeConfig (optional)`: You also have an options to pass `DatetimeConfig`. It provides complementary information on how to mark parsed digits as day, month or year and also provide options to handle abbreviated time zones and fold for parsing ambiguous timestamps during daylight saving transitions. Ideally, DatetimeConfig should be constructed from pipeline configuration passed to task scripts
 
 Output:
@@ -51,7 +51,7 @@ Examples:
 
 ## Ambiguous Dates
 
-If `formats_list` doesn't contain a match or is not passed, `parse` will use regex to parse the raw datetime string.
+If `formats` doesn't contain a match or is not passed, `parse` will use regex to parse the raw datetime string.
 The regex parsing allows to capture digits of short formatted dates. The captured digits can all be two digits or one of them could be 4 digits long representing year.
 Sometimes, it is hard to infer day, month and year from the parsed digits and this leads to ambiguity during parsing.
 
@@ -67,42 +67,42 @@ Following are some examples of ambiguous cases
 | 2021-10-31T02:45:00 Europe/Rome | **AmbiguousFoldError**: DatetimeConfig.fold must not be None to parse datetime without ambiguity. | Can be fixed by passing DatetimeConfig.fold |
 | Oct 31st 2021 02:45:00.5677 AM Europe/Rome | **AmbiguousFoldError**: DatetimeConfig.fold must not be None to parse datetime without ambiguity. | Can be fixed by passing DatetimeConfig.fold |
 
-## Working with formats_list
+## Working with formats
 
 ```Python
 from task_script_utils.datetime_parser import parse
 
-datetime_formats_list = [
+datetime_formats = [
     "DD-MM-YY HH:mm:ss z",
 ]
 ```
 
-Case 1: When raw datetime string matches with one of the format in datetime_formats_list
+Case 1: When raw datetime string matches with one of the format in datetime_formats
 
 ```python
-result = parse("21-12-20 12:30:20 Asia/Kolkata", formats_list=datetime_formats_list)
+result = parse("21-12-20 12:30:20 Asia/Kolkata", formats=datetime_formats)
 result.tsformat()   # 2020-12-21T07:00:20Z
 result.isoformat()  # 2020-12-21T12:30:20+05:30
 ```
 
-Case 2: When raw datetime string doesn't match with one of the format in datetime_formats_list but can be parsed without any ambiguity.
+Case 2: When raw datetime string doesn't match with one of the format in datetime_formats but can be parsed without any ambiguity.
 In this case, it can be inferred that year is 2020, day is 21 and hence
 month is 12.
 This is just an example and there could be multiple cases that may lead to ambiguity or invalid datetime.
 These are discussed in later sections of this documents
 
 ```python
-result = parse("21-12-2020 12:30:20 PM America/Chicago", formats_list=datetime_formats_list)
+result = parse("21-12-2020 12:30:20 PM America/Chicago", formats=datetime_formats)
 result.isoformat()  # 2020-12-21T12:30:20-06:00
 result.tsformat()   # 2020-12-21T18:30:20Z
 ```
 
-Case 3: When raw datetime string doesn't match with one of the format in datetime_formats_list and is ambiguous.
+Case 3: When raw datetime string doesn't match with one of the format in datetime_formats and is ambiguous.
 This is just an example and there could be multiple cases that may lead to ambiguity or invalid datetime.
 These are discussed in later sections of this documents
 
 ```python
-result = parse("21-12-20 12:30:20 PM America/Chicago", formats_list=datetime_formats_list)
+result = parse("21-12-20 12:30:20 PM America/Chicago", formats=datetime_formats)
 '''
 Traceback (most recent call last):
  ...
@@ -166,7 +166,7 @@ This is visible as the result of `result.datetime.isoformat()`, where `result.da
 ```python
 from task_script_utils.datetime_parser import parse
 
-datetime_formats_list = [
+datetime_formats = [
     "DD-MM-YY HH:mm:ss.SSSSSS z",
 ]
 
@@ -221,10 +221,10 @@ task_script_utils.datetime_parser.parser_exceptions.OffsetNotKnownError: Offset 
 `"Z"` can be used as token for capturing abbreviated timezones when using datetime_formats to parse the raw datetime string. Even in this case, for successful parsing, `DatetimeConfig.tz_dict` is required
 
 ```python
-dt_formats_list = [
+dt_formats = [
   "YYYY-MM-DD HH:mm:ss Z"
 ]
-result = parse("2021-12-12 14:15:16 CST", formats_list=dt_formats_list, config=dt_config)
+result = parse("2021-12-12 14:15:16 CST", formats=dt_formats, config=dt_config)
 result.isoformat() # 2021-12-12T14:15:16-06:00
 ```
 
