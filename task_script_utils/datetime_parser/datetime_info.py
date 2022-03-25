@@ -725,13 +725,17 @@ class DateTimeInfo:
         Returns:
             tuple[str]: (day, month, year)
         """
-        parsed_results = [self._is_format(date_str, format_) for format_ in formats]
+        parsed_results = [
+            (format_, self._is_format(date_str, format_)) for format_ in formats
+        ]
 
-        parsed_results = list(filter(lambda x: x is not None, parsed_results))
+        parsed_results = list(filter(lambda x: x[1] is not None, parsed_results))
         if len(parsed_results) != 1:
             raise AmbiguousDateError(
-                f"Ambiguous date:{date_str}, possible formats: {formats}"
+                f"Ambiguous date: {date_str}, possible formats: "
+                f"{[parsed_result[0] for parsed_result in parsed_results]}."
             )
+        print(parsed_results)
         result = parsed_results[0]
         return (str(result.day), str(result.month), str(result.year))
 

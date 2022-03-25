@@ -1,4 +1,9 @@
-# TS Datetime Parser
+# TS Datetime Parser <!-- omit in toc -->
+
+## Version <!-- omit in toc -->
+
+v1.2.0
+## Table of Contents <!-- omit in toc -->
 
 - [Usage](#usage)
 - [Unambiguous Datetime](#unambiguous-datetime)
@@ -6,10 +11,12 @@
 - [Working with formats](#working-with-formats)
   - [Working with fractional seconds](#working-with-fractional-seconds)
   - [Working with abbreviated timezones](#working-with-abbreviated-timezones)
-- [Working with DatetimeConfig](#working-with-datetimeconfig)
+- [Working with `DatetimeConfig`](#working-with-datetimeconfig)
 - [Working with TSDatetime](#working-with-tsdatetime)
 - [DatetimeConfig](#datetimeconfig)
 - [Limitations](#limitations)
+- [Changelog](#changelog)
+  - [v1.2.0](#v120)
 
 ## Usage
 
@@ -18,8 +25,15 @@
 Input:
 
 - `datetime_raw_str: str`: raw datetime string to be parsed.
-- `formats: Sequence[str] (optional)`: You can optionally pass a list of formats to try to parse datetime string. If `datetime_raw_str` doesn't matches with any format, the datetime parser will still try to parse `datetime_raw_str` with other methods such as using regex and trying long datetime format
-- `config: DatetimeConfig (optional)`: You also have an options to pass `DatetimeConfig`. It provides complementary information on how to mark parsed digits as day, month or year and also provide options to handle abbreviated time zones and fold for parsing ambiguous timestamps during daylight saving transitions. Ideally, DatetimeConfig should be constructed from pipeline configuration passed to task scripts
+- `formats: Sequence[str] (optional)`: You can optionally pass a list of formats to try to parse datetime string. If `datetime_raw_str` doesn't match with any format, the datetime parser will still try to parse `datetime_raw_str` with other methods such as using regex and trying long datetime format. See below for additional behavior regarding the usage of `DatetimeConfig.require_unambiguous_formats` and `formats`.
+- `config: DatetimeConfig (optional)`: You also have an option to pass `DatetimeConfig`. It provides complementary information on how to mark parsed digits as day, month or year and also provide options to handle abbreviated time zones and fold for parsing ambiguous timestamps during daylight saving transitions. Ideally, `DatetimeConfig` should be constructed from the pipeline configuration with the following options:
+  - `day_first`: Whether to interpret the first value in an ambiguous 3-integer date (e.g. 01/05/09) as the day (`True`) or month (`False`). Defaults to `None`.
+  - `year_first`: Whether to interpret the first value in an ambiguous 3-integer date (e.g. 01/05/09) as the year. When the year has four digits, then whether `year_first` is `True` or `False`,is decided by regex parsing done by `DatetimeInfo` class. If both `year_first` and `day_first` are true, then `year_first` will take priority and resulting date format will be as YDM. Defaults to `None`.
+  - `tz_dict`: A python dict that maps abbreviated timezone names to their corresponding offset. Defaults to `{}`.
+  - `require_unambiguous_formats`: Whether require datetime formats to be unambiguous. Defaults to `False`.
+    - If `require_unambiguous_formats` 
+      - is `True` and any of the formats produce a conflicting output, an `AmbiguousDatetimeFormatsError` will be raised.
+      - is `False`, the first valid parsed datetime valid will be returned.
 
 Output:
 
@@ -49,7 +63,7 @@ Examples:
 | Sunday, May 26 2013 12:12:12.5677 AM Asia/Kolkata | 2013-05-26T00:12:12.5677+05:30 | |
 | Sunday, May 26th 2013 12:12:12.5677 AM Asia/Kolkata | 2013-05-26T00:12:12.5677+05:30 | |
 
-## Ambiguous Dates
+## Ambiguous Datetime
 
 If `formats` doesn't contain a match or is not passed, `parse` will use regex to parse the raw datetime string.
 The regex parsing allows to capture digits of short formatted dates. The captured digits can all be two digits or one of them could be 4 digits long representing year.
@@ -107,7 +121,7 @@ result = parse("21-12-20 12:30:20 PM America/Chicago", formats=datetime_formats)
 Traceback (most recent call last):
  ...
 task_script_utils.datetime_parser.parser_exceptions.AmbiguousDateError:
-Ambiguous date:21-12-20, possible formats: ('MM-DD-YY', 'YY-MM-DD', 'DD-MM-YY')
+Ambiguous date:21-12-20, possible formats: ('YY-MM-DD', 'DD-MM-YY')
 '''
 ```
 
@@ -383,3 +397,12 @@ A `DatetimeConfig` object has following attributes:
 
 1. It is not possible to parse just dates or just times alone.
    e.g. `parse('2021-12-08')` or `parse('12:00:00')` will raise `InvalidDateError`
+
+## Changelog
+
+### v1.2.0
+
+- Add `require_unambiguous_formats` to `DatetimeConfig` to enable/disable checking of ambiguous datetime formats passed to parsing functions
+- Add `check_for_mutual_ambiguity` function to check for ambiguous datetime formats passed to parsing functions
+- Add public-facing `parse_with_formats` function that only attempts to parse datetime strings using the provided formats
+- Fix exception message when trying to parse 2-digit dates without using a format to only print out the possible formats that parse to a valid datetime

@@ -25,11 +25,10 @@ class DatetimeConfig:
 
             year_first (Optional[bool], optional): Whether to interpret the first
             value in an ambiguous 3-integer date (e.g. 01/05/09) as the year.
-            Defaults to None. When the year has four digits, then whether
-            `year_first` is `true` or `false`,is decided by regex parsing done
-            by `DatetimeInfo` class. If both `year_first` and `day_first` are true,
-            then `year_first` will take priority and resulting date format will be as
-            YDM.
+            When the year has four digits, then whether `year_first` is `True` or
+            `False`, is decided by regex parsing done by `DatetimeInfo` class. If both
+            `year_first` and `day_first` are true, then `year_first` will take priority
+            and resulting date format will be as YDM. Defaults to None.
 
             tz_dict (dict, optional): A python dict that maps abbreviated timezone
             names to their corresponding offset. Defaults to {}.
