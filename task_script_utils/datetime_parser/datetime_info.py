@@ -735,8 +735,7 @@ class DateTimeInfo:
                 f"Ambiguous date: {date_str}, possible formats: "
                 f"{[parsed_result[0] for parsed_result in parsed_results]}."
             )
-        print(parsed_results)
-        result = parsed_results[0]
+        result = parsed_results[0][1]
         return (str(result.day), str(result.month), str(result.year))
 
     def _validate_meridiem(self):
