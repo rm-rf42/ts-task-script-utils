@@ -166,8 +166,7 @@ def _parse_with_formats(
                     f" datetimes {list(unique_parsed_times.keys())}, and the input"
                     f" datetime string '{datetime_str}'."
                 )
-            else:
-                return parsed_times[0]
+            return parsed_times[0]
 
     for format_ in formats:
         try:
