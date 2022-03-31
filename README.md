@@ -11,7 +11,7 @@ Utility functions for Tetra Task Scripts
 - [Changelog](#changelog)
   - [v1.1.0](#v110)
   - [v1.1.1](#v111)
-
+  - [v1.1.2](#v112)
 ## Installation
 
 `pip install ts-task-script-utils`
@@ -46,6 +46,12 @@ then
 `pipenv run python -m pytest`
 
 ## Changelog
+
+### v1.1.2
+
+- Refactor `datetime_parser`
+- Add base class `DateTimeInfo`
+- Segregate parsing logic into `ShortDateTimeInfo` and `ShortDateTimeInfo`
 
 ### v1.1.1
 
