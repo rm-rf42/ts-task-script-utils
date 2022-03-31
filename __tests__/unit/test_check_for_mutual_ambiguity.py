@@ -5,7 +5,6 @@ from task_script_utils.datetime_parser.parser import parse, parse_with_formats
 from task_script_utils.datetime_parser.parser_exceptions import (
     AmbiguousDatetimeFormatsError,
 )
-from task_script_utils.datetime_parser.utils import from_pendulum_format
 
 empty_formats = []
 
