@@ -49,9 +49,9 @@ then
 
 ### v1.1.2
 
-- Refactor `datetime_parser`
+- Refactor `datetime_parser` package
 - Add base class `DateTimeInfo`
-- Segregate parsing logic into `ShortDateTimeInfo` and `ShortDateTimeInfo`
+- Segregate parsing logic into `ShortDateTimeInfo` and `LongDateTimeInfo`
 
 ### v1.1.1
 
