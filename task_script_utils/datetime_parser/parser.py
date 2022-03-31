@@ -154,7 +154,7 @@ def _parse_with_formats(
             except Exception:
                 pass
         if len(parsed_times) == 1:
-            return parsed_times[0], format_
+            return parsed_times[0]
         if len(parsed_times) > 1:
             unique_parsed_times = Counter(
                 [parsed_time[0].isoformat() for parsed_time in parsed_times]
