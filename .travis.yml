@@ -5,6 +5,7 @@ env:
     - PIPENV_IGNORE_VIRTUALENVS=1
 
 language: python
+dist: focal
 python:
   - "3.7"
 install:
