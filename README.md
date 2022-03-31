@@ -51,10 +51,8 @@ then
 ### v1.2.0
 
 - Add boolean config parameter `require_unambiguous_formats` to `DatetimeConfig`
-- Move and rename `utils.py` to `utils/conversions.py` and add new file `utils/checks.py`
-- Add function `utils.checks.check_for_mutual_ambiguity` to be called during parsing if `DatetimeConfig.require_unambiguous_formats` is set to `True`
-  - `AmbiguousDatetimeFormatsError` is raised if mutually ambiguous formats are detected
-- Add unit tests for `utils.checks.check_for_mutual_ambiguity`
+- Add logic to `parser._parse_with_formats` to be used when `DatetimeConfig.require_unambiguous_formats` is set to `True`
+  - `AmbiguousDatetimeFormatsError` is raised if mutually ambiguous formats are detected and differing datetimes are parsed
 - Add parameter typing throughout repository
 
 ### v1.1.1

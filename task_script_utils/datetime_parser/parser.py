@@ -1,13 +1,16 @@
+from collections import Counter
 from typing import Sequence
 
 import pendulum
-from task_script_utils.datetime_parser.parser_exceptions import DatetimeParserError
+from task_script_utils.datetime_parser.parser_exceptions import (
+    AmbiguousDatetimeFormatsError,
+    DatetimeParserError,
+)
 from task_script_utils.datetime_parser.ts_datetime import TSDatetime
 
 from .datetime_config import DEFAULT_DATETIME_CONFIG, DatetimeConfig
 from .datetime_info import DateTimeInfo
-from .utils.checks import check_for_mutual_ambiguity
-from .utils.conversions import (
+from .utils import (
     from_pendulum_format,
     replace_abbreviated_tz_with_utc_offset,
     replace_z_with_offset,
@@ -137,7 +140,34 @@ def _parse_with_formats(
         formats = replace_zz_with_Z(formats)
 
     if config.require_unambiguous_formats:
-        check_for_mutual_ambiguity(config, formats)
+        parsed_times = []
+        for format_ in formats:
+            try:
+                parsed_times.append(
+                    (
+                        from_pendulum_format(
+                            datetime_str_with_no_abbreviated_tz, format_, tz=None
+                        ),
+                        format_,
+                    )
+                )
+            except Exception:
+                pass
+        if len(parsed_times) == 1:
+            return parsed_times[0], format_
+        if len(parsed_times) > 1:
+            unique_parsed_times = Counter(
+                [parsed_time[0].isoformat() for parsed_time in parsed_times]
+            )
+            if len(Counter(unique_parsed_times).values()) > 1:
+                raise AmbiguousDatetimeFormatsError(
+                    "Ambiguity found between datetime formats: "
+                    f"{[parsed_time[1] for parsed_time in parsed_times]} and the parsed"
+                    f" datetimes {list(unique_parsed_times.keys())} for the input"
+                    f" datetime string '{datetime_str}'."
+                )
+            else:
+                return parsed_times[0]
 
     for format_ in formats:
         try:
@@ -145,6 +175,15 @@ def _parse_with_formats(
                 datetime_str_with_no_abbreviated_tz, format_, tz=None
             )
             return parsed, format_
-        except Exception as e:
-            continue
+        except Exception:
+            pass
     return None, None
+
+
+# 			return one of the result
+
+# else:
+
+# 	parse the raw data with the given formats one by one
+
+# 	return the first match

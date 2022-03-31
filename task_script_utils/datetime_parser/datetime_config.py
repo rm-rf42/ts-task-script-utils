@@ -1,5 +1,5 @@
 from typing import Optional
-from .utils.conversions import map_offset_to_seconds
+from .utils import map_offset_to_seconds
 
 
 class DatetimeConfig:

@@ -9,7 +9,7 @@ from pendulum.locales.en import locale
 
 from .parser_exceptions import *
 from .datetime_config import DatetimeConfig
-from .utils.conversions import get_time_formats_for_long_date
+from .utils import get_time_formats_for_long_date
 from .tz_list import _all_abbreviated_tz_list
 
 
