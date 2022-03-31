@@ -3,6 +3,7 @@
 ## Version <!-- omit in toc -->
 
 v1.2.0
+
 ## Table of Contents <!-- omit in toc -->
 
 - [Usage](#usage)
@@ -12,6 +13,7 @@ v1.2.0
 - [Unambiguous Datetime](#unambiguous-datetime)
 - [Ambiguous Datetime](#ambiguous-datetime)
 - [Working with formats](#working-with-formats)
+  - [Supported Datetime Tokens](#supported-datetime-tokens)
   - [Working with fractional seconds](#working-with-fractional-seconds)
   - [Working with abbreviated timezones](#working-with-abbreviated-timezones)
 - [Working with `DatetimeConfig`](#working-with-datetimeconfig)
@@ -26,7 +28,7 @@ v1.2.0
 ### Input
 
  - `datetime_raw_str (str)`: Raw datetime string
- - `formats (Sequence[str], optional)`: List of possible datetime formats. These datetime formats must be built using pendulum datetime tokens. Defaults to empty tuple.
+ - `formats (Sequence[str], optional)`: List of possible datetime formats. These datetime formats must be built using [Supported Datetime Tokens](#supported-datetime-tokens). Defaults to empty tuple.
    - If the `DatetimeConfig` object in the `config` position has `require_unambiguous_formats` set to:
      - `True` and any of the formats produce a conflicting output, an `AmbiguousDatetimeFormatsError` will be raised.
      - `False`, the first valid parsed datetime valid will be returned.
@@ -172,7 +174,7 @@ Ambiguous date:21-12-20, possible formats: ('YY-MM-DD', 'DD-MM-YY')
 '''
 ```
 
-The following tokens are currently supported:
+### Supported Datetime Tokens
 
 |                            | Token  | Output                            |
 | -------------------------- | ------ | --------------------------------- |
