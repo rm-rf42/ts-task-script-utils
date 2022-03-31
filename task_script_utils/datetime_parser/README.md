@@ -34,10 +34,10 @@ v1.2.0
      - `False`, the first valid parsed datetime valid will be returned.
  - `config (DatetimeConfig, optional)`: Datetime Configuration. Defaults to `DEFAULT_DATETIME_CONFIG`.
    - It provides complementary information on how to mark parsed digits as day, month or year and also provide options to handle abbreviated time zones and fold for parsing ambiguous timestamps during daylight saving transitions. Ideally, `DatetimeConfig` should be constructed from the pipeline configuration with the following options:
-    - `day_first`: Whether to interpret the first value in an ambiguous 3-integer date (e.g. 01/05/09) as the day (`True`) or month (`False`). Defaults to `None`.
-    - `year_first`: Whether to interpret the first value in an ambiguous 3-integer date (e.g. 01/05/09) as the year. When the year has four digits, then whether `year_first` is `True` or `False`,is decided by regex parsing done by `DatetimeInfo` class. If both `year_first` and `day_first` are true, then `year_first` will take priority and resulting date format will be as YDM. Defaults to `None`.
-    - `tz_dict`: A python dict that maps abbreviated timezone names to their corresponding offset. Defaults to `{}`.
-    - `require_unambiguous_formats`: Whether require datetime formats to be unambiguous. Defaults to `False`.
+    - `day_first (optional)`: Whether to interpret the first value in an ambiguous 3-integer date (e.g. 01/05/09) as the day (`True`) or month (`False`). Defaults to `None`.
+    - `year_first (optional)`: Whether to interpret the first value in an ambiguous 3-integer date (e.g. 01/05/09) as the year. When the year has four digits, then whether `year_first` is `True` or `False`,is decided by regex parsing done by `DatetimeInfo` class. If both `year_first` and `day_first` are true, then `year_first` will take priority and resulting date format will be as YDM. Defaults to `None`.
+    - `tz_dict (optional)`: A python dict that maps abbreviated timezone names to their corresponding offset. Defaults to `{}`.
+    - `require_unambiguous_formats (optional)`: Whether require datetime formats to be unambiguous. Defaults to `False`.
       - If `require_unambiguous_formats` 
         - is `True` and any of the formats produce a conflicting output, an `AmbiguousDatetimeFormatsError` will be raised.
         - is `False`, the first valid parsed datetime valid will be returned.
