@@ -6,6 +6,9 @@ v1.2.0
 ## Table of Contents <!-- omit in toc -->
 
 - [Usage](#usage)
+  - [Input](#input)
+  - [Output](#output)
+  - [Examples](#examples)
 - [Unambiguous Datetime](#unambiguous-datetime)
 - [Ambiguous Datetime](#ambiguous-datetime)
 - [Working with formats](#working-with-formats)
@@ -20,27 +23,71 @@ v1.2.0
 
 ## Usage
 
-`from task_script_utils.datetime_parser import parse`
+### Input
 
-Input:
+ - `datetime_raw_str (str)`: Raw datetime string
+ - `formats (Sequence[str], optional)`: List of possible datetime formats. These datetime formats must be built using pendulum datetime tokens. Defaults to empty tuple.
+   - If the `DatetimeConfig` object in the `config` position has `require_unambiguous_formats` set to:
+     - `True` and any of the formats produce a conflicting output, an `AmbiguousDatetimeFormatsError` will be raised.
+     - `False`, the first valid parsed datetime valid will be returned.
+ - `config (DatetimeConfig, optional)`: Datetime Configuration. Defaults to `DEFAULT_DATETIME_CONFIG`.
+   - It provides complementary information on how to mark parsed digits as day, month or year and also provide options to handle abbreviated time zones and fold for parsing ambiguous timestamps during daylight saving transitions. Ideally, `DatetimeConfig` should be constructed from the pipeline configuration with the following options:
+    - `day_first`: Whether to interpret the first value in an ambiguous 3-integer date (e.g. 01/05/09) as the day (`True`) or month (`False`). Defaults to `None`.
+    - `year_first`: Whether to interpret the first value in an ambiguous 3-integer date (e.g. 01/05/09) as the year. When the year has four digits, then whether `year_first` is `True` or `False`,is decided by regex parsing done by `DatetimeInfo` class. If both `year_first` and `day_first` are true, then `year_first` will take priority and resulting date format will be as YDM. Defaults to `None`.
+    - `tz_dict`: A python dict that maps abbreviated timezone names to their corresponding offset. Defaults to `{}`.
+    - `require_unambiguous_formats`: Whether require datetime formats to be unambiguous. Defaults to `False`.
+      - If `require_unambiguous_formats` 
+        - is `True` and any of the formats produce a conflicting output, an `AmbiguousDatetimeFormatsError` will be raised.
+        - is `False`, the first valid parsed datetime valid will be returned.
 
-- `datetime_raw_str: str`: raw datetime string to be parsed.
-- `formats: Sequence[str] (optional)`: You can optionally pass a list of formats to try to parse datetime string. If `datetime_raw_str` doesn't match with any format, the datetime parser will still try to parse `datetime_raw_str` with other methods such as using regex and trying long datetime format. See below for additional behavior regarding the usage of `DatetimeConfig.require_unambiguous_formats` and `formats`.
-- `config: DatetimeConfig (optional)`: You also have an option to pass `DatetimeConfig`. It provides complementary information on how to mark parsed digits as day, month or year and also provide options to handle abbreviated time zones and fold for parsing ambiguous timestamps during daylight saving transitions. Ideally, `DatetimeConfig` should be constructed from the pipeline configuration with the following options:
-  - `day_first`: Whether to interpret the first value in an ambiguous 3-integer date (e.g. 01/05/09) as the day (`True`) or month (`False`). Defaults to `None`.
-  - `year_first`: Whether to interpret the first value in an ambiguous 3-integer date (e.g. 01/05/09) as the year. When the year has four digits, then whether `year_first` is `True` or `False`,is decided by regex parsing done by `DatetimeInfo` class. If both `year_first` and `day_first` are true, then `year_first` will take priority and resulting date format will be as YDM. Defaults to `None`.
-  - `tz_dict`: A python dict that maps abbreviated timezone names to their corresponding offset. Defaults to `{}`.
-  - `require_unambiguous_formats`: Whether require datetime formats to be unambiguous. Defaults to `False`.
-    - If `require_unambiguous_formats` 
-      - is `True` and any of the formats produce a conflicting output, an `AmbiguousDatetimeFormatsError` will be raised.
-      - is `False`, the first valid parsed datetime valid will be returned.
-
-Output:
+### Output
 
 - A `TSDatetime` object.
 
 ![Parse Flow Diagram](./parse-white.png)
 ![Short date format Resolution for two digit date parts](./short-date-format-resolution.png)
+
+
+### Examples
+
+Ambiguous input while ignoring ambiguity:
+```python
+>>> from task_script_utils.datetime_parser import parse
+
+>>> ambiguous_formats = [
+    "MM/DD/YYYY hh:mm:ss A z",
+    "DD/MM/YYYY hh:mm:ss A z",
+]
+>>> datetime_raw_str = "01/02/2003 04:05:06 AM UTC"
+>>> parsed_datetime = parse(datetime_raw_str, formats=ambiguous_formats)
+>>> parsed_datetime.tsformat() # first parsed output returned
+
+'2003-01-02T04:05:06Z'
+```
+
+Ambiguous input while requiring ambiguity:
+```python
+>>> config = DatetimeConfig(require_unambiguous_formats=True)
+>>> parsed_datetime = parse(datetime_raw_str, formats=ambiguous_formats, config=config)
+
+## Raises AmbiguousDatetimeFormatsError
+Traceback (most recent call last):
+...
+    task_script_utils.datetime_parser.parser_exceptions.AmbiguousDatetimeFormatsError: Ambiguity found between datetime formats: ['MM/DD/YYYY hh:mm:ss A z', 'DD/MM/YYYY hh:mm:ss A z'], the parsed datetimes ['2003-01-02T04:05:06+00:00', '2003-02-01T04:05:06+00:00'], and the input datetime string '01/02/2003 04:05:06 AM UTC'.
+
+
+```
+
+Forgivingly ambiguous input while requiring ambiguity:
+```python
+>>> from task_script_utils.datetime_parser import DatetimeConfig
+
+>>> datetime_raw_str = "02/02/2003 04:05:06 AM UTC"
+>>> config = DatetimeConfig(require_unambiguous_formats=True)
+>>> parsed_datetime = parse(datetime_raw_str, formats=ambiguous_formats, config=config)
+>>> parsed_datetime.tsformat()
+'2003-02-02T04:05:06Z'
+```
 
 ## Unambiguous Datetime
 
@@ -403,6 +450,8 @@ A `DatetimeConfig` object has following attributes:
 ### v1.2.0
 
 - Add `require_unambiguous_formats` to `DatetimeConfig` to enable/disable checking of ambiguous datetime formats passed to parsing functions
-- Add `check_for_mutual_ambiguity` function to check for ambiguous datetime formats passed to parsing functions
+- Add logic to `parser._parse_with_formats` to be used when `DatetimeConfig.require_unambiguous_formats` is set to `True`
+  - `AmbiguousDatetimeFormatsError` is raised if mutually ambiguous formats are detected and differing datetimes are parsed
+- Add parameter typing throughout repository
 - Add public-facing `parse_with_formats` function that only attempts to parse datetime strings using the provided formats
 - Fix exception message when trying to parse 2-digit dates without using a format to only print out the possible formats that parse to a valid datetime

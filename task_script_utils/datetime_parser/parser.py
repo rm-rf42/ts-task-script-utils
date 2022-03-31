@@ -28,8 +28,8 @@ def parse(
     Args:
         datetime_raw_str (str): Raw datetime string
         formats (Sequence[str], optional): List of possible datetime
-        formats. Defaults to empty tuple.
-        These datetime formats must be built using `pendulum` datetime tokens.
+        formats. These datetime formats must be built using `pendulum` datetime tokens.
+        Defaults to empty tuple.
         config (DatetimeConfig, optional): Datetime Configuration.
         Defaults to DEFAULT_DATETIME_CONFIG.
 
@@ -162,8 +162,8 @@ def _parse_with_formats(
             if len(Counter(unique_parsed_times).values()) > 1:
                 raise AmbiguousDatetimeFormatsError(
                     "Ambiguity found between datetime formats: "
-                    f"{[parsed_time[1] for parsed_time in parsed_times]} and the parsed"
-                    f" datetimes {list(unique_parsed_times.keys())} for the input"
+                    f"{[parsed_time[1] for parsed_time in parsed_times]}, the parsed"
+                    f" datetimes {list(unique_parsed_times.keys())}, and the input"
                     f" datetime string '{datetime_str}'."
                 )
             else:
