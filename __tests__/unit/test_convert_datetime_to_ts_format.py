@@ -1,5 +1,6 @@
 import sys
 from dateutil import tz
+import pytest
 from task_script_utils.convert_datetime_to_ts_format import (
     convert_datetime_to_ts_format,
 )
@@ -33,9 +34,15 @@ def test_input_timezone():
         ),
         ("2019-07-17 11:21:00", tz.tzutc(), "2019-07-17T11:21:00.000Z"),
         ("2020-04-30T20:27:41.000Z", "GMT+3", "2020-04-30T17:27:41.000Z"),
+        ("2019-07-17 11:21:00", 123, AttributeError),
     ]
     for raw, timezone, expect in raw_timezone_expect:
-        assert convert_datetime_to_ts_format(raw, timezone=timezone) == expect
+        if isinstance(expect, str):
+            assert convert_datetime_to_ts_format(raw, timezone=timezone) == expect
+        else:
+            # expect is an Exception type
+            with pytest.raises(expect):
+                convert_datetime_to_ts_format(raw, timezone=timezone)
 
 
 def test_input_timezone_overrides_embedded():

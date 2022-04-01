@@ -2,7 +2,16 @@ from typing import Optional
 from .utils import map_offset_to_seconds
 
 
+# pylint: disable=R0903
 class DatetimeConfig:
+    """DatetimeConfig provides complementary information on how to mark
+    parsed digits as day, month or year.
+    It also provides an option to handle abbreviated time zones and
+    fold for parsing ambiguous timestamps during daylight saving transitions.
+    Ideally, DatetimeConfig should be constructed from pipeline configuration
+    passed to task scripts.
+    """
+
     def __init__(
         self,
         day_first: Optional[bool] = None,
@@ -10,12 +19,7 @@ class DatetimeConfig:
         tz_dict: dict = {},
         fold: Optional[int] = None,
     ):
-        """DatetimeConfig provides complementary information on how to mark
-        parsed digits as day, month or year.
-        It also provides an option to handle abbreviated time zones and
-        fold for parsing ambiguous timestamps during daylight saving transitions.
-        Ideally, DatetimeConfig should be constructed from pipeline configuration
-        passed to task scripts.
+        """DatetimeConfig constructor.
 
         Args:
             day_first (Optional[bool], optional): Whether to interpret the first
@@ -27,7 +31,7 @@ class DatetimeConfig:
             Defaults to None. When the year has four digits, then whether
             `year_first` is `true` or `false`,is decided by regex parsing done
             by `DatetimeInfo` class. If both `year_first` and `day_first` are true,
-            then `year_first` will take priority and resulting date format will be as YDM.
+            then `year_first` will take priority and resulting date format will be YDM.
 
             tz_dict (dict, optional): A python dict that maps abbreviated timezone
             names to their corresponding offset. Defaults to {}.

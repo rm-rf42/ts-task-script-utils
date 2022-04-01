@@ -1,3 +1,6 @@
+# pylint: skip-file
+
+
 class DatetimeParserError(Exception):
     pass
 

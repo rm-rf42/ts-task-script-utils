@@ -1,20 +1,30 @@
-import dateparser, arrow, datetime
+from typing import Union
+import warnings
+import dateparser
+import arrow
 from dateutil import tz
 
 
 def convert_datetime_to_ts_format(
-    datetime, datetime_format: str = "", timezone: str = ""
+    datetime, datetime_format: str = "", timezone: Union[tz.tzoffset, str] = ""
 ):
-    """Convert datetime to TetraScience standard: ISO-8601 in milliseconds in UTC if timezone is available
+    """Convert datetime to TetraScience standard: ISO-8601 in milliseconds in UTC if
+    timezone is available
 
     Inputs:
         datetime - raw datetime
-        datetime_format - raw datetime format (must follow https://arrow.readthedocs.io/en/stable/#format)
-        timezone - user-defined timezone. If the user specify an timezone, it will overwrite the timezone extracted from the raw datetime. It can be either string (i.e. "GMT-5") or a timezone type recognized by the arrow.get function.
+
+        datetime_format - raw datetime format build using arrow tokens
+        link: must follow https://arrow.readthedocs.io/en/stable/#format
+
+        timezone - user-defined timezone. If the user specify an timezone, it will
+        overwrite the timezone extracted from the raw datetime. It can be either
+        string (i.e. "GMT-5") or a timezone type recognized by the arrow.get function.
 
 
     Output:
-        Datetime string in ISO-8601 with millisecond precision. If timezone is defined, it will be in UTC indicated by 'Z'.
+        Datetime string in ISO-8601 with millisecond precision. If timezone is defined,
+        it will be in UTC indicated by 'Z'.
 
         Examples:
         If timezone is defined: "2019-07-17T14:21:00.000Z"
@@ -30,7 +40,8 @@ def convert_datetime_to_ts_format(
 
     if parsed_time is None:
         raise ValueError(
-            f"Could not parse input datetime string {datetime} using {parser_name} and the following input formats: {datetime_format}"
+            # pylint: disable=C0301
+            f"Could not parse input datetime string {datetime} using {parser_name} and the following input formats: {datetime_format}"  # noqa: E501
         )
 
     timezone_to_use = parsed_time.tzinfo
@@ -38,9 +49,10 @@ def convert_datetime_to_ts_format(
     if timezone:
         try:
             timezone_to_use = tz.gettz(timezone)
-        except:
-            print(
-                "The provided timezone can't be parsed by dateutil tz, going to use the plain value"
+        except TypeError:
+            warnings.warn(
+                # pylint: disable=C0301
+                "The provided timezone can't be parsed by dateutil tz, going to use the plain value"  # noqa: E501
             )
             timezone_to_use = timezone
 
