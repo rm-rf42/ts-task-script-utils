@@ -1,7 +1,7 @@
 import pytest
 from pendulum import now
 
-from task_script_utils.datetime_parser.utils import from_pendulum_format
+from task_script_utils.datetime_parser.utils.manipulation import from_pendulum_format
 
 
 subseconds_test_cases = [

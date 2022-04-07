@@ -13,7 +13,7 @@ from pydash.arrays import flatten
 from .datetime_config import DatetimeConfig
 from .tz_list import _all_abbreviated_tz_list
 from .ts_datetime import TSDatetime
-from .utils import _parse_with_formats
+from .utils.parsing import _parse_with_formats
 from .parser_exceptions import (
     DatetimeParserError,
     InvalidOffsetError,
@@ -279,7 +279,7 @@ class LongDateTimeInfo(DateTimeInfo):
         long_datetime_formats = self._build_long_datetime_formats_list()
         parsed_datetime, matched_format = _parse_with_formats(
             datetime_str=self.date_time_raw,
-            datetime_config=self.config,
+            config=self.config,
             formats=long_datetime_formats,
         )
         if parsed_datetime:

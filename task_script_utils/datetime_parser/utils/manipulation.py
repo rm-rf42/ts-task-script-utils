@@ -3,7 +3,7 @@ import re
 from itertools import product
 from typing import Mapping, Optional, Sequence, Tuple
 
-import pendulum
+from pendulum import now
 from pendulum.tz import timezone as pendulum_timezone
 from pendulum import datetime as pendulum_datetime
 from pydash.arrays import flatten
@@ -13,6 +13,12 @@ from task_script_utils.datetime_parser.fractional_seconds_formatter import (
 from task_script_utils.datetime_parser.ts_datetime import TSDatetime
 
 _formatter = FractionalSecondsFormatter()
+
+TIME_PARTS = [
+    ["h", "hh", "H", "HH"],
+    ["m", "mm"],
+    ["s", "ss"],
+]
 
 
 def map_offset_to_seconds(tz_dict):
@@ -27,7 +33,7 @@ def map_offset_to_seconds(tz_dict):
     }
 
 
-def get_time_formats_for_long_date(fractional_seconds: Optional[str]):
+def get_time_formats_for_long_date(fractional_seconds: Optional[str]) -> Tuple:
     def map_am_pm(time_format):
         return time_format if time_format.startswith("H") else time_format + " A"
 
@@ -116,44 +122,3 @@ def replace_z_with_offset(datetime_str: str) -> str:
     12-12-12T14:53:00 Z -> 12-12-12T14:53:00 +00:00
     """
     return re.sub(r"(?<=\d|\s)Z(?=\s|$)", "+00:00", datetime_str)
-
-
-def parse_with_formats(
-    datetime_str: str, datetime_config, formats: Sequence[str] = ()
-) -> Tuple[Optional[TSDatetime], Optional[str]]:
-    """Given list of formats and datetime config, try
-    to parse the datetime string
-
-    Args:
-        datetime_str (str): raw datetime string
-        datetime_config (DatetimeConfig): a valid DatetimeConfig
-        formats (Sequence[str], optional): list of formats. Defaults to ().
-
-    Returns:
-        Tuple[Optional[TSDatetime], Optional[str]]: return TSDatetime, matched_format
-    """
-    # If datetime config contains tz_dict, then replace
-    # abbreviated_tz in datetime_str with its corresponding
-    # utc offset values from datetime_config.tz_dict
-    datetime_str_with_no_abbreviated_tz = replace_abbreviated_tz_with_utc_offset(
-        datetime_str, datetime_config.tz_dict
-    )
-    if datetime_str_with_no_abbreviated_tz != datetime_str:
-        # It means datetime_str did contain abbreviated_tz and we
-        # have replaced it with its utc_offset value from tz_dict.
-        # Now if the format in formats_list contains "zz", replace
-        # it with "Z". This is because no library parses abbreviated tz
-        # due to its ambiguous nature
-        formats = replace_zz_with_Z(formats)
-
-    for format_ in formats:
-        try:
-            parsed = from_pendulum_format(
-                datetime_str_with_no_abbreviated_tz, format_, tz=None
-            )
-            return parsed, format_
-        except ValueError:
-            continue
-        except re.error:
-            continue
-    return None, None

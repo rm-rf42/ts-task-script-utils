@@ -457,3 +457,4 @@ A `DatetimeConfig` object has following attributes:
 - Add parameter typing throughout repository
 - Add public-facing `parse_with_formats` function that only attempts to parse datetime strings using the provided formats
 - Fix exception message when trying to parse 2-digit dates without using a format to only print out the possible formats that parse to a valid datetime
+- Move `utils.py` into `utils/` folder and split logic into two files to avoid cyclic dependency

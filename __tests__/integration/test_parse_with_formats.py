@@ -1,7 +1,7 @@
 from typing import Optional, Sequence
 import pytest
 from task_script_utils.datetime_parser import DatetimeConfig
-from task_script_utils.datetime_parser.parser import parse_with_formats
+from task_script_utils.datetime_parser.utils.parsing import parse_with_formats
 from task_script_utils.datetime_parser.parser_exceptions import DatetimeParserError
 
 parse_with_formats_list = [

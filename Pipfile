@@ -10,12 +10,12 @@ dateparser = "*"
 arrow = "*"
 pendulum = "2.1.2"
 pydash = "*"
+ts-task-script-utils = {path = "."}
 
 [dev-packages]
 pytest = "*"
 pytest-cov = "*"
 black = ">=21.12b0"
-
 
 [pipenv]
 allow_prereleases = true
