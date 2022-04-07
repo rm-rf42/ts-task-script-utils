@@ -25,14 +25,14 @@ class DatetimeConfig:
         Args:
             day_first (Optional[bool], optional): Whether to interpret the first
             value in an ambiguous 3-integer date (e.g. 01/05/09) as the
-            day (True) or month (False). Defaults to None.
+            day `True` or month `False`. Defaults to `None`.
 
             year_first (Optional[bool], optional): Whether to interpret the first
             value in an ambiguous 3-integer date (e.g. 01/05/09) as the year.
             When the year has four digits, then whether `year_first` is `True` or
             `False`, is decided by regex parsing done by `DatetimeInfo` class. If both
             `year_first` and `day_first` are true, then `year_first` will take priority
-            and resulting date format will be as YDM. Defaults to None.
+            and resulting date format will be as YDM. Defaults to `None`.
 
             tz_dict (dict, optional): A python dict that maps abbreviated timezone
             names to their corresponding offset. Defaults to {}.
@@ -40,10 +40,10 @@ class DatetimeConfig:
             fold (Optional[int], optional): 0 or 1. It is required during the
             2 hour window when clocks are set back in a timezone which keeps
             track of daylight savings (such as IANA timezones like `Europe/London`).
-            Defaults to None.
+            Defaults to `None`.
 
-            require_unambiguous_formats (bool): Whether require datetime formats to be
-            unambiguous. Defaults to False.
+            require_unambiguous_formats (bool, optional): Whether require datetime
+            formats to be unambiguous. Defaults to `False`.
         """
         self.day_first = day_first
         self.year_first = year_first
