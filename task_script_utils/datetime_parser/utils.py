@@ -1,9 +1,10 @@
 import datetime as dt
 import re
 from itertools import product
-from typing import Mapping, Optional, Sequence
+from typing import Mapping, Optional, Sequence, Tuple
 
 import pendulum
+from pendulum.tz import timezone as pendulum_timezone
 from pendulum import datetime as pendulum_datetime
 from pydash.arrays import flatten
 from task_script_utils.datetime_parser.fractional_seconds_formatter import (
@@ -12,12 +13,6 @@ from task_script_utils.datetime_parser.fractional_seconds_formatter import (
 from task_script_utils.datetime_parser.ts_datetime import TSDatetime
 
 _formatter = FractionalSecondsFormatter()
-
-TIME_PARTS = [
-    ["h", "hh", "H", "HH"],
-    ["m", "mm"],
-    ["s", "ss"],
-]
 
 
 def map_offset_to_seconds(tz_dict):
@@ -71,10 +66,9 @@ def replace_abbreviated_tz_with_utc_offset(
     Converts `12-12-2012 12:12:12 AM IST` to `12-12-2012 12:12:12 AM +05:30`
     if `IST: +05:30` exist in tz_dict
     """
-    if tz_dict:
-        for tz_key in tz_dict:
-            if tz_key in datetime_str:
-                return datetime_str.replace(tz_key, tz_dict[tz_key])
+    for tz_name in tz_dict:
+        if tz_name in datetime_str:
+            return datetime_str.replace(tz_name, tz_dict[tz_name])
     return datetime_str
 
 
@@ -93,14 +87,14 @@ def replace_zz_with_Z(formats: Sequence[str] = ()):
 def from_pendulum_format(
     datetime_string: str,
     fmt: str,
-    tz: Optional[pendulum.tz.timezone] = None,
+    tz: Optional[pendulum_timezone] = None,
     locale=None,
 ) -> TSDatetime:
     """
     Creates a DateTime instance from a specific format.
     """
     subseconds = None
-    parts = _formatter.parse(datetime_string, fmt, pendulum.now(), locale=locale)
+    parts = _formatter.parse(datetime_string, fmt, now(), locale=locale)
     if not isinstance(parts, dict):
         raise TypeError(f"Could not match any datetime tokens in '{fmt}'.")
     if parts["tz"] is None:
@@ -122,3 +116,44 @@ def replace_z_with_offset(datetime_str: str) -> str:
     12-12-12T14:53:00 Z -> 12-12-12T14:53:00 +00:00
     """
     return re.sub(r"(?<=\d|\s)Z(?=\s|$)", "+00:00", datetime_str)
+
+
+def parse_with_formats(
+    datetime_str: str, datetime_config, formats: Sequence[str] = ()
+) -> Tuple[Optional[TSDatetime], Optional[str]]:
+    """Given list of formats and datetime config, try
+    to parse the datetime string
+
+    Args:
+        datetime_str (str): raw datetime string
+        datetime_config (DatetimeConfig): a valid DatetimeConfig
+        formats (Sequence[str], optional): list of formats. Defaults to ().
+
+    Returns:
+        Tuple[Optional[TSDatetime], Optional[str]]: return TSDatetime, matched_format
+    """
+    # If datetime config contains tz_dict, then replace
+    # abbreviated_tz in datetime_str with its corresponding
+    # utc offset values from datetime_config.tz_dict
+    datetime_str_with_no_abbreviated_tz = replace_abbreviated_tz_with_utc_offset(
+        datetime_str, datetime_config.tz_dict
+    )
+    if datetime_str_with_no_abbreviated_tz != datetime_str:
+        # It means datetime_str did contain abbreviated_tz and we
+        # have replaced it with its utc_offset value from tz_dict.
+        # Now if the format in formats_list contains "zz", replace
+        # it with "Z". This is because no library parses abbreviated tz
+        # due to its ambiguous nature
+        formats = replace_zz_with_Z(formats)
+
+    for format_ in formats:
+        try:
+            parsed = from_pendulum_format(
+                datetime_str_with_no_abbreviated_tz, format_, tz=None
+            )
+            return parsed, format_
+        except ValueError:
+            continue
+        except re.error:
+            continue
+    return None, None

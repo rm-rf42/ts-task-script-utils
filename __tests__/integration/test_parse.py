@@ -97,7 +97,7 @@ def test_parse(
             config=datetime_config,
         )
         parsed_datetime = parsed_datetime.isoformat()
-    except DatetimeParserError as e:
+    except DatetimeParserError:
         parsed_datetime = None
 
     assert parsed_datetime == expected

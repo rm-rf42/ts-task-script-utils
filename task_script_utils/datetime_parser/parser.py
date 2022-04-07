@@ -9,7 +9,7 @@ from task_script_utils.datetime_parser.parser_exceptions import (
 from task_script_utils.datetime_parser.ts_datetime import TSDatetime
 
 from .datetime_config import DEFAULT_DATETIME_CONFIG, DatetimeConfig
-from .datetime_info import DateTimeInfo
+from .datetime_info import ShortDateTimeInfo, LongDateTimeInfo
 from .utils import (
     from_pendulum_format,
     replace_abbreviated_tz_with_utc_offset,
@@ -52,20 +52,13 @@ def parse(
 
     # Otherwise use DateInfo Parser to parse short dates
     if not parsed_datetime:
-        datetime_info = DateTimeInfo(datetime_str, config)
-        if datetime_info.dtstamp:
-            parsed_datetime = TSDatetime(
-                datetime_=datetime_info.datetime,
-                subseconds=datetime_info.fractional_seconds,
-            )
+        datetime_info = ShortDateTimeInfo(datetime_str, config)
+        parsed_datetime = datetime_info.datetime
 
     # Use long date formats
     if not parsed_datetime:
-        parsed_datetime, _ = _parse_with_formats(
-            datetime_str=datetime_str,
-            config=config,
-            formats=datetime_info.long_datetime_formats,
-        )
+        datetime_info = LongDateTimeInfo(datetime_str, config)
+        parsed_datetime = datetime_info.datetime
 
     if parsed_datetime is None:
         raise DatetimeParserError(f"Could not parse: {datetime_str}")

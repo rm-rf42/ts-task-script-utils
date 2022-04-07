@@ -12,7 +12,6 @@ Utility functions for Tetra Task Scripts
   - [v1.2.0](#v120)
   - [v1.1.1](#v111)
   - [v1.1.0](#v110)
-
 ## Installation
 
 `pip install ts-task-script-utils`
@@ -54,6 +53,9 @@ then
 - Add logic to `parser._parse_with_formats` to be used when `DatetimeConfig.require_unambiguous_formats` is set to `True`
   - `AmbiguousDatetimeFormatsError` is raised if mutually ambiguous formats are detected and differing datetimes are parsed
 - Add parameter typing throughout repository
+- Refactor `datetime_parser` package
+- Add base class `DateTimeInfo`
+- Segregate parsing logic into `ShortDateTimeInfo` and `LongDateTimeInfo`
 
 ### v1.1.1
 

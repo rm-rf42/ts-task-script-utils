@@ -2,7 +2,6 @@ from typing import Optional, Sequence
 import pytest
 from task_script_utils.datetime_parser.parser import (
     parse,
-    _parse_with_formats,
     DatetimeConfig,
 )
 
@@ -28,8 +27,8 @@ datetime_formats_test_cases = {
     "Sunday, May 26th 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
     "Sunday, May 26th, 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
     "Sunday, May 26 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
-    "Sunday, May 26 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",
-    "Sunday, May 26th 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",
+    "Sunday, May 26 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",  # noqa E501
+    "Sunday, May 26th 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",  # noqa E501
 }
 
 parse_with_no_datetime_formats_test_cases = {
@@ -38,15 +37,13 @@ parse_with_no_datetime_formats_test_cases = {
     "Sunday, May 26th 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
     "Sunday, May 26th, 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
     "Sunday, May 26 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
-    "Sunday, May 26 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",
-    "Sunday, May 26th 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",
+    "Sunday, May 26 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",  # noqa E501
+    "Sunday, May 26th 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",  # noqa E501
     "1:2:32 2021-12-23 AM America/Chicago": "2021-12-23T01:02:32-06:00",
     "1:2:32 2021-12-23 AM +530": "2021-12-23T01:02:32+05:30",
     "May 26 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
     "Sunday, May 26th 2013 12:12:12 AM IST": "2013-05-26T00:12:12+05:30",
     "Sunday, May 26 2013 12:12:12.5677 Asia/Kolkata": "2013-05-26T12:12:12.5677+05:30",
-    "Sunday, May 26 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",
-    "Sunday, May 26th 2013 12:12:12.5677 AM Asia/Kolkata": "2013-05-26T00:12:12.5677+05:30",
     # Single digit day
     "Thursday, Nov 4 2021 12:12:12 AM Asia/Kolkata": "2021-11-04T00:12:12+05:30",
     # Error Cases:
@@ -56,13 +53,6 @@ parse_with_no_datetime_formats_test_cases = {
     "Sunday, May 26th 2013 12:12:12 AM ZST Asia/Kolkata": None,
     # Missing Month
     "Sunday, 26 2013 12:12:12 AM Asia/Kolkata": None,
-}
-
-format_list_with_no_tz_dict_test_cases = {
-    "Sunday, May 26th 2013 12:12:12 AM IST Asia/Kolkata": None,
-    "Sunday, May 26th 2013 12:12:12 AM ZST Asia/Kolkata": None,
-    "Sunday, May 26th 2013 12:12:12 AM Asia/Kolkata": "2013-05-26T00:12:12+05:30",
-    "Sunday, May 26th 2013 12:12:12 AM": None,
 }
 
 dateutil_parser_test_cases = {
@@ -187,7 +177,7 @@ def test_parse_with_formats(input_: str, expected: Optional[str]):
             formats,
             datetime_config,
         )
-    except DatetimeParserError as e:
+    except DatetimeParserError:
         parsed_datetime = None
 
     if parsed_datetime is None:
@@ -221,7 +211,7 @@ def test_parse(input_: str, expected: Optional[str]):
             config=datetime_config,
         )
         parsed_datetime = parsed_datetime.isoformat()
-    except DatetimeParserError as e:
+    except DatetimeParserError:
         parsed_datetime = None
 
     assert parsed_datetime == expected
@@ -235,7 +225,7 @@ def test_convert_to_iso_with_fold(
     try:
         result = parse(input_, config=config)
         result = result.tsformat()
-    except DatetimeParserError as e:
+    except DatetimeParserError:
         result = None
     assert result == expected
 
@@ -247,7 +237,7 @@ def test_convert_to_iso_with_fractional_seconds(input_: str, expected: Optional[
     try:
         result = parse(input_, config=config)
         result = result.tsformat()
-    except DatetimeParserError as e:
+    except DatetimeParserError:
         result = None
     assert result == expected
 
@@ -265,7 +255,7 @@ def test_convert_to_ts_format_for_padding(
     try:
         result = parse(input_, config=config)
         result = result.tsformat()
-    except DatetimeParserError as e:
+    except DatetimeParserError:
         result = None
     assert result == expected
 
@@ -279,7 +269,6 @@ def test_datetime_str_with_Z(
     try:
         result = parse(input_, formats=list(dt_formats))
         result = result.tsformat()
-    except DatetimeParserError as e:
-        print(str(e))
+    except DatetimeParserError:
         result = None
     assert result == expected

@@ -1,6 +1,6 @@
 from typing import Optional
 import pytest
-from task_script_utils.datetime_parser.datetime_info import DateTimeInfo
+from task_script_utils.datetime_parser.datetime_info import ShortDateTimeInfo
 from task_script_utils.datetime_parser.datetime_config import DatetimeConfig
 from task_script_utils.datetime_parser import tz_dicts
 from task_script_utils.datetime_parser.parser_exceptions import DatetimeParserError
@@ -72,9 +72,11 @@ regex_test_cases = [
     ("2018-13-09T16:15+5:3 PM", None),
     ("2018-13-09T16:15+05332 PM", None),
     ("2018-13-09T16:15+2 AM", None),  # hrs = 16 but meridiem=AM
+    ("2018-13-09V11:15:15 +05:30 PM", None),
 ]
 
 
+# pylint: disable=C0116
 @pytest.mark.parametrize(
     "input_, year_first, day_first, expected", two_digit_date_with_config_test_cases
 )
@@ -86,9 +88,9 @@ def test_match_short_date(
 ):
     config = DatetimeConfig(year_first=year_first, day_first=day_first)
     try:
-        date_info = DateTimeInfo(input_, config)
-        result = date_info._date_str
-    except DatetimeParserError as e:
+        date_info = ShortDateTimeInfo(input_, config)
+        result = _build_date_str_from_datetime_info(date_info)
+    except DatetimeParserError:
         result = None
 
     assert result == expected
@@ -99,9 +101,16 @@ def test_regex_parsing(input_: str, expected: Optional[str]):
     config = {"year_first": True, "tz_dict": tz_dicts.USA}
     year_first = DatetimeConfig(**config)
     try:
-        d = DateTimeInfo(input_, year_first)
-        parsed_datetime = d.dtstamp
-    except DatetimeParserError as e:
+        short_datetime_info = ShortDateTimeInfo(input_, year_first)
+        parsed_datetime = short_datetime_info.datetime_stamp
+    except DatetimeParserError:
         parsed_datetime = None
 
     assert parsed_datetime == expected
+
+
+def _build_date_str_from_datetime_info(dt_info: ShortDateTimeInfo) -> Optional[str]:
+    """Returns year-month-day"""
+    if dt_info.day and dt_info.month and dt_info.year:
+        return f"{dt_info.year}-{dt_info.month}-{dt_info.day}"
+    return None
