@@ -1,4 +1,3 @@
-import sys
 from dateutil import tz
 import pytest
 from task_script_utils.convert_datetime_to_ts_format import (
