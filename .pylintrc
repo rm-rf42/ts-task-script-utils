@@ -21,4 +21,4 @@ disable=raw-checker-failed,
 
 
 [FORMAT]
-max-line-length=88
+max-line-length=150
