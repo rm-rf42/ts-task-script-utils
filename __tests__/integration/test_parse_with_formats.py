@@ -83,7 +83,6 @@ def test_parse_with_formats(
     expected: Optional[str],
     raises_error: bool,
 ):
-    print(input_, formats, expected)
     datetime_config = DatetimeConfig()
     if raises_error:
         with pytest.raises(DatetimeParserError):
@@ -98,5 +97,4 @@ def test_parse_with_formats(
             formats=formats,
             config=datetime_config,
         )
-        print(parsed_datetime.isoformat())
         assert parsed_datetime.isoformat() == expected

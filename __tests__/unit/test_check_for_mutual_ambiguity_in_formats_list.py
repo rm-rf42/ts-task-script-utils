@@ -14,6 +14,11 @@ ambiguous_formats = [
     "DD/MM/YYYY hh:mm:ss A z",
 ]
 
+ambiguous_formats_with_zz = [
+    "MM/DD/YYYY hh:mm:ss A zz",
+    "DD/MM/YYYY hh:mm:ss A zz",
+]
+
 ambiguous_formats_short_year = [
     "MM/DD/YY hh:mm:ss A z",
     "YY/MM/DD hh:mm:ss A z",
@@ -46,7 +51,13 @@ def test_unambiguous_formats():
 
 def test_require_unambiguous_formats_with_unambiguous_formats():
     datetime_str = "Saturday, February 3rd 2001 04:05:06 AM UTC"
+    expected = "2001-02-03T04:05:06Z"
     datetime_config = DatetimeConfig(require_unambiguous_formats=True)
+    result = parse_with_formats(
+        datetime_str, formats=unambiguous_formats, config=datetime_config
+    )
+    assert expected == result.tsformat()
+
     if datetime_config.require_unambiguous_formats:
         parse_with_formats(datetime_str, formats=unambiguous_formats)
     else:
@@ -79,6 +90,19 @@ def test_require_unambiguous_formats_with_ambiguous_formats_with_subseconds():
         parse_with_formats(
             datetime_str,
             formats=ambiguous_formats_with_subseconds,
+            config=datetime_config,
+        )
+
+
+def test_require_unambiguous_formats_with_ambiguous_formats_with_zz():
+    datetime_str = ambiguous_datetime.format(ambiguous_formats_with_zz[0])
+    datetime_config = DatetimeConfig(
+        require_unambiguous_formats=True, tz_dict={"UTC": "+00:00"}
+    )
+    with pytest.raises(AmbiguousDatetimeFormatsError):
+        parse_with_formats(
+            datetime_str,
+            formats=ambiguous_formats_with_zz,
             config=datetime_config,
         )
 
