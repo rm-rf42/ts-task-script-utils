@@ -104,7 +104,7 @@ def test_to_int_scientific_notation_negative_exponent_greater_than_1():
     assert actual == 10
 
 
-def test_to_int_scientific_notation():
+def test_to_int_negative_scientific_notation():
     """Test Scientific Notation"""
     value = "-5e5"
     # Act

@@ -172,7 +172,7 @@ def test_to_decimal_scientific_notation_negative_exponent():
     assert actual.compare_total(Decimal("0.00314")) == 0
 
 
-def test_to_decimal_scientific_notation():
+def test_to_decimal_negative_scientific_notation():
     """Test Scientific Notation"""
     value = "-5e5"
     # Act
@@ -183,7 +183,7 @@ def test_to_decimal_scientific_notation():
     assert actual.compare_total(Decimal("-5E+5")) == 0
 
 
-def test_to_decimal_scientific_notation_negative_exponent():
+def test_to_decimal_negative_scientific_notation_negative_exponent():
     """Test Scientific Notation, negative exponent"""
     value = "-2.74e-3"
     # Act

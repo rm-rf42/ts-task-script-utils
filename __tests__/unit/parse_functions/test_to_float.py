@@ -159,7 +159,7 @@ def test_to_float_scientific_notation_negative_exponent():
     assert actual == 0.00314
 
 
-def test_to_float_scientific_notation():
+def test_to_float_negative_scientific_notation():
     """Test Scientific Notation"""
     value = "-5e5"
     # Act
@@ -170,7 +170,7 @@ def test_to_float_scientific_notation():
     assert actual == -500000.0
 
 
-def test_to_float_scientific_notation_negative_exponent():
+def test_to_float_negative_scientific_notation_negative_exponent():
     """Test Scientific Notation, negative exponent"""
     value = "-2.74e-3"
     # Act

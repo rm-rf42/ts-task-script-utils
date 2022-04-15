@@ -2,7 +2,7 @@
 A collection of useful functions to parse raw values into a more useable form
 """
 
-from typing import Union, Optional, Set
+from typing import Optional, Set
 from decimal import Decimal
 
 
