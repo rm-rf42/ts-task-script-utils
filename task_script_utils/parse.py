@@ -14,10 +14,10 @@ def to_int(value: str) -> Optional[int]:
     :return: The int value of the input string or None if the string could not be parsed to int
     """
     # --- Reference implementation ---
-    try:
-        return int(value)
-    except ValueError:
-        return None
+    # try:
+    #     return int(value)
+    # except ValueError:
+    #     return None
     raise NotImplementedError("Not implemented yet")
 
 
@@ -29,11 +29,10 @@ def to_float(value: str) -> Optional[float]:
     :return: The float value of the input string. None if the string could not be parsed to float
     """
     # --- Reference implementation ---
-    try:
-        return float(value)
-    except ValueError:
-        return None
-
+    # try:
+    #     return float(value)
+    # except ValueError:
+    #     return None
     raise NotImplementedError("Not implemented yet")
 
 
@@ -45,10 +44,10 @@ def to_decimal(value: str) -> Optional[Decimal]:
     :return: The decimal value of the input string.  None if the string could not be converted to Decimal
     """
     # --- Reference implementation ---
-    try:
-        return Decimal(value)
-    except Exception:
-        return None
+    # try:
+    #     return Decimal(value)
+    # except Exception:
+    #     return None
     raise NotImplementedError("Not implemented yet")
 
 
@@ -68,21 +67,21 @@ def to_boolean(
     :raises ValueError: If the sets overlap or if either set is empty
     """
     # --- Reference implementation ---
-    if not true_set or not false_set:
-        raise Exception("Fail")
-    if len(true_set & false_set):
-        raise Exception("Fail")
-    true_set_compare = true_set
-    false_set_compare = false_set
-    value_compare = value.strip()
-    if not case_sensitive:
-        value_compare = value_compare.lower()
-        true_set_compare = {t.lower() for t in true_set}
-        false_set_compare = {f.lower() for f in false_set}
+    # if not true_set or not false_set:
+    #     raise Exception("Fail")
+    # if len(true_set & false_set):
+    #     raise Exception("Fail")
+    # true_set_compare = true_set
+    # false_set_compare = false_set
+    # value_compare = value.strip()
+    # if not case_sensitive:
+    #     value_compare = value_compare.lower()
+    #     true_set_compare = {t.lower() for t in true_set}
+    #     false_set_compare = {f.lower() for f in false_set}
 
-    if value_compare in true_set_compare:
-        return True
-    if value_compare in false_set_compare:
-        return False
-    return None
+    # if value_compare in true_set_compare:
+    #     return True
+    # if value_compare in false_set_compare:
+    #     return False
+    # return None
     raise NotImplementedError("Not implemented yet")
