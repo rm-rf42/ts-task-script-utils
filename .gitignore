@@ -8,3 +8,4 @@ dist/
 copy
 .DS_Store
 dev.*
+*~
