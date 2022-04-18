@@ -1,7 +1,7 @@
 from collections import Counter
 from copy import copy
 from re import error as re_error
-from typing import Sequence, Tuple
+from typing import Optional, Sequence, Tuple
 import pendulum
 from task_script_utils.datetime_parser.ts_datetime import TSDatetime
 from task_script_utils.datetime_parser.utils.manipulation import (
@@ -63,7 +63,7 @@ def _parse_with_formats(
     datetime_str: str,
     formats: Sequence[str] = (),
     config: DatetimeConfig = DEFAULT_DATETIME_CONFIG,
-) -> Tuple[TSDatetime, str]:
+) -> Tuple[Optional[TSDatetime], Optional[str]]:
     # If the input datetime string contains Z to denote UTC+0,
     # then Z is replaced by +00:00
     datetime_str = replace_z_with_offset(datetime_str)
