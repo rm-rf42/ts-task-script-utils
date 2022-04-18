@@ -1,4 +1,3 @@
-import sys
 from dateutil import tz
 import pytest
 from task_script_utils.convert_datetime_to_ts_format import (
@@ -54,11 +53,8 @@ def test_input_timezone_overrides_embedded():
 
 
 def test_unreadable_format():
-    try:
+    with pytest.raises(ValueError):
         convert_datetime_to_ts_format("20200512T235847.070Z")
-    except:
-        exc_info = sys.exc_info()
-        assert exc_info[0] == ValueError
 
 
 def test_format_strings():
@@ -79,13 +75,3 @@ def test_YDM_order():
     ]
     for raw, format, expect in raw_format_expect:
         assert convert_datetime_to_ts_format(raw, format) == expect
-
-
-def test_bad_timezone():
-    try:
-        convert_datetime_to_ts_format(
-            "2020-03-06T17:19:45.706000-05:00", timezone="GMT+500"
-        )
-    except:
-        exc_info = sys.exc_info()
-        assert exc_info[0] == TypeError

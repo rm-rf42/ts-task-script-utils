@@ -1,7 +1,7 @@
 import pytest
 from pendulum import now
 
-from task_script_utils.datetime_parser.utils import from_pendulum_format
+from task_script_utils.datetime_parser.utils.manipulation import from_pendulum_format
 
 
 subseconds_test_cases = [
@@ -67,11 +67,24 @@ padding_test_cases = [
 @pytest.mark.parametrize(
     "input_, iso_format, datetime_iso_format", subseconds_test_cases
 )
-def test_subseconds(input_, iso_format, datetime_iso_format):
+def test_subseconds(input_: str, iso_format: str, datetime_iso_format: str):
     fmt = "dddd, MMMM Do YYYY hh:mm:ss.SSSSSS A z"
     ts_datetime_ = from_pendulum_format(input_, fmt, now(), None)
     assert ts_datetime_.isoformat() == iso_format
     assert ts_datetime_.datetime.isoformat() == datetime_iso_format
+
+
+def test_invalid_format_string():
+    """
+    If a format string does not contain any datetime tokens, pendulum can not handle it.
+    """
+    with pytest.raises(TypeError):
+        from_pendulum_format(
+            "Sunday, May 26th 2013 12:12:12.00000000 AM Asia/Kolkata",
+            "GTPgtp",
+            now(),
+            None,
+        )
 
 
 @pytest.mark.parametrize(

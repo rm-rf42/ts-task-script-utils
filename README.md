@@ -9,9 +9,9 @@ Utility functions for Tetra Task Scripts
 - [Datetime Parser](#datetime-parser)
 - [Test](#test)
 - [Changelog](#changelog)
-  - [v1.1.0](#v110)
+  - [v1.2.0](#v120)
   - [v1.1.1](#v111)
-  - [v1.1.2](#v112)
+  - [v1.1.0](#v110)
 ## Installation
 
 `pip install ts-task-script-utils`
@@ -33,9 +33,9 @@ parse("2004-12-23T12:30 AM +05:30", <format_list>)
 parse("2004-12-23T12:30 AM +05:30", <format_list>, <datetime_config>)
 ```
 
-Parse() returns a TSDatetime Object. You can use TSDatetime.tsformat() and
-TSDatetime.isoformat() to get datetime string. You can also use
-TSDatetime.datetime to access python datetime object.
+`parse()` returns a `TSDatetime` Object. You can use `TSDatetime.tsformat()` and
+`TSDatetime.isoformat()` to get datetime string. You can also use
+`TSDatetime.datetime()` to access python datetime object.
 
 You can read more about the datetime parser [here](task_script_utils/datetime_parser/README.md).
 
@@ -47,8 +47,12 @@ then
 
 ## Changelog
 
-### v1.1.2
+### v1.2.0
 
+- Add boolean config parameter `require_unambiguous_formats` to `DatetimeConfig`
+- Add logic to `parser._parse_with_formats` to be used when `DatetimeConfig.require_unambiguous_formats` is set to `True`
+  - `AmbiguousDatetimeFormatsError` is raised if mutually ambiguous formats are detected and differing datetimes are parsed
+- Add parameter typing throughout repository
 - Refactor `datetime_parser` package
 - Add base class `DateTimeInfo`
 - Segregate parsing logic into `ShortDateTimeInfo` and `LongDateTimeInfo`

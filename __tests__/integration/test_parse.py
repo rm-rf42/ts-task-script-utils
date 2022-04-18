@@ -1,3 +1,4 @@
+from typing import Optional
 import pytest
 from task_script_utils.datetime_parser import DatetimeConfig, parse
 from task_script_utils.datetime_parser.parser_exceptions import DatetimeParserError
@@ -83,7 +84,12 @@ parse_test_cases = {
 
 
 @pytest.mark.parametrize("input_, year_first, day_first, expected", parse_test_cases)
-def test_parse(input_, year_first, day_first, expected):
+def test_parse(
+    input_: str,
+    year_first: Optional[bool],
+    day_first: Optional[bool],
+    expected: Optional[str],
+):
     datetime_config = DatetimeConfig(year_first=year_first, day_first=day_first)
     try:
         parsed_datetime = parse(

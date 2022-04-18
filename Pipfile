@@ -3,13 +3,6 @@ name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
 
-[dev-packages]
-snapshottest = "*"
-pytest = "*"
-pytest-cov = "*"
-ipykernel= "*"
-black = ">=21.12b0"
-
 [packages]
 numpy = "*"
 python-dateutil = "*"
@@ -17,6 +10,12 @@ dateparser = "*"
 arrow = "*"
 pendulum = "2.1.2"
 pydash = "*"
+ts-task-script-utils = {path = "."}
+
+[dev-packages]
+pytest = "*"
+pytest-cov = "*"
+black = ">=21.12b0"
 
 [pipenv]
 allow_prereleases = true

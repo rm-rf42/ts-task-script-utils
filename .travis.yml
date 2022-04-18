@@ -1,3 +1,9 @@
+env:
+  global:
+    # BEGIN: pipenv requirements to ignore virtual environment and create virtualenv (.venv forlder) inside the script folder
+    - PIPENV_VENV_IN_PROJECT=true
+    - PIPENV_IGNORE_VIRTUALENVS=1
+
 language: python
 dist: focal
 python:

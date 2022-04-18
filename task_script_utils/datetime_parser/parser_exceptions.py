@@ -51,3 +51,7 @@ class AmbiguousFoldError(DatetimeParserError):
 
 class OffsetNotKnownError(DatetimeParserError):
     pass
+
+
+class AmbiguousDatetimeFormatsError(DatetimeParserError):
+    pass

@@ -1,26 +1,29 @@
 from typing import Sequence
 
 import pendulum
-
-from task_script_utils.datetime_parser.parser_exceptions import DatetimeParserError
+from task_script_utils.datetime_parser.parser_exceptions import (
+    DatetimeParserError,
+)
 from task_script_utils.datetime_parser.ts_datetime import TSDatetime
-from .datetime_config import DatetimeConfig, DEFAULT_DATETIME_CONFIG
+
+from .datetime_config import DEFAULT_DATETIME_CONFIG, DatetimeConfig
 from .datetime_info import ShortDateTimeInfo, LongDateTimeInfo
-from .utils import replace_z_with_offset, parse_with_formats
+from .utils.parsing import _parse_with_formats
+from .utils.manipulation import replace_z_with_offset
 
 
 def parse(
     datetime_raw_str: str,
-    formats_list: Sequence[str] = (),
+    formats: Sequence[str] = (),
     config: DatetimeConfig = DEFAULT_DATETIME_CONFIG,
 ) -> TSDatetime:
     """Parse datetime_str and construct a TSDatetime Object
 
     Args:
         datetime_raw_str (str): Raw datetime string
-        formats_list (Sequence[str], optional): List of possible datetime formats.
-        These datetime formats must be built using `pendulum` datetime tokens.
-        Defaults to [].
+        formats (Sequence[str], optional): List of possible datetime
+        formats. These datetime formats must be built using `pendulum` datetime tokens.
+        Defaults to empty tuple.
         config (DatetimeConfig, optional): Datetime Configuration.
         Defaults to DEFAULT_DATETIME_CONFIG.
 
@@ -36,8 +39,10 @@ def parse(
     # then Z is replaced by +00:00
     datetime_str = replace_z_with_offset(datetime_raw_str)
     # Parse Using formats list
-    if formats_list:
-        parsed_datetime, _ = parse_with_formats(datetime_str, config, formats_list)
+    if formats:
+        parsed_datetime, _ = _parse_with_formats(
+            datetime_str, config=config, formats=formats
+        )
 
     # Otherwise use DateInfo Parser to parse short dates
     if not parsed_datetime:
