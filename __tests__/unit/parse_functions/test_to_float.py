@@ -1,6 +1,4 @@
-"""
-Test `to_float()` function in parse.py
-"""
+"""Test `to_float()` function in parse.py."""
 import pytest
 from task_script_utils import parse
 

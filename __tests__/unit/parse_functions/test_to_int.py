@@ -1,6 +1,4 @@
-"""
-Test `to_int()` function in parse.py
-"""
+"""Test `to_int()` function in parse.py."""
 import pytest
 from task_script_utils import parse
 

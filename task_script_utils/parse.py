@@ -1,13 +1,12 @@
-"""
-A collection of useful functions to parse raw values into a more useable form
-"""
+"""A collection of useful functions to parse raw values into a more useable form."""
 
 from typing import Optional, Set
 from decimal import Decimal
 
 
 def to_int(value: str) -> Optional[int]:
-    """Converts given value to its equivalent integer.
+    """
+    Converts given value to its equivalent integer.
 
     :param value: A string to convert
     :type value: string
@@ -22,7 +21,8 @@ def to_int(value: str) -> Optional[int]:
 
 
 def to_float(value: str) -> Optional[float]:
-    """Converts given value to its equivalent float.
+    """
+    Converts given value to its equivalent float.
 
     :param value: A string to convert
     :type value: string
@@ -37,7 +37,8 @@ def to_float(value: str) -> Optional[float]:
 
 
 def to_decimal(value: str) -> Optional[Decimal]:
-    """Converts the given value to its equivalent python Decimal type
+    """
+    Converts the given value to its equivalent python Decimal type
 
     :param value: The value to convert
     :type value: string
@@ -54,7 +55,8 @@ def to_decimal(value: str) -> Optional[Decimal]:
 def to_boolean(
     value: str, true_set: Set[str], false_set: Set[str], case_sensitive: bool = False
 ) -> Optional[bool]:
-    """Converts given string to a boolean value based on whether it is in either of the sets provided
+    """
+    Converts given string to a boolean value based on whether it is in either of the sets provided
 
     :param value: A string to convert
     :type value: string

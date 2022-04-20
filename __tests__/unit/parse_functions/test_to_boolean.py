@@ -1,12 +1,10 @@
-"""
-Test `to_boolean()` function in parse.py
-"""
+"""Test `to_boolean()` function in parse.py."""
 import pytest
 from task_script_utils import parse
 
 
 @pytest.mark.parametrize("value", ["True", "False", "Something else"])
-@pytest.mark.parametrize("case_sensitive", ["True", "False"])
+@pytest.mark.parametrize("case_sensitive", [True, False])
 def test_to_boolean_empty_sets(value, case_sensitive):
     """Test Empty Sets."""
     # Arrange
