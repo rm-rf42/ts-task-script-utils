@@ -8,17 +8,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
 
     - uses: actions/setup-python@v3
       with:
-        python-version: 3.9
+        python-version: 3.7
 
     - name: Build package
       run: |
         python3 -m pip install --upgrade build
         python3 -m build
 
-    - name: Publish package to TestPyPI
+    - name: Publish package to Artifactory
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         user: ${{ secrets.ARTIFACTORY_USER }}
