@@ -276,6 +276,19 @@ def test_to_decimal_decimal_representation_of_integer():
     assert actual.compare_total(Decimal("512.00")) == 0
 
 
+def test_to_decimal_decimal_representation_of_negative_integer():
+    """Test Decimal representation of integer."""
+    # Arrange
+    value = "-512.00"
+
+    # Act
+    actual = parse.to_decimal(value)
+
+    # Assert
+    assert isinstance(actual, Decimal)
+    assert actual.compare_total(Decimal("-512.00")) == 0
+
+
 def test_to_decimal_string_has_underscores_integer():
     """Test String has underscores (integer)."""
     # Arrange
