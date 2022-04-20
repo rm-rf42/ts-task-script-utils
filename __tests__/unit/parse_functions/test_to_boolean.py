@@ -8,7 +8,7 @@ from task_script_utils import parse
 @pytest.mark.parametrize("value", ["True", "False", "Something else"])
 @pytest.mark.parametrize("case_sensitive", ["True", "False"])
 def test_to_boolean_empty_sets(value, case_sensitive):
-    """Test Empty Sets"""
+    """Test Empty Sets."""
     # Arrange
 
     # Act
@@ -21,7 +21,7 @@ def test_to_boolean_empty_sets(value, case_sensitive):
 @pytest.mark.parametrize("value", ["True", "False", "Something else"])
 @pytest.mark.parametrize("case_sensitive", [True, False])
 def test_to_boolean_empty_true_set(value, case_sensitive):
-    """Test Empty True Set"""
+    """Test Empty True Set."""
     # Arrange
 
     # Act
@@ -34,19 +34,21 @@ def test_to_boolean_empty_true_set(value, case_sensitive):
 @pytest.mark.parametrize("value", ["True", "False", "Something else"])
 @pytest.mark.parametrize("case_sensitive", [True, False])
 def test_to_boolean_empty_false_set(value, case_sensitive):
-    """Test Empty False Set"""
+    """Test Empty False Set."""
     # Arrange
 
     # Act
 
     # Assert
     with pytest.raises(Exception):
-        parse.to_boolean(value, {"true", "1", "yes"}, set(), case_sensitive=case_sensitive)
+        parse.to_boolean(
+            value, {"true", "1", "yes"}, set(), case_sensitive=case_sensitive
+        )
 
 
 @pytest.mark.parametrize("value", ["True", "1", "yes"])
 def test_to_boolean_case_sensitive_string_is_in_true_set(value):
-    """Test Case sensitive string is in True Set"""
+    """Test Case sensitive string is in True Set."""
     # Arrange
     case_sensitive = True
 
@@ -64,7 +66,7 @@ def test_to_boolean_case_sensitive_string_is_in_true_set(value):
     "value", ["yes", "Yes", "yEs", "yeS", "YEs", "YeS", "yES", "YES"]
 )
 def test_to_boolean_case_insensitive_string_is_in_true_set(value):
-    """Test Case insensitive string is in True Set"""
+    """Test Case insensitive string is in True Set."""
     # Arrange
     case_sensitive = False
 
@@ -79,7 +81,7 @@ def test_to_boolean_case_insensitive_string_is_in_true_set(value):
 
 @pytest.mark.parametrize("value", ["False", "0", "no"])
 def test_to_boolean_case_sensitive_string_is_in_false_set(value):
-    """Test Case sensitive string is in False Set"""
+    """Test Case sensitive string is in False Set."""
     # Arrange
     case_sensitive = True
 
@@ -94,7 +96,7 @@ def test_to_boolean_case_sensitive_string_is_in_false_set(value):
 
 @pytest.mark.parametrize("value", ["no", "No", "nO", "NO"])
 def test_to_boolean_case_insensitive_string_is_in_false_set(value):
-    """Test Case insensitive string is in False Set"""
+    """Test Case insensitive string is in False Set."""
     # Arrange
     case_sensitive = False
 
@@ -114,7 +116,7 @@ def test_to_boolean_case_insensitive_string_is_in_false_set(value):
 def test_to_boolean_case_sensitive_string_is_not_in_either_set_but_looks_like_it_should_be(
     value,
 ):
-    """Test Case sensitive string is not in either set, but looks like it should be"""
+    """Test Case sensitive string is not in either set, but looks like it should be."""
     # Arrange
     case_sensitive = True
 
@@ -129,7 +131,7 @@ def test_to_boolean_case_sensitive_string_is_not_in_either_set_but_looks_like_it
 
 @pytest.mark.parametrize("value", ["    True", " 1", "\\t   \\t yes"])
 def test_to_boolean_leading_whitespace_true_(value):
-    """Test Leading whitespace (true)"""
+    """Test Leading whitespace (true)."""
     # Arrange
     case_sensitive = True
 
@@ -144,7 +146,7 @@ def test_to_boolean_leading_whitespace_true_(value):
 
 @pytest.mark.parametrize("value", ["True   ", "1\\t", "yes     \\t\\t"])
 def test_to_boolean_trailing_whitespace_true_(value):
-    """Test Trailing whitespace (true)"""
+    """Test Trailing whitespace (true)."""
     # Arrange
     case_sensitive = True
 
@@ -159,7 +161,7 @@ def test_to_boolean_trailing_whitespace_true_(value):
 
 @pytest.mark.parametrize("value", ["     False ", "\\t\\t0\\t\\t", "  no\\t  "])
 def test_to_boolean_surrounding_whitespace(value):
-    """Test Surrounding whitespace"""
+    """Test Surrounding whitespace."""
     # Arrange
     case_sensitive = True
 
@@ -190,7 +192,7 @@ def test_to_boolean_surrounding_whitespace(value):
 )
 @pytest.mark.parametrize("case_sensitive", [True, False])
 def test_to_boolean_string_is_not_in_either_set(value, case_sensitive):
-    """Test String is not in either set"""
+    """Test String is not in either set."""
     # Arrange
 
     # Act

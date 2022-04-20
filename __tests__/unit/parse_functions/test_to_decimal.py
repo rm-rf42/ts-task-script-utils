@@ -19,7 +19,7 @@ from task_script_utils import parse
 
 
 def test_to_decimal_positive_integer():
-    """Test Positive Integer"""
+    """Test Positive Integer."""
     # Arrange
     value = "2022"
 
@@ -32,7 +32,7 @@ def test_to_decimal_positive_integer():
 
 
 def test_to_decimal_positive_decimal():
-    """Test Positive decimal"""
+    """Test Positive decimal."""
     # Arrange
     value = "32.5"
 
@@ -45,7 +45,7 @@ def test_to_decimal_positive_decimal():
 
 
 def test_to_decimal_positive_integer_with_plus():
-    """Test Positive integer with +"""
+    """Test Positive integer with +."""
     # Arrange
     value = "+1024"
 
@@ -58,7 +58,7 @@ def test_to_decimal_positive_integer_with_plus():
 
 
 def test_to_decimal_positive_decimal_with_plus():
-    """Test Positive decimal with +"""
+    """Test Positive decimal with +."""
     # Arrange
     value = "+99.99"
 
@@ -71,7 +71,7 @@ def test_to_decimal_positive_decimal_with_plus():
 
 
 def test_to_decimal_negative_integer():
-    """Test Negative integer"""
+    """Test Negative integer."""
     # Arrange
     value = "-40"
 
@@ -84,7 +84,7 @@ def test_to_decimal_negative_integer():
 
 
 def test_to_decimal_negative_decimal():
-    """Test Negative decimal"""
+    """Test Negative decimal."""
     # Arrange
     value = "-67.1322"
 
@@ -97,7 +97,7 @@ def test_to_decimal_negative_decimal():
 
 
 def test_to_decimal_decimal_with_trailing_zeros():
-    """Test Decimal with trailing zeros"""
+    """Test Decimal with trailing zeros."""
     # Arrange
     value = "12.3400"
 
@@ -110,7 +110,7 @@ def test_to_decimal_decimal_with_trailing_zeros():
 
 
 def test_to_decimal_negative_decimal_with_trailing_zeros():
-    """Test Negative decimal with trailing zeros"""
+    """Test Negative decimal with trailing zeros."""
     # Arrange
     value = "-56.78000"
 
@@ -123,7 +123,7 @@ def test_to_decimal_negative_decimal_with_trailing_zeros():
 
 
 def test_to_decimal_zero():
-    """Test Zero"""
+    """Test Zero."""
     # Arrange
     value = "0"
 
@@ -136,7 +136,7 @@ def test_to_decimal_zero():
 
 
 def test_to_decimal_positive_zero():
-    """Test Positive Zero"""
+    """Test Positive Zero."""
     # Arrange
     value = "+0"
 
@@ -149,7 +149,7 @@ def test_to_decimal_positive_zero():
 
 
 def test_to_decimal_negative_zero():
-    """Test Negative Zero"""
+    """Test Negative Zero."""
     # Arrange
     value = "-0"
 
@@ -162,7 +162,7 @@ def test_to_decimal_negative_zero():
 
 
 def test_to_decimal_zero_with_a_side_of_extra_zeros():
-    """Test Zero with a side of extra Zeros"""
+    """Test Zero with a side of extra Zeros."""
     # Arrange
     value = "0.0000000"
 
@@ -175,7 +175,7 @@ def test_to_decimal_zero_with_a_side_of_extra_zeros():
 
 
 def test_to_decimal_scientific_notation():
-    """Test Scientific Notation"""
+    """Test Scientific Notation."""
     # Arrange
     value = "2.99e8"
 
@@ -188,7 +188,7 @@ def test_to_decimal_scientific_notation():
 
 
 def test_to_decimal_scientific_notation_negative_exponent():
-    """Test Scientific Notation, negative exponent"""
+    """Test Scientific Notation, negative exponent."""
     # Arrange
     value = "3.14e-3"
 
@@ -201,7 +201,7 @@ def test_to_decimal_scientific_notation_negative_exponent():
 
 
 def test_to_decimal_negative_scientific_notation():
-    """Test Scientific Notation"""
+    """Test Scientific Notation."""
     # Arrange
     value = "-5e5"
 
@@ -214,7 +214,7 @@ def test_to_decimal_negative_scientific_notation():
 
 
 def test_to_decimal_negative_scientific_notation_negative_exponent():
-    """Test Scientific Notation, negative exponent"""
+    """Test Scientific Notation, negative exponent."""
     # Arrange
     value = "-2.74e-3"
 
@@ -227,7 +227,7 @@ def test_to_decimal_negative_scientific_notation_negative_exponent():
 
 
 def test_to_decimal_scientific_notation_negative_exponent_greater_than_1():
-    """Test Scientific Notation, negative exponent, greater than 1"""
+    """Test Scientific Notation, negative exponent, greater than 1."""
     # Arrange
     value = "1000e-2"
 
@@ -240,7 +240,7 @@ def test_to_decimal_scientific_notation_negative_exponent_greater_than_1():
 
 
 def test_to_decimal_leading_whitespace():
-    """Test Leading whitespace"""
+    """Test Leading whitespace."""
     # Arrange
     value = "  \t  64.01"
 
@@ -253,7 +253,7 @@ def test_to_decimal_leading_whitespace():
 
 
 def test_to_decimal_trailing_whitespace():
-    """Test Trailing whitespace"""
+    """Test Trailing whitespace."""
     # Arrange
     value = "128.28       "
 
@@ -266,7 +266,7 @@ def test_to_decimal_trailing_whitespace():
 
 
 def test_to_decimal_surrounding_whitespace():
-    """Test Surrounding whitespace"""
+    """Test Surrounding whitespace."""
     # Arrange
     value = "\t256.99\t \t "
 
@@ -279,7 +279,7 @@ def test_to_decimal_surrounding_whitespace():
 
 
 def test_to_decimal_decimal():
-    """Test Decimal"""
+    """Test Decimal."""
     # Arrange
     value = "3.1415"
 
@@ -292,7 +292,7 @@ def test_to_decimal_decimal():
 
 
 def test_to_decimal_decimal_representation_of_integer():
-    """Test Decimal representation of integer"""
+    """Test Decimal representation of integer."""
     # Arrange
     value = "512.00"
 
@@ -305,7 +305,7 @@ def test_to_decimal_decimal_representation_of_integer():
 
 
 def test_to_decimal_string_has_underscores_integer():
-    """Test String has underscores (integer)"""
+    """Test String has underscores (integer)."""
     # Arrange
     value = "20_48"
 
@@ -317,7 +317,7 @@ def test_to_decimal_string_has_underscores_integer():
 
 
 def test_to_decimal_string_has_underscores_decimal():
-    """Test String has underscores (decimal)"""
+    """Test String has underscores (decimal)."""
     # Arrange
     value = "1_499_999.9_9"
 
@@ -344,7 +344,7 @@ def test_to_decimal_string_has_underscores_decimal():
     ],
 )
 def test_to_decimal_invalid_strings(value):
-    """Test Invalid strings"""
+    """Test Invalid strings."""
     # Arrange from parameters
     # Act
     actual = parse.to_decimal(value)
