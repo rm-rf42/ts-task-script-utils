@@ -9,7 +9,6 @@ def to_int(value: str) -> Optional[int]:
     Converts given value to its equivalent integer.
 
     :param value: A string to convert
-    :type value: string
     :return: The int value of the input string or None if the string could not be parsed to int
     """
     # --- Reference implementation ---
@@ -25,7 +24,6 @@ def to_float(value: str) -> Optional[float]:
     Converts given value to its equivalent float.
 
     :param value: A string to convert
-    :type value: string
     :return: The float value of the input string. None if the string could not be parsed to float
     """
     # --- Reference implementation ---
@@ -41,7 +39,6 @@ def to_decimal(value: str) -> Optional[Decimal]:
     Converts the given value to its equivalent python Decimal type
 
     :param value: The value to convert
-    :type value: string
     :return: The decimal value of the input string.  None if the string could not be converted to Decimal
     """
     # --- Reference implementation ---
@@ -59,11 +56,8 @@ def to_boolean(
     Converts given string to a boolean value based on whether it is in either of the sets provided
 
     :param value: A string to convert
-    :type value: string
     :param true_set: A set of strings which represent True values
-    :type true_set: Set[string]
     :param false_set: A set of strings which represent False values
-    :type false_set: Set[string]
 
     :return: The boolean value of the input string or None if the string could not be parsed to boolean
     :raises ValueError: If the sets overlap or if either set is empty
