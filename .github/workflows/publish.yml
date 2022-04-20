@@ -23,4 +23,4 @@ jobs:
       with:
         user: ${{ secrets.ARTIFACTORY_USER }}
         password: ${{ secrets.ARTIFACTORY_PASSWORD }}
-        repository_url: ${{ ARTIFACTORY_URL }}      
+        repository_url: ${{ secrets.ARTIFACTORY_URL }}      
