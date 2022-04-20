@@ -7,7 +7,9 @@ from task_script_utils import parse
 
 def test_to_int_positive_integer():
     """Test Positive Integer"""
+    # Arrange
     value = "2022"
+
     # Act
     actual = parse.to_int(value)
 
@@ -18,7 +20,9 @@ def test_to_int_positive_integer():
 
 def test_to_int_positive_integer_with_plus():
     """Test Positive integer with +"""
+    # Arrange
     value = "+1024"
+
     # Act
     actual = parse.to_int(value)
 
@@ -29,7 +33,9 @@ def test_to_int_positive_integer_with_plus():
 
 def test_to_int_negative_integer():
     """Test Negative integer"""
+    # Arrange
     value = "-40"
+
     # Act
     actual = parse.to_int(value)
 
@@ -40,7 +46,9 @@ def test_to_int_negative_integer():
 
 def test_to_int_zero():
     """Test Zero"""
+    # Arrange
     value = "0"
+
     # Act
     actual = parse.to_int(value)
 
@@ -51,7 +59,9 @@ def test_to_int_zero():
 
 def test_to_int_positive_zero():
     """Test Positive Zero"""
+    # Arrange
     value = "+0"
+
     # Act
     actual = parse.to_int(value)
 
@@ -62,7 +72,9 @@ def test_to_int_positive_zero():
 
 def test_to_int_negative_zero():
     """Test Negative Zero"""
+    # Arrange
     value = "-0"
+
     # Act
     actual = parse.to_int(value)
 
@@ -73,7 +85,9 @@ def test_to_int_negative_zero():
 
 def test_to_int_scientific_notation():
     """Test Scientific Notation"""
+    # Arrange
     value = "2.99e8"
+
     # Act
     actual = parse.to_int(value)
 
@@ -95,7 +109,9 @@ def test_to_int_scientific_notation_negative_exponent_between_0_and_1(value):
 
 def test_to_int_scientific_notation_negative_exponent_greater_than_1():
     """Test Scientific Notation, negative exponent, greater than 1"""
+    # Arrange
     value = "1000e-2"
+
     # Act
     actual = parse.to_int(value)
 
@@ -106,7 +122,9 @@ def test_to_int_scientific_notation_negative_exponent_greater_than_1():
 
 def test_to_int_negative_scientific_notation():
     """Test Scientific Notation"""
+    # Arrange
     value = "-5e5"
+
     # Act
     actual = parse.to_int(value)
 
@@ -117,7 +135,9 @@ def test_to_int_negative_scientific_notation():
 
 def test_to_int_scientific_notation_negative_exponent():
     """Test Scientific Notation, negative exponent"""
+    # Arrange
     value = "-2.74e-3"
+
     # Act
     actual = parse.to_int(value)
 
@@ -127,7 +147,9 @@ def test_to_int_scientific_notation_negative_exponent():
 
 def test_to_int_leading_whitespace():
     """Test Leading whitespace"""
+    # Arrange
     value = "  \t  64"
+
     # Act
     actual = parse.to_int(value)
 
@@ -138,7 +160,9 @@ def test_to_int_leading_whitespace():
 
 def test_to_int_trailing_whitespace():
     """Test Trailing whitespace"""
+    # Arrange
     value = "128       "
+
     # Act
     actual = parse.to_int(value)
 
@@ -149,7 +173,9 @@ def test_to_int_trailing_whitespace():
 
 def test_to_int_surrounding_whitespace():
     """Test Surrounding whitespace"""
+    # Arrange
     value = "\t256\t \t "
+
     # Act
     actual = parse.to_int(value)
 
@@ -160,7 +186,9 @@ def test_to_int_surrounding_whitespace():
 
 def test_to_int_decimal():
     """Test Decimal"""
+    # Arrange
     value = "3.1415"
+
     # Act
     actual = parse.to_int(value)
 
@@ -170,7 +198,9 @@ def test_to_int_decimal():
 
 def test_to_int_decimal_representation_of_integer():
     """Test Decimal representation of integer"""
+    # Arrange
     value = "512.00"
+
     # Act
     actual = parse.to_int(value)
 
@@ -181,7 +211,9 @@ def test_to_int_decimal_representation_of_integer():
 
 def test_to_int_string_has_underscores():
     """Test String has underscores"""
+    # Arrange
     value = "20_48"
+
     # Act
     actual = parse.to_int(value)
 
