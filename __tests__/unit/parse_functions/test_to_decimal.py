@@ -239,43 +239,15 @@ def test_to_decimal_scientific_notation_negative_exponent_greater_than_1():
     assert actual.compare_total(Decimal("10.00")) == 0
 
 
-def test_to_decimal_leading_whitespace():
-    """Test Leading whitespace."""
-    # Arrange
-    value = "  \t  64.01"
-
+@pytest.mark.parametrize("value", ["  \t  128.01", "128.01       ", "\t128.01\t \t "])
+def test_to_decimal_whitespace(value):
+    """Test whitespace."""
     # Act
     actual = parse.to_decimal(value)
 
     # Assert
     assert isinstance(actual, Decimal)
-    assert actual.compare_total(Decimal("64.01")) == 0
-
-
-def test_to_decimal_trailing_whitespace():
-    """Test Trailing whitespace."""
-    # Arrange
-    value = "128.28       "
-
-    # Act
-    actual = parse.to_decimal(value)
-
-    # Assert
-    assert isinstance(actual, Decimal)
-    assert actual.compare_total(Decimal("128.28")) == 0
-
-
-def test_to_decimal_surrounding_whitespace():
-    """Test Surrounding whitespace."""
-    # Arrange
-    value = "\t256.99\t \t "
-
-    # Act
-    actual = parse.to_decimal(value)
-
-    # Assert
-    assert isinstance(actual, Decimal)
-    assert actual.compare_total(Decimal("256.99")) == 0
+    assert actual.compare_total(Decimal("128.01")) == 0
 
 
 def test_to_decimal_decimal():

@@ -224,43 +224,15 @@ def test_to_float_scientific_notation_negative_exponent_greater_than_1():
     assert actual == 10.0
 
 
-def test_to_float_leading_whitespace():
-    """Test Leading whitespace."""
-    # Arrange
-    value = "  \t  64.01"
-
+@pytest.mark.parametrize("value", ["  \t  128.01", "128.01       ", "\t128.01\t \t "])
+def test_to_float_whitespace(value):
+    """Test whitespace."""
     # Act
     actual = parse.to_float(value)
 
     # Assert
     assert isinstance(actual, float), f"Expected float, got {actual} ({type(actual)})"
-    assert actual == 64.01
-
-
-def test_to_float_trailing_whitespace():
-    """Test Trailing whitespace."""
-    # Arrange
-    value = "128.28       "
-
-    # Act
-    actual = parse.to_float(value)
-
-    # Assert
-    assert isinstance(actual, float), f"Expected float, got {actual} ({type(actual)})"
-    assert actual == 128.28
-
-
-def test_to_float_surrounding_whitespace():
-    """Test Surrounding whitespace."""
-    # Arrange
-    value = "\t256.99\t \t "
-
-    # Act
-    actual = parse.to_float(value)
-
-    # Assert
-    assert isinstance(actual, float), f"Expected float, got {actual} ({type(actual)})"
-    assert actual == 256.99
+    assert actual == 128.01
 
 
 def test_to_float_decimal_representation_of_integer():

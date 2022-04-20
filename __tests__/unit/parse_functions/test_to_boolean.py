@@ -127,9 +127,22 @@ def test_to_boolean_case_sensitive_string_is_not_in_either_set_but_looks_like_it
     assert actual is None
 
 
-@pytest.mark.parametrize("value", ["    True", " 1", "\\t   \\t yes"])
-def test_to_boolean_leading_whitespace_true_(value):
-    """Test Leading whitespace (true)."""
+@pytest.mark.parametrize(
+    "value",
+    [
+        "    True",
+        " 1",
+        "\\t   \\t yes",
+        "True   ",
+        "1\\t",
+        "yes     \\t\\t",
+        "     True ",
+        "\\t\\t1\\t\\t",
+        "  yes\\t  ",
+    ],
+)
+def test_to_boolean_whitespace(value):
+    """Test whitespace."""
     # Arrange
     case_sensitive = True
 
@@ -140,36 +153,6 @@ def test_to_boolean_leading_whitespace_true_(value):
 
     # Assert
     assert actual is True
-
-
-@pytest.mark.parametrize("value", ["True   ", "1\\t", "yes     \\t\\t"])
-def test_to_boolean_trailing_whitespace_true_(value):
-    """Test Trailing whitespace (true)."""
-    # Arrange
-    case_sensitive = True
-
-    # Act
-    actual = parse.to_boolean(
-        value, {"True", "1", "yes"}, {"False", "0", "no"}, case_sensitive=case_sensitive
-    )
-
-    # Assert
-    assert actual is True
-
-
-@pytest.mark.parametrize("value", ["     False ", "\\t\\t0\\t\\t", "  no\\t  "])
-def test_to_boolean_surrounding_whitespace(value):
-    """Test Surrounding whitespace."""
-    # Arrange
-    case_sensitive = True
-
-    # Act
-    actual = parse.to_boolean(
-        value, {"True", "1", "yes"}, {"False", "0", "no"}, case_sensitive=case_sensitive
-    )
-
-    # Assert
-    assert actual is False
 
 
 @pytest.mark.parametrize(

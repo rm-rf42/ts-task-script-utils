@@ -143,43 +143,29 @@ def test_to_int_scientific_notation_negative_exponent():
     assert actual is None
 
 
-def test_to_int_leading_whitespace():
-    """Test Leading whitespace."""
-    # Arrange
-    value = "  \t  64"
-
+@pytest.mark.parametrize(
+    "value",
+    ["1e0", "1e+0", "1e-0", "1.0e0", "1.0e+0", "1.0e-0"],
+)
+def test_to_int_scientific_notation_zero_exponent(value):
+    """Test Scientific Notation, zero exponent."""
     # Act
     actual = parse.to_int(value)
 
     # Assert
-    assert isinstance(actual, int), f"Expected int, got {actual} ({type(actual)})"
-    assert actual == 64
+    assert isinstance(actual, int)
+    assert actual == 1
 
 
-def test_to_int_trailing_whitespace():
-    """Test Trailing whitespace."""
-    # Arrange
-    value = "128       "
-
+@pytest.mark.parametrize("value", ["  \t  128", "128       ", "\t128\t \t "])
+def test_to_int_whitespace(value):
+    """Test whitespace."""
     # Act
     actual = parse.to_int(value)
 
     # Assert
     assert isinstance(actual, int), f"Expected int, got {actual} ({type(actual)})"
     assert actual == 128
-
-
-def test_to_int_surrounding_whitespace():
-    """Test Surrounding whitespace."""
-    # Arrange
-    value = "\t256\t \t "
-
-    # Act
-    actual = parse.to_int(value)
-
-    # Assert
-    assert isinstance(actual, int), f"Expected int, got {actual} ({type(actual)})"
-    assert actual == 256
 
 
 def test_to_int_decimal():
