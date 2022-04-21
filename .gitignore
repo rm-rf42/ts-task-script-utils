@@ -1,4 +1,7 @@
 .vscode*
+.idea
+.python-version
+**/.DS_Store
 .pytest_cache*
 __pycache__
 .coverage
