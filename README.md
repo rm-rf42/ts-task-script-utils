@@ -40,12 +40,6 @@ parse("2004-12-23T12:30 AM +05:30", < format_list >, < datetime_config >)
 
 You can read more about the datetime parser [here](task_script_utils/datetime_parser/README.md).
 
-## Test
-
-`pipenv install --dev`
-then
-`pipenv run python -m pytest`
-
 ## Changelog
 
 ### v1.2.0
