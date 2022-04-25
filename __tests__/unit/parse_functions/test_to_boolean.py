@@ -132,13 +132,13 @@ def test_to_boolean_case_sensitive_string_is_not_in_either_set_but_looks_like_it
     [
         "    True",
         " 1",
-        "\\t   \\t yes",
+        "\t   \t yes",
         "True   ",
-        "1\\t",
-        "yes     \\t\\t",
+        "1\t",
+        "yes     \t\t",
         "     True ",
-        "\\t\\t1\\t\\t",
-        "  yes\\t  ",
+        "\t\t1\t\t",
+        "  yes\t  ",
     ],
 )
 def test_to_boolean_whitespace(value):
