@@ -117,8 +117,8 @@ def test_to_boolean_case_insensitive_string_is_in_false_set(value):
         "yeS",
         "YEs",
         "YeS",
-        'yES",'
-        '"YES',
+        "yES",
+        "YES",
         "No",
         "nO",
         "NO",
