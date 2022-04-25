@@ -19,21 +19,6 @@ def to_int(value: str) -> Optional[int]:
     raise NotImplementedError("Not implemented yet")
 
 
-def to_float(value: str) -> Optional[float]:
-    """
-    Converts given value to its equivalent float.
-
-    :param value: A string to convert
-    :return: The float value of the input string. None if the string could not be parsed to float
-    """
-    # --- Reference implementation ---
-    # try:
-    #     return float(value)
-    # except ValueError:
-    #     return None
-    raise NotImplementedError("Not implemented yet")
-
-
 def to_decimal(value: str) -> Optional[Decimal]:
     """
     Converts the given value to its equivalent python Decimal type
