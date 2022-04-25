@@ -208,6 +208,46 @@ def test_to_int_string_has_underscores():
 @pytest.mark.parametrize(
     "value",
     [
+        "nan",
+        "NaN",
+        "NAN",
+    ],
+)
+def test_to_int_nan_strings(value):
+    """Test not a number strings."""
+    # Arrange from parameters
+    # Act
+    actual = parse.to_int(value)
+
+    # Assert
+    assert actual is None
+
+
+def test_to_int_positive_infinity():
+    # Arrange
+    value = "inf"
+
+    # Act
+    actual = parse.to_int(value)
+
+    # Assert
+    assert actual is None
+
+
+def test_to_int_negative_infinity():
+    # Arrange
+    value = "-inf"
+
+    # Act
+    actual = parse.to_int(value)
+
+    # Assert
+    assert actual is None
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
         "two",
         "12.4.5",
         "1/2",
@@ -217,6 +257,10 @@ def test_to_int_string_has_underscores():
         "0xbadbeef",
         "0o775",
         "0b100001",
+        "infinity",
+        "INFINITY",
+        "-infinity",
+        "-INFINITY",
     ],
 )
 def test_to_int_invalid_strings(value):
