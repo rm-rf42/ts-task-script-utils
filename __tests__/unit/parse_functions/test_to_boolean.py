@@ -169,6 +169,11 @@ def test_to_boolean_whitespace(value):
         "-",
         "    ",
         "Τʀυe",
+        "nan",
+        "NaN",
+        "NAN",
+        "inf",
+        "-inf"
     ],
 )
 @pytest.mark.parametrize("case_sensitive", [True, False])
