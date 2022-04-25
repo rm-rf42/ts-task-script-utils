@@ -109,7 +109,19 @@ def test_to_boolean_case_insensitive_string_is_in_false_set(value):
 
 @pytest.mark.parametrize(
     "value",
-    ["TRUE", "FALSE", "Yes", "yEs", "yeS", "YEs", "YeS", 'yES", "YES', "No", "nO", "NO"],
+    [
+        "TRUE",
+        "FALSE",
+        "Yes",
+        "yEs",
+        "yeS",
+        "YEs",
+        "YeS",
+        'yES", "YES',
+        "No",
+        "nO",
+        "NO",
+    ],
 )
 def test_to_boolean_case_sensitive_string_is_not_in_either_set_but_looks_like_it_should_be(
     value,
@@ -173,7 +185,7 @@ def test_to_boolean_whitespace(value):
         "NaN",
         "NAN",
         "inf",
-        "-inf"
+        "-inf",
     ],
 )
 @pytest.mark.parametrize("case_sensitive", [True, False])
