@@ -250,19 +250,6 @@ def test_to_decimal_whitespace(value):
     assert actual.compare_total(Decimal("128.01")) == 0
 
 
-def test_to_decimal_decimal():
-    """Test Decimal."""
-    # Arrange
-    value = "3.1415"
-
-    # Act
-    actual = parse.to_decimal(value)
-
-    # Assert
-    assert isinstance(actual, Decimal)
-    assert actual.compare_total(Decimal("3.1415")) == 0
-
-
 def test_to_decimal_decimal_representation_of_integer():
     """Test Decimal representation of integer."""
     # Arrange
@@ -316,6 +303,46 @@ def test_to_decimal_string_has_underscores_decimal():
 @pytest.mark.parametrize(
     "value",
     [
+        "nan",
+        "NaN",
+        "NAN",
+    ],
+)
+def test_to_decimal_nan_strings(value):
+    """Test not a number strings."""
+    # Arrange from parameters
+    # Act
+    actual = parse.to_decimal(value)
+
+    # Assert
+    assert actual.is_nan()
+
+
+def test_to_decimal_positive_infinity():
+    """Test not a number strings."""
+    # Arrange from parameters
+    # Act
+    actual = parse.to_decimal("inf")
+
+    # Assert
+    assert actual.is_infinite()
+    assert actual > 0
+
+
+def test_to_decimal_negative_infinity():
+    """Test not a number strings."""
+    # Arrange from parameters
+    # Act
+    actual = parse.to_decimal("-inf")
+
+    # Assert
+    assert actual.is_infinite()
+    assert actual < 0
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
         "two",
         "thirty-five point seven",
         "12.4.5",
@@ -326,6 +353,10 @@ def test_to_decimal_string_has_underscores_decimal():
         "0xbadbeef",
         "0o775",
         "0b100001",
+        "infinity",
+        "INFINITY",
+        "-infinity",
+        "-INFINITY",
     ],
 )
 def test_to_decimal_invalid_strings(value):
