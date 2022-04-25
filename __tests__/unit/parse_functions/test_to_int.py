@@ -224,6 +224,7 @@ def test_to_int_nan_strings(value):
 
 
 def test_to_int_positive_infinity():
+    """Test positive infinity is parsed to None (i.e. considered invalid input)."""
     # Arrange
     value = "inf"
 
@@ -235,6 +236,7 @@ def test_to_int_positive_infinity():
 
 
 def test_to_int_negative_infinity():
+    """Test negative infinity is parsed to None (i.e. considered invalid input)."""
     # Arrange
     value = "-inf"
 
